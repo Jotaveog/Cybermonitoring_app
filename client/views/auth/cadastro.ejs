@@ -1,89 +1,66 @@
 <!-- importa o header -->
 <%- include('../partials/header')  %>
 
-<main>
-    <div class="container">
-        <!-- Estilo do card geral -->
-        <div class="card"
-        style="padding: 2rem; border: 2px solid var(--cor-borda); box-shadow: 6px 6px 0px var(--cor-borda); 
-        background-color: var(--cor-fundo);">
-            <!-- Texto inicial -->
-            <h2 style="color: var(--cor-destaque); text-align: center; margin-bottom: 5px;"> 
-                <i class="fa-solid fa-user-plus"></i>
-                CADASTRO 
-            </h2>
-            <!-- Formulário de cadastro -->
-            <form action="/usuarios/cadastrar" method="post" enctype="multipart/form-data">
-
-                <div class="row">
-                    <div class="col">
-                       
-                        <!-- Caixinha de nome -->
-                         <div class="form-group">
-                            <label for="nome">
-                                <i class="fa-solid fa-id-card"></i> Nome Completo:      
-                            </label>
-                            <input type="text" id="nome" name="nome" class="form-control" required>
-                         </div>
-                         
-                        <!-- Caixinha de email -->
-                        <div class="form-group">
-                            <label for="email"> <i class="fa-solid fa-envelope"></i> Email:</label>
-                            <input type="email" id="email" name="email" class="form-control" required>
-                        </div>
-
-                        <!-- Caixinha de perfil -->
-                        <div class="form-group">
-                            <label for="perfil"> <i class="fa-solid fa-users"></i> Qual sua Função ?</label>
-                            <select name="perfil" id="perfil" class="form-control" required>
-                                <option value="ofertante"> Administrador </option>
-                                <option value="interessado"> Técnico </option>
-                            </select>
-                        </div>
-                    </div>
-                    <!-- SEGUNDA COLUNA -->
-                    <div class="col">
-                    <!-- Legenda divisão 1 -->
-                        <fieldset>
-                            <legend class="float-none w-auto text-white"> - </legend>
-                        </fieldset>
-
-                        <!-- Caixinha de telefone -->
-                         <div class="form-group">
-                            <label for="telefone">
-                                <i class="fa-solid fa-phone"></i> Telefone / Whatsapp:      
-                            </label>
-                            <input type="text" id="telefone" name="telefone" class="form-control" required>
-                         </div>
-                         
-                        <!-- Caixinha de senha -->
-                         <div class="form-group"> 
-                            <label for="senha"> <i class="fa-solid fa-lock"></i> Senha:</label>
-                            <input type="password" name="senha" id="senha" class="form-control" required>
-                         </div>
-
-                        <!-- Caixinha de confirmar senha -->
-                         <div class="form-group"> 
-                            <label for="senha"> <i class="fa-solid fa-lock"></i> Confirmar Senha:</label>
-                            <input type="password" name="senha" id="senha" class="form-control" required>
-                         </div>
-
-                    </div>
-                </div>
-                <!-- Botão de envio do formulário -->
-                 <button type="submit" class="btn btn-secondary" style="width: 100%; margin-top: 15px;">
-                    <i></i> Cadastrar
-                 </button>
-                 <!-- Opção para ir para página de login -->
-                  <div style="text-align: center; margin-top: 20px;">
-                        <a href="/login" style="color: var(--cor-texto-principal); font-weight: bold; text-decoration: none;">
-                            Já tem conta? 
-                            <span style="color: var(--cor-destaque); text-decoration: underline;"> 
-                                Faça Login
-                            </span>
-                        </a>
-                  </div>
-            </form>
+<main class="login-container">
+    <div class="auth-card auth-card-wide">
+        <div class="auth-card-header">
+            <h1>Cadastro</h1>
+            <p>Faça seu cadastro para acessar o painel de monitoramento</p>
         </div>
+
+        <form action="/usuarios/cadastrar" method="post" class="auth-form">
+            <div class="form-group">
+                <label for="nome">
+                    Nome completo
+                </label>
+                <input type="text" id="nome" name="nome" class="form-control" placeholder="Nome do usuário" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">
+                    E-mail
+                </label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="Seu e-mail" required>
+            </div>
+
+            <!-- Caixinha de perfil -->
+            <div class="form-group">
+                <label for="perfil"> <i class="fa-solid fa-users"></i> Qual sua Função ?</label>
+                    <select name="perfil" id="perfil" class="form-control" required>
+                        <option value="administrador" style="color: #f4f3ff; background-color: #12121A;"> Administrador </option>
+                        <option value="tecnico" style="color: #f4f3ff;  background-color: #12121A;"> Técnico </option>
+                    </select>
+            </div>
+
+            <div class="form-group">
+                <label for="login">
+                    Login
+                </label>
+                <input type="text" id="login" name="login" class="form-control" placeholder="Nome de usuário" required>
+            </div>
+
+            <div class="form-group">
+                <label for="senha">
+                    Senha
+                </label>
+                <input type="password" id="senha" name="senha" class="form-control" placeholder="Mínimo 6 caracteres" required>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmar_senha">
+                    Confirmar senha
+                </label>
+                <input type="password" id="confirmar_senha" name="confirmar_senha" class="form-control" placeholder="Confirme sua senha" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary auth-button">
+                Cadastrar
+            </button>
+
+            <div class="auth-link-row">
+                <span>Já possui conta?</span>
+                <a href="/login">Entrar</a>
+            </div>
+        </form>
     </div>
 </main>

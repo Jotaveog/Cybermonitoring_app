@@ -22,8 +22,8 @@ router.post("/login", usuarioController.login);
 // Rota de saida
 router.get("/logout", usuarioController.logout);
 
-// Rota de saida
-router.get("/login", usuarioController.login);
+// Redireciona GET /usuarios/login para a tela de login principal
+router.get("/login", (req, res) => res.redirect("/login"));
 
 // Rota de cadastro de usuários
 // O multer, salva a imagem
@@ -36,11 +36,11 @@ router.use(somenteAdmin);
 
 // Obtém a lista de usuários
 router.get("/", (req, res) => {
-  res.status(200).render("usuarios/listar");
+  res.status(200).render("administrador/listar");
 });
 //Retornar a página de cadastro
 router.get("/cadastro", (req, res) => {
-  res.status(200).render("usuarios/cadastrar");
+  res.status(200).render("administrador/cadastrar");
 });
 
 module.exports = router;

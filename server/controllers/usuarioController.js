@@ -24,7 +24,7 @@ module.exports = {
           .render("erro", { mensagem: "Credenciais inválidas" });
 
       // compara a senha que o usuário digitou, com a senha do usuario retornado no banco
-      const senhaValida = await bcrypt.compare(senha, usuario.senha);
+      const senhaValida = await bcrypt.compare(senha, usuario.senha_hash);
       // Se senhas não coincidirem, mensagem de erro
       if (!senhaValida)
         return res
@@ -33,7 +33,7 @@ module.exports = {
 
       // Gera o token de acesso, contendo o perfil
       const token = jwt.sign(
-        { id: usuario.id, perfil: usuario.perfil, nome: usuario.nome },
+        { id: usuario.id_usuario, perfil: usuario.perfil, nome: usuario.nome },
         process.env.JWT_SECRET,
         { expiresIn: "2h" },
       );
@@ -68,9 +68,10 @@ module.exports = {
     
     try {
     // Pega as infomações das caixinhas da view, de acordo com o name delas
-    const { nome, email, senha_hash, id_perfil } = req.body;
+    const { nome, email, login, senha, id_perfil } = req.body;
+    const perfilId = id_perfil ? parseInt(id_perfil, 10) : 2;
 
-    if (id_perfil === 1) // 1 representa o perfil de administrador
+    if (perfilId === 1) // 1 representa o perfil de administrador
       return res
         .status(403)
         .render("erro", {
@@ -82,7 +83,7 @@ module.exports = {
         const senhaHash = await bcrypt.hash(senha, 10);
 
         // Chama o model passando as informações para criar o usuário
-        await usuarioModel.criarUsuario(nome, email, senhaHash, id_perfil);
+        await usuarioModel.criarUsuario(nome, email, login, senhaHash, perfilId);
 
         // Variável para definir para onde o usuário será redirecionado após criar o novo usuário
         let redirecionadoPara = "/login";
