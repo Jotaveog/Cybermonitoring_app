@@ -36,11 +36,11 @@ router.use(somenteAdmin);
 
 // Obtém a lista de usuários
 router.get("/", (req, res) => {
-  res.status(200).render("usuarios/listar");
+  res.status(200).render("administrador/listar");
 });
 //Retornar a página de cadastro
 router.get("/cadastro", (req, res) => {
-  res.status(200).render("usuarios/cadastrar");
+  res.status(200).render("administrador/cadastrar");
 });
 
 module.exports = router;
