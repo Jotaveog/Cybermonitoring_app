@@ -1,89 +1,91 @@
--- Deleta o banco de dados 
-DROP DATABASE sistema_trocas;
+CREATE DATABASE cybermonitoring;
+USE cybermonitoring;
 
--- Cria o banco de dados sistema_trocas
-CREATE DATABASE IF NOT EXISTS sistema_trocas;
-
--- UTILIZA O BANCO CRIADO PARA CRIAÇÃO DAS TABELAS
-USE sistema_trocas;
-
--- Deleta as tabelas antigas caso existam
-DROP TABLE IF EXISTS usuarios;
-DROP TABLE IF EXISTS produtos;
-DROP TABLE IF EXISTS interesses;
-
--- Tabela usuários
-CREATE TABLE usuarios(
-	id INT AUTO_INCREMENT PRIMARY KEY,
-	nome VARCHAR(100),
-    email VARCHAR(100),
-    senha VARCHAR(255),
-    telefone VARCHAR(20),
-    foto VARCHAR(255),
-    perfil ENUM('administrador', 'ofertante', 'interessado')
+-- PERFIS (controle de acesso)
+CREATE TABLE perfis (
+    id_perfil INT AUTO_INCREMENT PRIMARY KEY,
+    nome_perfil VARCHAR(50) NOT NULL UNIQUE
 );
 
--- Tabela produtos
-CREATE TABLE produtos(
-	id INT AUTO_INCREMENT PRIMARY KEY,
-	nome VARCHAR(100),
-	descricao TEXT,
-    preco DECIMAL(10,2),
-	condicao ENUM('novo', 'usado') DEFAULT 'usado',
-    foto VARCHAR(255),
-	is_publico BOOLEAN DEFAULT TRUE,
-    status_troca BOOLEAN DEFAULT FALSE,
+--  USUÁRIOS
+CREATE TABLE usuarios (
+    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(120) NOT NULL UNIQUE,
+    login VARCHAR(50) NOT NULL UNIQUE,
+    senha_hash VARCHAR(255) NOT NULL,
+    status ENUM('ATIVO', 'INATIVO') DEFAULT 'ATIVO',
+    ultimo_acesso DATETIME,
+    data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    id_perfil INT NOT NULL,
+    FOREIGN KEY (id_perfil) REFERENCES perfis(id_perfil)
+);
+
+-- ATIVOS (CRUD PRINCIPAL)
+CREATE TABLE ativos (
+    id_ativo INT AUTO_INCREMENT PRIMARY KEY,
+    nome_maquina VARCHAR(100) NOT NULL,
+    patrimonio VARCHAR(50) UNIQUE,
+    numero_serie VARCHAR(80),
+    ip VARCHAR(45),
+    mac_address VARCHAR(30),
+    setor VARCHAR(80),
+    laboratorio VARCHAR(80),
+    sistema_operacional VARCHAR(100),
+    status_cadastro ENUM('ATIVO', 'INATIVO') DEFAULT 'ATIVO',
+    data_cadastro DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+--  MONITORAMENTO (dados coletados)
+CREATE TABLE monitoramentos (
+    id_monitoramento INT AUTO_INCREMENT PRIMARY KEY,
+    id_ativo INT NOT NULL,
+    uso_cpu DECIMAL(5,2),
+    uso_memoria DECIMAL(5,2),
+    uso_disco DECIMAL(5,2),
+    temperatura DECIMAL(5,2),
+    disponibilidade BOOLEAN,
+    status_monitoramento ENUM('NORMAL', 'ATENCAO', 'CRITICO') NOT NULL,
+    data_coleta DATETIME DEFAULT CURRENT_TIMESTAMP,
+    origem_dado VARCHAR(100),
+    FOREIGN KEY (id_ativo) REFERENCES ativos(id_ativo)
+);
+
+--  HISTÓRICO DE STATUS
+CREATE TABLE historico_status (
+    id_historico INT AUTO_INCREMENT PRIMARY KEY,
+    id_ativo INT NOT NULL,
+    status_anterior ENUM('NORMAL', 'ATENCAO', 'CRITICO'),
+    status_novo ENUM('NORMAL', 'ATENCAO', 'CRITICO') NOT NULL,
+    data_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
+    observacao TEXT,
+    FOREIGN KEY (id_ativo) REFERENCES ativos(id_ativo)
+);
+
+--  RELATÓRIOS
+CREATE TABLE relatorios (
+    id_relatorio INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(150) NOT NULL,
+    tipo VARCHAR(80),
+    filtro_aplicado TEXT,
+    formato_exportacao ENUM('PDF', 'EXCEL') NOT NULL,
+    data_geracao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    id_usuario INT NOT NULL,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
+);
+
+--  LOGS DO SISTEMA
+CREATE TABLE logs_sistema (
+    id_log INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT,
-    FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE
+    acao VARCHAR(100) NOT NULL,
+    descricao TEXT,
+    data_hora DATETIME DEFAULT CURRENT_TIMESTAMP,
+    ip_origem VARCHAR(45),
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
 );
 
--- Tabela interesses
-CREATE TABLE interesses(
-	id INT AUTO_INCREMENT PRIMARY KEY,
-	id_produto INT,
-    id_interessado INT,
-    data_interesse DATETIME DEFAULT CURRENT_TIMESTAMP,
-    -- REFERENCIAS DE CHAVE ESTRANGEIRAS
-    FOREIGN KEY (id_produto)     REFERENCES produtos(id) ON DELETE CASCADE,
-    FOREIGN KEY (id_interessado) REFERENCES usuarios(id) ON DELETE CASCADE 
-);
-
--- senha: greg
--- INSERTS DE USUÁRIOS
--- ADM
-INSERT INTO usuarios(nome, email, senha, telefone, perfil)
-VALUES(
-	'Admin Greg', 
-    'greg@gmail.com', 
-    '$2a$10$bnVggkOhZQJP9ipjXWe01eztcGAB/T3ptXbA36MzwiAyAn6EkYaca', 
-    '2740028922', 
-    'administrador'
-);
-
--- OFERTANTE
-INSERT INTO usuarios(nome, email, senha, telefone, perfil)
-VALUES(
-	'João Ofertante', 
-    'ofertante@gmail.com', 
-    '$2a$10$bnVggkOhZQJP9ipjXWe01eztcGAB/T3ptXbA36MzwiAyAn6EkYaca', 
-    '2740028922', 
-    'ofertante'
-);
-
--- INTERESSADO
-INSERT INTO usuarios(nome, email, senha, telefone, perfil)
-VALUES(
-	'Bruce Interessado', 
-    'interessado@gmail.com', 
-    '$2a$10$bnVggkOhZQJP9ipjXWe01eztcGAB/T3ptXbA36MzwiAyAn6EkYaca', 
-    '2740028922', 
-    'interessado'
-);
-
-
-
-
-
-
-
-	
+--  DADOS INICIAIS
+INSERT INTO perfis (nome_perfil) VALUES
+('Administrador'),
+('Tecnico');
