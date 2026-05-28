@@ -16,8 +16,8 @@ module.exports = {
     // CREATE
     criarUsuario : async (nome, email, login, senha_hash, id_perfil) =>{
         // Query pra fazer a consulta no banco
-        const query = `INSERT INTO usuarios (nome, email, login, senha_hash, id_perfil)
-                       VALUES (?,?,?,?,?)`
+        const query = `INSERT INTO usuarios (nome, email, senha, telefone, foto, perfil)
+                       VALUES (?,?,?,?,?,?)`
         // Guarda o resultado da consulta na variável
         const [resultado] = await db.execute(query, [nome, email, login, senha_hash, id_perfil])
         // Retorna pro controller o resultado, nesse caso o id do usuário inserido
