@@ -1,0 +1,47 @@
+<!-- importa o header -->
+<%- include('../partials/header') %>
+
+<!-- MAIN: A classe login-container usa o Flexbox do Body para centralizar a div interna no meio do espaço livre -->
+<main class="login-container">
+    <!-- CARD DO LOGIN: Seguindo o Design System Brutalista com bordas grossas -->
+    <div class="card" style="width: 100%; max-width: 400px; padding: 2rem; border: 2px solid var(--cor-borda); box-shadow: 6px 6px 0px var(--cor-borda); background-color: var(--cor-fundo);">
+        
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <!-- Ícone do Font Awesome centralizado com a cor Vermelha -->
+            <i class="fa-solid fa-circle-user fa-4x" style="color: var(--cor-destaque); margin-bottom: 10px;"></i>
+            <h2 style="margin: 0;">Acesso Restrito</h2>
+            <p style="color: var(--cor-texto-secundario); margin-top: 5px;">Faça login para continuar.</p>
+        </div>
+
+        <!-- Formulário apontando para a Rota Pública de Autenticação -->
+        <form action="/usuarios/login" method="POST">
+            
+            <div class="form-group">
+                <label for="email_login">
+                    <i class="fa-solid fa-envelope"></i> E-mail
+                </label>
+                <input type="email" id="email_login" name="email" class="form-control" placeholder="Seu e-mail cadastrado" required>
+            </div>
+
+            <div class="form-group">
+                <label for="senha_login">
+                    <i class="fa-solid fa-lock"></i> Senha
+                </label>
+                <input type="password" id="senha_login" name="senha" class="form-control" placeholder="Sua senha secreta" required>
+            </div>
+
+            <!-- Botão Primário Vermelho -->
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px; font-size: 16px;">
+                <i class="fa-solid fa-right-to-bracket"></i> Entrar
+            </button>
+             <div style="text-align: center; margin-top: 25px;">
+            <a href="/cadastro" style="color: var(--cor-texto-principal); font-weight: bold; text-decoration: none;">
+                Não tem uma conta? <span style="color: var(--cor-destaque); text-decoration: underline;">Crie aqui</span>
+            </a>
+            </div>
+    </form>
+    </div> 
+</main>
+
+<!-- importa o footer -->
+<%- include('../partials/footer') %>
