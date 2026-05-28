@@ -89,3 +89,20 @@ CREATE TABLE logs_sistema (
 INSERT INTO perfis (nome_perfil) VALUES
 ('Administrador'),
 ('Tecnico');
+
+INSERT INTO usuarios (nome, email, login, senha_hash, id_perfil) VALUES
+('Administrador TI', 'admin@senai.edu.br', 'admin', '$2b$10$8KyW5hYBt3ySxuSMmTG2OeGh9RVrMAyXO9JEDggAQwMn2dRShNkHy', 1),
+('Técnico Suporte', 'tecnico@senai.edu.br', 'tecnico', '$2b$10$8KyW5hYBt3ySxuSMmTG2OeGh9RVrMAyXO9JEDggAQwMn2dRShNkHy', 2);
+
+INSERT INTO ativos (nome_maquina, patrimonio, numero_serie, ip, mac_address, setor, laboratorio, sistema_operacional, status_cadastro) VALUES
+('Laboratório 01', 'PC-1001', 'SN-2024-001', '10.0.0.11', '00:1A:2B:3C:4D:5E', 'TI', 'Lab A', 'Windows 11', 'ATIVO'),
+('Laboratório 02', 'PC-1002', 'SN-2024-002', '10.0.0.12', '00:1A:2B:3C:4D:5F', 'Administração', 'Lab B', 'Ubuntu 24.04', 'ATIVO'),
+('Laboratório 03', 'PC-1003', 'SN-2024-003', '10.0.0.13', '00:1A:2B:3C:4D:60', 'Secretaria', 'Lab C', 'Windows 10', 'ATIVO');
+
+INSERT INTO monitoramentos (id_ativo, uso_cpu, uso_memoria, uso_disco, temperatura, disponibilidade, status_monitoramento, origem_dado, data_coleta) VALUES
+(1, 22.5, 55.2, 43.8, 42.3, 1, 'NORMAL', 'API externa', '2026-05-20 10:30:00'),
+(2, 84.1, 91.0, 77.5, 75.9, 0, 'CRITICO', 'CSV importado', '2026-05-20 10:35:00'),
+(3, 58.7, 72.4, 66.2, 63.8, 1, 'ATENCAO', 'JSON importado', '2026-05-20 10:40:00');
+
+INSERT INTO historico_status (id_ativo, status_anterior, status_novo, observacao) VALUES
+(2, 'ATENCAO', 'CRITICO', 'Alerta crítico detectado na última coleta');
