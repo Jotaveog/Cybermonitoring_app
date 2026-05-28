@@ -43,10 +43,8 @@ module.exports = {
 
       // Redirecionamento de acordo com o perfil
       if (usuario.perfil === "administrador") return res.redirect("/usuarios");
-      if (usuario.perfil === "ofertante")
+      if (usuario.perfil === "tecnico")
         return res.redirect("/produtos/meus-produtos");
-      if (usuario.perfil === "interessado")
-        return res.redirect("/produtos/vitrine");
     } catch (erro) {
       res.status(500).render("erro", { mensagem: "Erro interno no servidor" });
     }
@@ -70,9 +68,9 @@ module.exports = {
     
     try {
     // Pega as infomações das caixinhas da view, de acordo com o name delas
-    const { nome, email, senha, telefone, perfil } = req.body;
+    const { nome, email, senha_hash, id_perfil } = req.body;
 
-    if (perfil === "administrador")
+    if (id_perfil === 1) // 1 representa o perfil de administrador
       return res
         .status(403)
         .render("erro", {
@@ -80,15 +78,11 @@ module.exports = {
             "Não é permitido criar usuários com perfil de administrador",
         });
 
-        // Multer salva a foto da pessoa na pasta uploads/usuarios, e o nome do arquivo fica disponível em req.file.filename
-        const fotoDaPessoa = req.file ? `uploads/usuarios/${req.file.filename}` : null;
-
-
         // Criptografa a senha antes de salvar no banco
         const senhaHash = await bcrypt.hash(senha, 10);
 
         // Chama o model passando as informações para criar o usuário
-        await usuarioModel.criarUsuario(nome, email, senhaHash, telefone, fotoDaPessoa, perfil);
+        await usuarioModel.criarUsuario(nome, email, senhaHash, id_perfil);
 
         // Variável para definir para onde o usuário será redirecionado após criar o novo usuário
         let redirecionadoPara = "/login";
