@@ -5,6 +5,7 @@
     <div class="auth-card auth-card-wide">
         <div class="auth-card-header">
             <h1>Cadastro</h1>
+            <p>Faça seu cadastro para acessar o painel de monitoramento</p>
         </div>
 
         <form action="/usuarios/cadastrar" method="post" class="auth-form">
@@ -20,6 +21,15 @@
                     E-mail
                 </label>
                 <input type="email" id="email" name="email" class="form-control" placeholder="Seu e-mail" required>
+            </div>
+
+            <!-- Caixinha de perfil -->
+            <div class="form-group">
+                <label for="perfil"> <i class="fa-solid fa-users"></i> Qual sua Função ?</label>
+                    <select name="perfil" id="perfil" class="form-control" required>
+                        <option value="administrador" style=" background-color: #12121A;"> Administrador </option>
+                        <option value="tecnico" style="background-color: #12121A;"> Técnico </option>
+                    </select>
             </div>
 
             <div class="form-group">
