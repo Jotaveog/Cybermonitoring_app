@@ -10,17 +10,14 @@
             <!-- Texto inicial -->
             <h2 style="color: var(--cor-destaque); text-align: center; margin-bottom: 5px;"> 
                 <i class="fa-solid fa-user-plus"></i>
-                CRIAR NOVA CONTA 
+                CADASTRO 
             </h2>
             <!-- Formulário de cadastro -->
             <form action="/usuarios/cadastrar" method="post" enctype="multipart/form-data">
 
                 <div class="row">
                     <div class="col">
-                        <fieldset>
-                            <legend class="float-none w-auto"> Informações pessoais </legend>
-                        </fieldset>
-
+                       
                         <!-- Caixinha de nome -->
                          <div class="form-group">
                             <label for="nome">
@@ -28,11 +25,7 @@
                             </label>
                             <input type="text" id="nome" name="nome" class="form-control" required>
                          </div>
-                         <!-- Legenda divisão 2 -->
-                        <fieldset class="mt-3">
-                            <legend class="float-none w-auto"> Informações de login </legend>
-                        </fieldset>
-
+                         
                         <!-- Caixinha de email -->
                         <div class="form-group">
                             <label for="email"> <i class="fa-solid fa-envelope"></i> Email:</label>
@@ -41,16 +34,11 @@
 
                         <!-- Caixinha de perfil -->
                         <div class="form-group">
-                            <label for="perfil"> <i class="fa-solid fa-users"></i> Qual seu papel?</label>
+                            <label for="perfil"> <i class="fa-solid fa-users"></i> Qual sua Função ?</label>
                             <select name="perfil" id="perfil" class="form-control" required>
-                                <option value="ofertante"> Quero oferecer produtos </option>
-                                <option value="interessado"> Busco produtos </option>
+                                <option value="ofertante"> Administrador </option>
+                                <option value="interessado"> Técnico </option>
                             </select>
-                        </div>
-                        <!-- Caixinha de foto -->
-                        <div class="form-group">
-                            <label for="foto"><i class="fa-solid fa-camera"></i> Foto do produto</label>
-                            <input type="file" name="foto" id="foto" class="form-control" accept="image/*" required>
                         </div>
                     </div>
                     <!-- SEGUNDA COLUNA -->
@@ -67,26 +55,24 @@
                             </label>
                             <input type="text" id="telefone" name="telefone" class="form-control" required>
                          </div>
-                         <!-- Legenda divisão 2 -->
-                        <fieldset class="mt-3">
-                            <legend class="float-none w-auto text-white"> - </legend>
-                        </fieldset>
-
+                         
                         <!-- Caixinha de senha -->
                          <div class="form-group"> 
                             <label for="senha"> <i class="fa-solid fa-lock"></i> Senha:</label>
                             <input type="password" name="senha" id="senha" class="form-control" required>
                          </div>
 
-                         <!-- PREVIEW DA IMAGEM -->
-                          <div id="preview-box" class="preview-container max-width:100%" style="height: 230px;">
-                            <img src="..." alt="Foto do usuário" id="preview-img" style="height: 230px; width: auto;">
-                          </div>
+                        <!-- Caixinha de confirmar senha -->
+                         <div class="form-group"> 
+                            <label for="senha"> <i class="fa-solid fa-lock"></i> Confirmar Senha:</label>
+                            <input type="password" name="senha" id="senha" class="form-control" required>
+                         </div>
+
                     </div>
                 </div>
                 <!-- Botão de envio do formulário -->
                  <button type="submit" class="btn btn-secondary" style="width: 100%; margin-top: 15px;">
-                    <i class="fa-solid fa-check"></i> Cadastrar
+                    <i></i> Cadastrar
                  </button>
                  <!-- Opção para ir para página de login -->
                   <div style="text-align: center; margin-top: 20px;">
