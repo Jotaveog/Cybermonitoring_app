@@ -1,0 +1,38 @@
+/* ===== CYBERMONITORING - adicionar no style.css existente ===== */
+ 
+.card-cyber {
+    background: #22222a;
+    border: 1px solid #333340;
+    border-radius: 8px;
+}
+ 
+.card-cyber-label {
+    font-size: 16px;
+    font-weight: 700;
+    color: #e0e0e8;
+    letter-spacing: 0.5px;
+    margin-bottom: 0;
+}
+ 
+.numero-destaque {
+    font-size: 64px;
+    font-weight: 800;
+    color: #4caf50;
+    line-height: 1;
+    font-family: monospace;
+}
+ 
+/* Ajusta tabelas dentro dos cards */
+.card-cyber .table-dark {
+    background: transparent;
+}
+ 
+.card-cyber .table-dark td,
+.card-cyber .table-dark th {
+    background: transparent;
+}
+ 
+.card-cyber .table-hover > tbody > tr:hover > * {
+    background-color: rgba(255,255,255,0.04);
+}
+ 
