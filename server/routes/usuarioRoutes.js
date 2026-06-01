@@ -35,12 +35,9 @@ router.use(verificarAutenticacao);
 router.use(somenteAdmin);
 
 // Obtém a lista de usuários
-router.get("/", (req, res) => {
-  res.status(200).render("administrador/listar");
-});
+router.get("/", usuarioController.listar);
+
 //Retornar a página de cadastro
-router.get("/cadastro", (req, res) => {
-  res.status(200).render("administrador/cadastrar");
-});
+router.get("/cadastro", usuarioController.renderizarCadastro);
 
 module.exports = router;

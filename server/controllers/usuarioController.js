@@ -107,7 +107,21 @@ module.exports = {
     } catch (erro) {
         console.error("Erro ao cadastrar usuário:", erro);
         res.status(500).render("erro", { mensagem: "Erro interno no servidor" });
-    }
+        }
+    },
+
+    // READ - LISTAR USUÁRIOS
+    listar: async(req,res) => {
+      try{
+          // Se deu certo
+          const usuarios = await usuarioModel.listarUsuarios()
+          res.render('usuarios/listar', { usuarios })
+      }
+      catch(erro){
+          // Se deu erro
+          res.status(500).render('erro', {mensagem: "Erro ao listar usuários"})
+        }
     }
 }
+
  
