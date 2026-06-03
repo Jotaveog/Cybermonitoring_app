@@ -82,9 +82,6 @@ Remover qualquer lógica de troca/negociação.
 4. ROTAS
 Substituir rotas antigas por:
 
-/auth/login
-/auth/cadastro
-
 /ativos
 /ativos/:id
 

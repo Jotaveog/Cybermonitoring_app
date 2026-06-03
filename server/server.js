@@ -44,21 +44,22 @@ app.get("/cadastro", (req, res) => {
   res.render('auth/cadastro');
 });
 
+// IMPORTAR MIDDLEWARES
+const { verificarAutenticacao } = require("./middlewares/authMiddlewares.js");
+
+// ROTAS PROTEGIDAS DOS DASHBOARDS
+app.get("/dashboard/admin", verificarAutenticacao, (req, res) => {
+  res.render('dashboard/administrador/index');
+});
+
+app.get("/dashboard/tecnico", verificarAutenticacao, (req, res) => {
+  res.render('dashboard/tecnico/index');
+});
+
 //Importar as rotas de usuário
 const usuariosRoutes = require("./routes/usuarioRoutes.js");
 // Requisições comecando com /usuarios é gerenciada pelo sub-arquivo de rotas
 app.use("/usuarios", usuariosRoutes);
-
-//Importar as rotas de produto
-const produtosRoutes = require("./routes/produtosRoutes.js");
-// Requisições comecando com /produtos é gerenciada pelo sub-arquivo de rotas
-app.use("/produtos", produtosRoutes);
-
-// //Função para subir o servidor
-// app.listen(port, () => {
-//   console.log(`Servidor ativo na porta: ${port}`);
-//   console.log(`Link: http://localhost:${port}`);
-// });
 
 // Traz as configurações do banco
 const pool = require("./config/db.js");

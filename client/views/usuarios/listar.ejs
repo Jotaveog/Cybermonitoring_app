@@ -1,0 +1,77 @@
+<%- include('../layouts/header') %>
+
+<main class="container-fluid" style="padding: 20px;">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1>
+                <i class="fa-solid fa-users"></i> Gerenciar Usuários
+            </h1>
+            <a href="/usuarios/cadastro" class="btn btn-primary mt-3">
+                <i class="fa-solid fa-plus"></i> Novo Usuário
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Lista de Usuários</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>Login</th>
+                                <th>Perfil</th>
+                                <th>Status</th>
+                                <th>Último Acesso</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (usuarios && usuarios.length > 0) { %>
+                                <% usuarios.forEach(usuario => { %>
+                                    <tr>
+                                        <td><%= usuario.id_usuario %></td>
+                                        <td><%= usuario.nome %></td>
+                                        <td><%= usuario.email %></td>
+                                        <td><%= usuario.login %></td>
+                                        <td><span class="badge bg-info"><%= usuario.nome_perfil %></span></td>
+                                        <td>
+                                            <% if (usuario.status === 'ATIVO') { %>
+                                                <span class="badge bg-success">ATIVO</span>
+                                            <% } else { %>
+                                                <span class="badge bg-danger">INATIVO</span>
+                                            <% } %>
+                                        </td>
+                                        <td><%= usuario.ultimo_acesso ? new Date(usuario.ultimo_acesso).toLocaleString('pt-BR') : 'Nunca' %></td>
+                                        <td>
+                                            <a href="/usuarios/<%= usuario.id_usuario %>/editar" class="btn btn-sm btn-warning">
+                                                <i class="fa-solid fa-edit"></i>
+                                            </a>
+                                            <form action="/usuarios/deletar/<%= usuario.id_usuario %>" method="POST" style="display: inline;">
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza?')">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted">Nenhum usuário cadastrado</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('../layouts/footer') %>

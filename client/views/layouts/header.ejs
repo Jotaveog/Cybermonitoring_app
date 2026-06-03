@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberMonitoring</title>
+
+    <!-- IMPORTAÇÃO FONT AWESOME -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- IMPORTAÇÃO DO BOOTSTRAP -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous" />
+
+    <!-- IMPORTAÇÃO DO CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <header>
+        <!-- Opções de menu, na direita -->
+        <nav class="nav-menu">
+
+            <!-- SE TIVER LOGADO -->
+            <% if (typeof usuario !=='undefined' && usuario) { %>
+
+                <!-- MOSTRA NOME DO USUÁRIO LOGADO -->
+                <span style="color: var(--cor-destaque); font-weight: bold; margin-right: 15px;">
+                    <i class="fa-solid fa-user"></i>
+                    <%= usuario.nome %>
+                </span>
+
+                <!-- Se for Administrador -->
+                <% if (usuario.perfil==='Administrador' ) { %>
+                    <div class="dropdown d-inline-block">
+                        <button class="dropdown-btn dropdown-toggle btn" type="button" data-bs-toggle="dropdown"
+                            aria-expanded="false" style="background: transparent; border: none;">
+                            <i class="fa-solid fa-user-shield"></i> Admin
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/usuarios">Gerenciar Usuários</a></li>
+                            <li><a class="dropdown-item" href="/ativos">Gerenciar Ativos</a></li>
+                            <li><a class="dropdown-item" href="/dashboard/admin">Dashboard Admin</a></li>
+                        </ul>
+                    </div>
+                <% } %>
+
+                <!-- Se for Técnico -->
+                <% if (usuario.perfil==='Tecnico' ) { %>
+                    <div class="dropdown d-inline-block">
+                        <button class="dropdown-btn dropdown-toggle btn" type="button" data-bs-toggle="dropdown"
+                            aria-expanded="false" style="background: transparent; border: none;">
+                            <i class="fa-solid fa-tools"></i> Técnico
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/monitoramentos">Monitoramentos</a></li>
+                            <li><a class="dropdown-item" href="/ativos">Ativos</a></li>
+                            <li><a class="dropdown-item" href="/dashboard/tecnico">Dashboard</a></li>
+                        </ul>
+                    </div>
+                <% } %>
+
+                <!-- Logout -->
+                <a href="/usuarios/logout" class="btn btn-danger btn-sm">
+                    <i class="fa-solid fa-sign-out-alt"></i> Sair
+                </a>
+
+            <% } else { %>
+                <!-- SE NÃO ESTIVER LOGADO -->
+                <a href="/login" class="btn btn-primary btn-sm">Login</a>
+                <a href="/cadastro" class="btn btn-secondary btn-sm">Cadastro</a>
+            <% } %>
+
+        </nav>
+    </header>
