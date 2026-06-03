@@ -1,47 +1,47 @@
-// IMPORTAÇÃO DOS MODULOS
+// IMPORTAÇÃO DOS MÓDULOS NECESSÁRIO
 const multer = require("multer")
 const path = require("path")
 const fs = require('fs')
 
-// CONFIGURAÇÃO DO diskStorage, LUGAR ONDE AS IMAGENS SERÃO ARMAZENADAS
+// Configuração do diskStorage, lugar onde as imagens serão armazernadas
 const storage = multer.diskStorage({
-    // DEFINIÇÃO DA PASTA DE DESTINO
+    // Definição da pasta de destino
     destination: (req, file, cb) => {
-        // PASTA RESERVA PARA CASO DÊ ERRADO O LOCAL CERTO
+        // Pasta reserva para caso dê errado o local certo
         let pastaDestino = 'gerais'
-        // DEPENDENDO DA ROTA QUE CHAMAR, ENCAMINHA A IMAGEM PARA A PASTA CORRETA
+        // Dependendo da rota que chamar, encaminha a imagem para a pasta correta
         if(req.originalUrl.includes('/usuarios')){
             pastaDestino = 'usuarios'
         }
-        else if(req.originalUrl.includes('/produtos')){
+        else if( req.originalUrl.includes('/produtos')){
             pastaDestino = 'produtos'
         }
-        // VARIÁVEL QUE GUARDA O CAMINHO DA PASTA PRINCIPAL DE UPLOADS
+        // Variável que guarda o caminho da pasta principal de uploads
         const uploadPath = path.join(__dirname, `../../client/public/uploads/${pastaDestino}`)
-        // SE NÃO EXISTIR A PASTA, O NODE TENTA CRIAR COM O MÓDULO FS
+        // Se não existir a pasta, o node tenta criar com o módulo fs
         if (!fs.existsSync(uploadPath)){
-        fs.mkdirSync(uploadPath, { recursive: true })
+            fs.mkdirSync(uploadPath, { recursive: true })
         }
-
+        // Função de callback, null diz que não houve erro nenhum, e retorna o caminho para a imagem
         cb(null, uploadPath)
-        },
-
-        // FUNÇÃO PARA ALTERAR O NOME DO ARQUIVO
-        filename: (req, file, cb) => {
-        // PEGA A DATA ATUAL
+    },
+    // função para alterar o nome do arquivo
+    filename: (req, file, cb ) => {
+        // pega a data atual
         const timestamp = Date.now()
-        // GERA UM NÚMERO ALEATORIO
+        // gera um número aleatório
         const numeroAleatorio = Math.round(Math.random() * 1E9)
-        // PEGA A EXTENSÃO DO ARQUIVO
-        const extensaoDoArquivo = path. extname(file.originalname)
-        // VARIÁVEL COM O NOME FINAL DO ARQUIVO, JÁ COM AS ALTERAÇÕES PARA EVITAR DUPLICATAS
+        // pega a extensão do arquivo 
+        const extensaoDoArquivo = path.extname(file.originalname)
+        
+        // variável com o nome final do arquivo, já com as alterações para evitar duplicatas
         const nomeFinalSeguro = `${timestamp}-${numeroAleatorio}${extensaoDoArquivo}`
-        // FUNÇÃO DE CALLBACK, NULL DIZ QUE NÃO HOUVE ERRO NENHUM, E RETORNA O NOME PARA A IMAGEM
+        
+        // Função de callback, null diz que não houve erro nenhum, e retorna o nome para a imagem
         cb(null, nomeFinalSeguro)
     }
 })
 
 const upload = multer({ storage: storage })
-
 
 module.exports = upload;

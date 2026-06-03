@@ -121,6 +121,18 @@ module.exports = {
       // se deu erro, mostra a tela de erro padrão pra pessoa
       res.status(500).render('erro', { mensagem: "Erro ao listar usuários" })
     }
+  },
+  //DELETE - DELETAR USUÁRIOS
+  deletar: async (req, res) => {
+    try {
+      const idVindoDaURL = req.params.id
+      await usuarioModel.deletarUsuario(idVindoDaURL)
+      res.redirect('/usuarios')
+    }
+    catch (erro) {
+      res.status(500).render('erro', { mensagem: "Erro ao deletar usuário" })
+    }
+
   }
 
 }

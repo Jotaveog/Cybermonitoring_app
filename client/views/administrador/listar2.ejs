@@ -1,0 +1,91 @@
+<!-- Importa o heades -->
+<%- include('../partials/header') %>
+
+    <!-- MAIN : com o conteúdo da página -->
+    <main class="container">
+
+        <h1> Estou na página Usuários / Editar </h1>
+
+        <a href="/usuarios/cadastro" class="btn btn-secondary">
+            + Novo Usuário
+        </a>
+
+        <!-- Grid dos cards de usuário -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+            <!-- verificação de usuário -->
+            <% if (usuarios && usuarios.length> 0) { %>
+                <!-- Criar cards, com as informações do usuário -->
+                <% usuarios.forEach(function(user) { %>
+                    <!-- Card do usuário -->
+                    <div class="card" style="border: 2px solid var(--cor-borda); box-shadow: 4px 4px 0px var
+                        (--cor-borda); background: var(--cor-fundo); display: flex; flex-direction:
+                        column; height: 100%;">
+
+                        <!-- FOTO DO INDIVÍDUO -->
+                        <% if (user.foto) { %>
+                            <img src="<%= user.foto %>" style="width: 100%; height: 200px; object-fit: cover;">
+                            <% } else { %>
+                                <img src="/img/sem-foto.png" style="width: 100%; height: 200px; object-fit: cover;">
+                                <% } %>
+
+                                    <!-- Corpo do card -->
+                                    <div style="padding: 15px" display: flex; flex-direction: colunm; flex-grow: 1;">
+                                        <!-- Nome -->
+                                        <h3 style="padding: 15px; display: flex; flex-direction: column; flex-grow: 1;">
+                                            <%= user.nome %>
+                                        </h3>
+
+                                        <!-- Email -->
+                                        <span style="font-size: 14px; color:var(--cor-text-principal);">
+                                            <i class="fa-solid fa-envelope"></i>
+                                            <%= user.email ? user.email : "Sem email" %>
+                                        </span>
+                                        <!-- telefone -->
+                                        <span style="font-size: 14px; color:var(--cor-text-principal);">
+                                            <i class="fa-solid fa-phone"></i>
+                                            <%= user.telefone ? user.telefone : "Sem telefone" %>
+                                        </span>
+
+                                        <!-- Selo de perfil - se o adm fundo preto, senão fundo vermelho -->
+                                        <% if(user.perfil==='administrador' ) { %>
+                                            <span
+                                                style="background-color: var(--cor-texto-principal); color: var(--cor-texto-inverso); font-size: 12px; padding: 5px; border-radius: 5px;">
+                                                Administrador
+                                            </span>
+                                            <% } else { %>
+                                                <span
+                                                    style="background-color: var(--cor-destaque); color: var(--cor-texto-inverso); font-size: 12px; padding: 5px; border-radius: 5px;">
+                                                    Usuário Comum
+                                                </span>
+                                                <% } %>
+                                    </div>
+                                    <div style="padding: 15px; display: flex; gap: 10px; font-size: 10px; margin: auto;">
+                                        <!-- Botão de editar -->
+                                        <a href="/usuarios/editar/<%= user.id %>" class="btn btn-secondary">
+                                            <i class="fa-solid fa-pen"></i> Editar
+                                        </a>
+
+
+                                        <!-- Botão de excluir -->
+                                        <form action="/usuarios/deletar/<%= user.id %>" method="post"
+                                            style="display: inline;"
+                                            onsubmit="return confirm('Deseja realmente fazer a exclusão?')">
+                                            <button type="submit" class="btn btn-danger">
+                                                <i class="fa-solid fa-trash"></i> Excluir
+                                            </button>
+                                        </form>
+
+                                    </div>
+                    </div>
+
+                    <%}) %>
+
+                        <!-- Senão tiver nenhum usuário vindo do banco -->
+                        <% } else { %>
+                            <h2> Nenhum usuário encontrado. </h2>
+                            <% } %>
+        </div>
+
+    </main>
+
+    <%- include('../partials/footer') %>
