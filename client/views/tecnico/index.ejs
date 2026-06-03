@@ -106,12 +106,7 @@
                                     <%= evento.data %>
                                 </td>
                                 <td class="fw-bold"><%= evento.hostname %></td>
-                                <td class="text-end fw-bold"
-                                    style="font-family: monospace; font-size: 13px; color:
-                                    <%= evento.corClasse === 'ok' ? '#4caf50' :
-                                        evento.corClasse === 'atencao' ? '#f5c542' : '#e74c3c' %>;">
-                                    <%= evento.disco %>
-                                </td>
+
                             </tr>
                             <% }); %>
                         </tbody>
@@ -134,12 +129,6 @@
         const canvas = document.getElementById('statusChart');
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
-
-        const dados = {
-            online:  <%= status.online %>,
-            atencao: <%= status.atencao %>,
-            critico: <%= status.critico %>
-        };
 
         const total = dados.online + dados.atencao + dados.critico;
         const fatias = [
