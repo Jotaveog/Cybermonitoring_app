@@ -49,6 +49,11 @@ const usuariosRoutes = require("./routes/usuarioRoutes.js");
 // Requisições comecando com /usuarios é gerenciada pelo sub-arquivo de rotas
 app.use("/usuarios", usuariosRoutes);
 
+//Importar as rotas de produto
+const produtosRoutes = require("./routes/produtosRoutes.js");
+// Requisições comecando com /produtos é gerenciada pelo sub-arquivo de rotas
+app.use("/produtos", produtosRoutes);
+
 // //Função para subir o servidor
 // app.listen(port, () => {
 //   console.log(`Servidor ativo na porta: ${port}`);

@@ -65,49 +65,62 @@ module.exports = {
   },
 
   cadastrar: async (req, res) => { // async porque tem operações assíncronas dentro da função (bcrypt e model)
-    
+
     try {
-    // Pega as infomações das caixinhas da view, de acordo com o name delas
-    const { nome, email, login, senha, id_perfil } = req.body;
-    const perfilId = id_perfil ? parseInt(id_perfil, 10) : 2;
+      // Pega as infomações das caixinhas da view, de acordo com o name delas
+      const { nome, email, login, senha, id_perfil } = req.body;
+      const perfilId = id_perfil ? parseInt(id_perfil, 10) : 2;
 
-    if (perfilId === 1) // 1 representa o perfil de administrador
-      return res
-        .status(403)
-        .render("erro", {
-          mensagem:
-            "Não é permitido criar usuários com perfil de administrador",
-        });
+      if (perfilId === 1) // 1 representa o perfil de administrador
+        return res
+          .status(403)
+          .render("erro", {
+            mensagem:
+              "Não é permitido criar usuários com perfil de administrador",
+          });
 
-        // Criptografa a senha antes de salvar no banco
-        const senhaHash = await bcrypt.hash(senha, 10);
+      // Criptografa a senha antes de salvar no banco
+      const senhaHash = await bcrypt.hash(senha, 10);
 
-        // Chama o model passando as informações para criar o usuário
-        await usuarioModel.criarUsuario(nome, email, login, senhaHash, perfilId);
+      // Chama o model passando as informações para criar o usuário
+      await usuarioModel.criarUsuario(nome, email, login, senhaHash, perfilId);
 
-        // Variável para definir para onde o usuário será redirecionado após criar o novo usuário
-        let redirecionadoPara = "/login";
-        // Verifica se o usuário que está criando o novo usuário é um administrador, para redirecionar ele para a tela de usuários, caso contrário, redireciona para a tela de login
-        if(req.cookies && req.cookies.token) {
-            try{
-                // lê o token dos cookies e verifica ele, usando a mesma chave secreta que foi usada para criar o token
-                const decodificado = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
-                if (decodificado.perfil === "administrador") {
-                    redirecionadoPara = "/usuarios";
-            }
+      // Variável para definir para onde o usuário será redirecionado após criar o novo usuário
+      let redirecionadoPara = "/login";
+      // Verifica se o usuário que está criando o novo usuário é um administrador, para redirecionar ele para a tela de usuários, caso contrário, redireciona para a tela de login
+      if (req.cookies && req.cookies.token) {
+        try {
+          // lê o token dos cookies e verifica ele, usando a mesma chave secreta que foi usada para criar o token
+          const decodificado = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
+          if (decodificado.perfil === "administrador") {
+            redirecionadoPara = "/usuarios";
+          }
         }
         catch (erro) { // Se o token for inválido ou tiver expirado, ele cai aqui
-            console.error("Erro ao verificar token:", erro);
+          console.error("Erro ao verificar token:", erro);
         }
-    }
+      }
 
-    // Redireciona para a tela de login
-    res.redirect(redirecionadoPara);
+      // Redireciona para a tela de login
+      res.redirect(redirecionadoPara);
 
     } catch (erro) {
-        console.error("Erro ao cadastrar usuário:", erro);
-        res.status(500).render("erro", { mensagem: "Erro interno no servidor" });
+      console.error(erro)
+      res.status(500).render('erro', { mensagem: "Erro ao cadastrar usuário" })
     }
+  },
+
+  //READ - LISTAR USUÁRIOS
+  listar: async (req, res) => {
+    try {
+      // Se deu certo, mostra a página de usuários
+      const usuarios = await usuarioModel.listarUsuarios();
+      res.render("usuarios/listar", { usuarios });
     }
+    catch (erro) {
+      // se deu erro, mostra a tela de erro padrão pra pessoa
+      res.status(500).render('erro', { mensagem: "Erro ao listar usuários" })
+    }
+  }
+
 }
- 

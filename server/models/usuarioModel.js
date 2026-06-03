@@ -27,3 +27,12 @@ module.exports = {
         return resultado.insertId 
     }
 }
+//READ
+listarUsuarios : async () =>{
+    // Query pra fazer a consulta no banco
+    const query = 'SELECT * FROM usuarios'
+    // Guarda o resultado da consulta na variável
+    const [linhas] = await db.execute(query)
+    // Retorna pro controller o resultado, nesse caso a lista de usuários
+    return linhas
+}
