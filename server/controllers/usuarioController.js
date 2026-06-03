@@ -42,9 +42,10 @@ module.exports = {
       res.cookie("token", token, { httpOnly: true });
 
       // Redirecionamento de acordo com o perfil
-      if (usuario.perfil === "administrador") return res.redirect("/usuarios");
+      if (usuario.perfil === "administrador") 
+        return res.redirect("/usuarios");
       if (usuario.perfil === "tecnico")
-        return res.redirect("/produtos/meus-produtos");
+        return res.redirect("../tecnico/index");
     } catch (erro) {
       res.status(500).render("erro", { mensagem: "Erro interno no servidor" });
     }
