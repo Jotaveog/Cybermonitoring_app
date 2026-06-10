@@ -56,6 +56,11 @@ app.get("/dashboard/tecnico", verificarAutenticacao, (req, res) => {
   res.render('dashboard/tecnico/index');
 });
 
+// Rota do Painel
+app.get("/painel", verificarAutenticacao, (req, res) => {
+  res.render('admin/painel');
+});
+
 //Importar as rotas de usuário
 const usuariosRoutes = require("./routes/usuarioRoutes.js");
 // Requisições comecando com /usuarios é gerenciada pelo sub-arquivo de rotas
