@@ -107,3 +107,5 @@ INSERT INTO monitoramentos (id_ativo, uso_cpu, uso_memoria, uso_disco, temperatu
 
 INSERT INTO historico_status (id_ativo, status_anterior, status_novo, observacao) VALUES
 (2, 'ATENCAO', 'CRITICO', 'Alerta crítico detectado na última coleta');
+
+ALTER TABLE usuarios DROP COLUMN login;
