@@ -56,6 +56,14 @@ app.get("/dashboard/tecnico", verificarAutenticacao, (req, res) => {
   res.render('dashboard/tecnico/index');
 });
 
+app.get("/tecnico/gerenciar-computadores", verificarAutenticacao, (req, res) => {
+  res.render('tecnico/gerenciar-computadores');
+});
+
+app.get("/tecnico/relatorios", verificarAutenticacao, (req, res) => {
+  res.render('tecnico/relatorios');
+});
+
 // Rota do Painel
 app.get("/painel", verificarAutenticacao, async (req, res) => {
   try {
