@@ -94,7 +94,7 @@ INSERT INTO perfis (nome_perfil) VALUES
 INSERT INTO usuarios (nome, email, senha_hash, id_perfil) VALUES
 ('Administrador TI', 'admin@senai.edu.br', '$2b$10$8KyW5hYBt3ySxuSMmTG2OeGh9RVrMAyXO9JEDggAQwMn2dRShNkHy', 1),
 ('Carlos Rubim', 'crubim@gmail.com', '$2b$10$8KyW5hYBt3ySxuSMmTG2OeGh9RVrMAyXO9JEDggAQwMn2dRShNkHy', 2),
-('Técnico Suporte', 'tecnico@senai.edu.br', '$2b$10$8KyW5hYBt3ySxuSMmTG2OeGh9RVrMAyXO9JEDggAQwMn2dRShNkHy', 2);
+('Técnico Suporte', 'tecnico@senai.edu.br', '$2b$10$8KyW5hYBt3ySxuSMmTG2OeGh9RVrMAyXO9JEDggAQwMn2dRShNkHy', 3);
 
 INSERT INTO ativos (nome_maquina, patrimonio, numero_serie, ip, mac_address, setor, laboratorio, sistema_operacional, status_cadastro) VALUES
 ('Laboratório 01', 'PC-1001', 'SN-2024-001', '10.0.0.11', '00:1A:2B:3C:4D:5E', 'TI', 'Lab A', 'Windows 11', 'ATIVO'),

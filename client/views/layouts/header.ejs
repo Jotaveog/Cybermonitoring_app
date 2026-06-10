@@ -18,57 +18,90 @@
 </head>
 
 <body>
-    <header>
-        <!-- Opções de menu, na direita -->
-        <nav class="nav-menu">
+    <!-- SE TIVER LOGADO - EXIBE SIDEBAR -->
+    <% if (typeof usuario !=='undefined' && usuario) { %>
+        <!-- SIDEBAR LATERAL -->
+        <aside class="sidebar">
+            <!-- LOGO/TÍTULO -->
+            <div class="sidebar-header">
+                <span class="logo-text">CYBERMONITORING</span>
+            </div>
 
-            <!-- SE TIVER LOGADO -->
-            <% if (typeof usuario !=='undefined' && usuario) { %>
-
-                <!-- MOSTRA NOME DO USUÁRIO LOGADO -->
-                <span style="color: var(--cor-destaque); font-weight: bold; margin-right: 15px;">
-                    <i class="fa-solid fa-user"></i>
-                    <%= usuario.nome %>
-                </span>
-
-                <!-- Se for Administrador -->
-                <% if (usuario.perfil==='Administrador' ) { %>
-                    <div class="dropdown d-inline-block">
-                        <button class="dropdown-btn dropdown-toggle btn" type="button" data-bs-toggle="dropdown"
-                            aria-expanded="false" style="background: transparent; border: none;">
-                            <i class="fa-solid fa-user-shield"></i> Admin
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/usuarios">Gerenciar Usuários</a></li>
-                            <li><a class="dropdown-item" href="/ativos">Gerenciar Ativos</a></li>
-                            <li><a class="dropdown-item" href="/dashboard/admin">Dashboard Admin</a></li>
-                        </ul>
+            <!-- DADOS DO USUÁRIO -->
+            <div class="user-info">
+                <% if (usuario.foto) { %>
+                    <img src="/uploads/usuarios/<%= usuario.foto %>" alt="<%= usuario.nome %>" class="user-avatar">
+                <% } else { %>
+                    <div class="user-avatar-placeholder">
+                        <i class="fa-solid fa-user"></i>
                     </div>
                 <% } %>
+                <div class="user-details">
+                    <p class="user-name"><%= usuario.nome %></p>
+                    <p class="user-role"><%= usuario.perfil %></p>
+                </div>
+            </div>
 
-                <!-- Se for Técnico -->
-                <% if (usuario.perfil==='Tecnico' ) { %>
-                    <div class="dropdown d-inline-block">
-                        <button class="dropdown-btn dropdown-toggle btn" type="button" data-bs-toggle="dropdown"
-                            aria-expanded="false" style="background: transparent; border: none;">
-                            <i class="fa-solid fa-tools"></i> Técnico
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/monitoramentos">Monitoramentos</a></li>
-                            <li><a class="dropdown-item" href="/ativos">Ativos</a></li>
-                            <li><a class="dropdown-item" href="/dashboard/tecnico">Dashboard</a></li>
-                        </ul>
-                    </div>
+            <!-- MENU NAVEGAÇÃO -->
+            <nav class="sidebar-nav">
+                <!-- MENU ADMINISTRADOR -->
+                <% if (usuario.perfil === 'Administrador') { %>
+                    <a href="/dashboard/admin" class="nav-item">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Painel</span>
+                    </a>
+                    <a href="/ativos" class="nav-item">
+                        <i class="fa-solid fa-computer"></i>
+                        <span>Gerenciar Computadores</span>
+                    </a>
+                    <a href="/usuarios" class="nav-item">
+                        <i class="fa-solid fa-users"></i>
+                        <span>Gerenciar Usuários</span>
+                    </a>
+                    <a href="/configuracoes" class="nav-item">
+                        <i class="fa-solid fa-gear"></i>
+                        <span>Configurações</span>
+                    </a>
+                    <a href="/relatorios" class="nav-item">
+                        <i class="fa-solid fa-file-chart-line"></i>
+                        <span>Relatórios</span>
+                    </a>
+                    <a href="/historico" class="nav-item">
+                        <i class="fa-solid fa-history"></i>
+                        <span>Histórico</span>
+                    </a>
                 <% } %>
 
-                <!-- Logout -->
-                <a href="/usuarios/logout" class="btn btn-danger btn-sm">
-                    <i class="fa-solid fa-sign-out-alt"></i> Sair
+                <!-- MENU TÉCNICO -->
+                <% if (usuario.perfil === 'Tecnico') { %>
+                    <a href="/dashboard/tecnico" class="nav-item">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Painel</span>
+                    </a>
+                    <a href="/monitoramentos" class="nav-item">
+                        <i class="fa-solid fa-wifi"></i>
+                        <span>Monitoramentos</span>
+                    </a>
+                    <a href="/ativos" class="nav-item">
+                        <i class="fa-solid fa-server"></i>
+                        <span>Ativos</span>
+                    </a>
+                    <a href="/relatorios" class="nav-item">
+                        <i class="fa-solid fa-file-chart-line"></i>
+                        <span>Relatórios</span>
+                    </a>
+                <% } %>
+            </nav>
+
+            <!-- BOTÃO SAIR -->
+            <div class="sidebar-footer">
+                <a href="/usuarios/logout" class="btn-logout">
+                    <i class="fa-solid fa-sign-out-alt"></i>
+                    <span>Sair</span>
                 </a>
+            </div>
+        </aside>
 
-            <% } else { %>
-             
-            <% } %>
-
-        </nav>
-    </header>
+        <!-- CONTEÚDO PRINCIPAL -->
+        <div class="main-wrapper">
+    <% } %>

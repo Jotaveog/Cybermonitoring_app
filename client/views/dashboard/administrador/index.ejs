@@ -1,0 +1,35 @@
+<%- include('../../layouts/header') %>
+
+<main>
+    <div class="dashboard-container">
+        <h1>Painel de Administrador</h1>
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <i class="fa-solid fa-computer"></i>
+                <h2>Computadores</h2>
+                <p>Gerenciar ativos</p>
+                <a href="/ativos" class="btn btn-primary">Acessar</a>
+            </div>
+            <div class="dashboard-card">
+                <i class="fa-solid fa-users"></i>
+                <h2>Usuários</h2>
+                <p>Gerenciar técnicos</p>
+                <a href="/usuarios" class="btn btn-primary">Acessar</a>
+            </div>
+            <div class="dashboard-card">
+                <i class="fa-solid fa-file-chart-line"></i>
+                <h2>Relatórios</h2>
+                <p>Ver relatórios</p>
+                <a href="/relatorios" class="btn btn-primary">Acessar</a>
+            </div>
+            <div class="dashboard-card">
+                <i class="fa-solid fa-history"></i>
+                <h2>Histórico</h2>
+                <p>Logs do sistema</p>
+                <a href="/historico" class="btn btn-primary">Acessar</a>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('../../layouts/footer') %>
