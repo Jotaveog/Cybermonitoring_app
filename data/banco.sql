@@ -1,18 +1,18 @@
-CREATE DATABASE cybermonitoring;
+CREATE DATABASE IF NOT EXISTS cybermonitoring;
 USE cybermonitoring;
 
 -- PERFIS (controle de acesso)
-CREATE TABLE perfis (
+CREATE TABLE IF NOT EXISTS perfis (
     id_perfil INT AUTO_INCREMENT PRIMARY KEY,
     nome_perfil VARCHAR(50) NOT NULL UNIQUE
 );
 
 --  USUÁRIOS
-CREATE TABLE usuarios (
+CREATE TABLE IF NOT EXISTS usuarios (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(120) NOT NULL UNIQUE,
-    login VARCHAR(50) NOT NULL UNIQUE,
+        login VARCHAR(50) DEFAULT NULL UNIQUE,
     senha_hash VARCHAR(255) NOT NULL,
     status ENUM('ATIVO', 'INATIVO') DEFAULT 'ATIVO',
     ultimo_acesso DATETIME,
@@ -22,7 +22,7 @@ CREATE TABLE usuarios (
 );
 
 -- ATIVOS (CRUD PRINCIPAL)
-CREATE TABLE ativos (
+CREATE TABLE IF NOT EXISTS ativos (
     id_ativo INT AUTO_INCREMENT PRIMARY KEY,
     nome_maquina VARCHAR(100) NOT NULL,
     patrimonio VARCHAR(50) UNIQUE,
@@ -37,7 +37,7 @@ CREATE TABLE ativos (
 );
 
 --  MONITORAMENTO (dados coletados)
-CREATE TABLE monitoramentos (
+CREATE TABLE IF NOT EXISTS monitoramentos (
     id_monitoramento INT AUTO_INCREMENT PRIMARY KEY,
     id_ativo INT NOT NULL,
     uso_cpu DECIMAL(5,2),
@@ -52,7 +52,7 @@ CREATE TABLE monitoramentos (
 );
 
 --  HISTÓRICO DE STATUS
-CREATE TABLE historico_status (
+CREATE TABLE IF NOT EXISTS historico_status (
     id_historico INT AUTO_INCREMENT PRIMARY KEY,
     id_ativo INT NOT NULL,
     status_anterior ENUM('NORMAL', 'ATENCAO', 'CRITICO'),
@@ -63,7 +63,7 @@ CREATE TABLE historico_status (
 );
 
 --  RELATÓRIOS
-CREATE TABLE relatorios (
+CREATE TABLE IF NOT EXISTS relatorios (
     id_relatorio INT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(150) NOT NULL,
     tipo VARCHAR(80),
@@ -75,7 +75,7 @@ CREATE TABLE relatorios (
 );
 
 --  LOGS DO SISTEMA
-CREATE TABLE logs_sistema (
+CREATE TABLE IF NOT EXISTS logs_sistema (
     id_log INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT,
     acao VARCHAR(100) NOT NULL,
@@ -90,13 +90,15 @@ INSERT INTO perfis (nome_perfil) VALUES
 ('Administrador'),
 ('Tecnico');
 
-INSERT INTO usuarios (nome, email, login, senha_hash, id_perfil) VALUES
-('Administrador TI', 'admin@senai.edu.br', 'admin', '$2b$10$8KyW5hYBt3ySxuSMmTG2OeGh9RVrMAyXO9JEDggAQwMn2dRShNkHy', 1),
-('Técnico Suporte', 'tecnico@senai.edu.br', 'tecnico', '$2b$10$8KyW5hYBt3ySxuSMmTG2OeGh9RVrMAyXO9JEDggAQwMn2dRShNkHy', 2);
+-- Senha já hashada para 'admin' (exemplo). Substitua se desejar.
+INSERT INTO usuarios (nome, email, senha_hash, id_perfil) VALUES
+('Administrador TI', 'admin@senai.edu.br', '$2b$10$8KyW5hYBt3ySxuSMmTG2OeGh9RVrMAyXO9JEDggAQwMn2dRShNkHy', 1),
+('Carlos Rubim', 'crubim@gmail.com', '$2b$10$8KyW5hYBt3ySxuSMmTG2OeGh9RVrMAyXO9JEDggAQwMn2dRShNkHy', 2),
+('Técnico Suporte', 'tecnico@senai.edu.br', '$2b$10$8KyW5hYBt3ySxuSMmTG2OeGh9RVrMAyXO9JEDggAQwMn2dRShNkHy', 2);
 
 INSERT INTO ativos (nome_maquina, patrimonio, numero_serie, ip, mac_address, setor, laboratorio, sistema_operacional, status_cadastro) VALUES
 ('Laboratório 01', 'PC-1001', 'SN-2024-001', '10.0.0.11', '00:1A:2B:3C:4D:5E', 'TI', 'Lab A', 'Windows 11', 'ATIVO'),
-('Laboratório 02', 'PC-1002', 'SN-2024-002', '10.0.0.12', '00:1A:2B:3C:4D:5F', 'Administração', 'Lab B', 'Ubuntu 24.04', 'ATIVO'),
+('Laboratório 02', 'PC-1002', 'SN-2024-002', '10.0.0.12', '00:1A:2B:3C:4D:5F', 'Administracao', 'Lab B', 'Ubuntu 24.04', 'ATIVO'),
 ('Laboratório 03', 'PC-1003', 'SN-2024-003', '10.0.0.13', '00:1A:2B:3C:4D:60', 'Secretaria', 'Lab C', 'Windows 10', 'ATIVO');
 
 INSERT INTO monitoramentos (id_ativo, uso_cpu, uso_memoria, uso_disco, temperatura, disponibilidade, status_monitoramento, origem_dado, data_coleta) VALUES

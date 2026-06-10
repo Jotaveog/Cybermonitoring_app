@@ -6,7 +6,7 @@ module.exports = {
   buscarPorEmail: async (email) => {
     const query = `SELECT u.*, p.nome_perfil
                    FROM usuarios u
-                   JOIN perfis p ON u.id_perfil = p.id_perfil
+                   LEFT JOIN perfis p ON u.id_perfil = p.id_perfil
                    WHERE u.email = ?`;
     const [linhas] = await db.execute(query, [email]);
     return linhas[0];
@@ -16,7 +16,7 @@ module.exports = {
   buscarPorLogin: async (login) => {
     const query = `SELECT u.*, p.nome_perfil
                    FROM usuarios u
-                   JOIN perfis p ON u.id_perfil = p.id_perfil
+                   LEFT JOIN perfis p ON u.id_perfil = p.id_perfil
                    WHERE u.login = ?`;
     const [linhas] = await db.execute(query, [login]);
     return linhas[0];
@@ -26,23 +26,18 @@ module.exports = {
   buscarPorId: async (id) => {
     const query = `SELECT u.*, p.nome_perfil
                    FROM usuarios u
-                   JOIN perfis p ON u.id_perfil = p.id_perfil
+                   LEFT JOIN perfis p ON u.id_perfil = p.id_perfil
                    WHERE u.id_usuario = ?`;
     const [linhas] = await db.execute(query, [id]);
     return linhas[0];
   },
 
   // CREATE - Criar novo usuário
-  criarUsuario: async (nome, email, login, senha_hash, id_perfil) => {
-    const query = `INSERT INTO usuarios (nome, email, login, senha_hash, id_perfil, status)
-                   VALUES (?, ?, ?, ?, ?, 'ATIVO')`;
-    const [resultado] = await db.execute(query, [
-      nome,
-      email,
-      login,
-      senha_hash,
-      id_perfil,
-    ]);
+  criarUsuario: async (nome, email, senha_hash, id_perfil) => {
+    const perfilId = id_perfil && Number(id_perfil) ? Number(id_perfil) : 2;
+    const query = `INSERT INTO usuarios (nome, email, senha_hash, id_perfil, status)
+                   VALUES (?, ?, ?, ?, 'ATIVO')`;
+    const [resultado] = await db.execute(query, [nome, email, senha_hash, perfilId]);
     return resultado.insertId;
   },
 

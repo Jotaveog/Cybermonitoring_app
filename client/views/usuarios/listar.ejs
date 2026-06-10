@@ -25,7 +25,6 @@
                                 <th>ID</th>
                                 <th>Nome</th>
                                 <th>Email</th>
-                                <th>Login</th>
                                 <th>Perfil</th>
                                 <th>Status</th>
                                 <th>Último Acesso</th>
@@ -39,7 +38,6 @@
                                         <td><%= usuario.id_usuario %></td>
                                         <td><%= usuario.nome %></td>
                                         <td><%= usuario.email %></td>
-                                        <td><%= usuario.login %></td>
                                         <td><span class="badge bg-info"><%= usuario.nome_perfil %></span></td>
                                         <td>
                                             <% if (usuario.status === 'ATIVO') { %>
@@ -63,7 +61,7 @@
                                 <% }); %>
                             <% } else { %>
                                 <tr>
-                                    <td colspan="8" class="text-center text-muted">Nenhum usuário cadastrado</td>
+                                    <td colspan="7" class="text-center text-muted">Nenhum usuário cadastrado</td>
                                 </tr>
                             <% } %>
                         </tbody>

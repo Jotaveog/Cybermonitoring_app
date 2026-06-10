@@ -107,7 +107,7 @@ module.exports = {
     
     try {
     // Pega as infomações das caixinhas da view, de acordo com o name delas
-    const { nome, email, login, senha, id_perfil } = req.body;
+    const { nome, email, senha, id_perfil } = req.body;
     const perfilId = id_perfil ? parseInt(id_perfil, 10) : 2;
 
     if (perfilId === 1) // 1 representa o perfil de administrador
@@ -121,8 +121,8 @@ module.exports = {
         // Criptografa a senha antes de salvar no banco
         const senhaHash = await bcrypt.hash(senha, 10);
 
-        // Chama o model passando as informações para criar o usuário
-        await usuarioModel.criarUsuario(nome, email, login, senhaHash, perfilId);
+        // Chama o model passando as informações para criar o usuário (agora sem login)
+        await usuarioModel.criarUsuario(nome, email, senhaHash, perfilId);
 
         // Variável para definir para onde o usuário será redirecionado após criar o novo usuário
         let redirecionadoPara = "/login";
@@ -131,7 +131,7 @@ module.exports = {
             try{
                 // lê o token dos cookies e verifica ele, usando a mesma chave secreta que foi usada para criar o token
                 const decodificado = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
-                if (decodificado.perfil === "administrador") {
+                if (decodificado.perfil && decodificado.perfil.toString().toLowerCase() === "administrador") {
                     redirecionadoPara = "/usuarios";
             }
         }
