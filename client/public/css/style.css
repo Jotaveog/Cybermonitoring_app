@@ -21,7 +21,7 @@ body{
     margin: 0;
     padding: 0;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     min-height: 100vh;
     background-image: url('/img/background.png');
     background-size: cover;
@@ -40,46 +40,168 @@ body::before {
 
 body.auth-page {
     min-height: 100vh;
+    flex-direction: column;
 }
 
-body.auth-page .header-sistema,
-body.auth-page .footer-sistema {
-    display: none;
+body.auth-page .sidebar,
+body.auth-page .main-wrapper {
+    display: none !important;
 }
 
 body.auth-page main {
     min-height: 100vh;
 }
 
-/* CLASSE PARA O RODAPÉ */
-.footer-sistema{
-    margin-top: auto; /* Empurra o rodapé para o final da página */
-    text-align: center;
-    background-color: var(--cor-fundo);
-    border-top: 2px solid var(--cor-borda);
+/* ===== SIDEBAR STYLES ===== */
+.sidebar {
+    width: 280px;
+    background: linear-gradient(180deg, rgba(6,10,18,0.95) 0%, rgba(7,11,22,0.92) 100%);
+    border-right: 1px solid var(--cor-borda);
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
 }
 
-/* CONFIGURAÇÕES DE CABEÇALHO */
-/* Class do cabeçaçho geral do sistema */
-.header-sistema {
-    background-color: var(--cor-menu);
-    color: var(--cor-texto-inverso);
-    padding: 15px 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 5px solid var(--cor-borda);
+.sidebar-header {
+    padding: 24px 20px;
+    border-bottom: 1px solid var(--cor-borda);
+    text-align: center;
 }
-/* Texto do cabeçalho */
-.header-sistema h2{
-    margin: 0;
+
+.logo-text {
+    font-size: 16px;
+    font-weight: 700;
     letter-spacing: 2px;
+    color: var(--cor-destaque);
+    display: block;
 }
-/* Apenas o menu */
-.nav-menu{
+
+.user-info {
+    padding: 20px;
+    border-bottom: 1px solid var(--cor-borda);
+    text-align: center;
     display: flex;
-    gap: 20px;
+    flex-direction: column;
     align-items: center;
+    gap: 12px;
+}
+
+.user-avatar,
+.user-avatar-placeholder {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--cor-destaque);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(88,166,255,0.1);
+}
+
+.user-avatar-placeholder {
+    font-size: 28px;
+    color: var(--cor-destaque);
+}
+
+.user-name {
+    margin: 0;
+    font-weight: 700;
+    color: var(--cor-texto-principal);
+    font-size: 16px;
+}
+
+.user-role {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: var(--cor-destaque);
+    font-weight: 500;
+}
+
+.sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 0;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    color: rgba(229,234,242,0.8);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+    font-size: 15px;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    background-color: rgba(88,166,255,0.12);
+    color: var(--cor-destaque);
+    border-left-color: var(--cor-destaque);
+}
+
+.nav-item i {
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar-footer {
+    padding: 12px 0;
+    border-top: 1px solid var(--cor-borda);
+}
+
+.btn-logout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px 20px;
+    color: #ff6b6b;
+    text-decoration: none;
+    background: transparent;
+    border: none;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-logout:hover {
+    background-color: rgba(255,107,107,0.1);
+    color: #ff8787;
+}
+
+/* MAIN WRAPPER */
+.main-wrapper {
+    margin-left: 280px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+/* CLASSE PARA O RODAPÉ */
+.footer-sistema{
+    margin-top: auto;
+    text-align: center;
+    background-color: rgba(6,10,18,0.95);
+    border-top: 1px solid var(--cor-borda);
+    padding: 20px;
+    font-size: 14px;
+    color: rgba(229,234,242,0.6);
 }
 
 /* CAIXA PRINCIPAL DO MAIN */

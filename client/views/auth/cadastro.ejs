@@ -1,5 +1,5 @@
 <!-- importa o header -->
-<%- include('../layouts/header')  %>
+<%- include('../layouts/header-auth')  %>
 
 <main class="login-container">
     <div class="auth-card auth-card-wide">
@@ -8,7 +8,7 @@
             <p>Faça seu cadastro para acessar o painel de monitoramento</p>
         </div>
 
-        <form action="/usuarios/cadastrar" method="post" class="auth-form">
+        <form action="/usuarios/cadastrar" method="post" class="auth-form" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="nome">
                     Nome completo
@@ -32,6 +32,13 @@
                 <input type="password" id="senha" name="senha" class="form-control" placeholder="Mínimo 6 caracteres" required>
             </div>
 
+            <div class="form-group">
+                <label for="foto">
+                    Foto de perfil (opcional)
+                </label>
+                <input type="file" id="foto" name="foto" class="form-control" accept="image/*">
+            </div>
+
             <button type="submit" class="btn btn-primary auth-button">
                 Cadastrar
             </button>
@@ -43,3 +50,5 @@
         </form>
     </div>
 </main>
+
+<%- include('../layouts/footer-auth') %>
