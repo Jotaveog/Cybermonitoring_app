@@ -12,7 +12,6 @@ CREATE TABLE IF NOT EXISTS usuarios (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(120) NOT NULL UNIQUE,
-        login VARCHAR(50) DEFAULT NULL UNIQUE,
     senha_hash VARCHAR(255) NOT NULL,
     status ENUM('ATIVO', 'INATIVO') DEFAULT 'ATIVO',
     ultimo_acesso DATETIME,
@@ -108,3 +107,5 @@ INSERT INTO monitoramentos (id_ativo, uso_cpu, uso_memoria, uso_disco, temperatu
 
 INSERT INTO historico_status (id_ativo, status_anterior, status_novo, observacao) VALUES
 (2, 'ATENCAO', 'CRITICO', 'Alerta crítico detectado na última coleta');
+
+ALTER TABLE usuarios DROP COLUMN login;

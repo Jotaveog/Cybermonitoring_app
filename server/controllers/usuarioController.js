@@ -80,7 +80,7 @@ module.exports = {
       if (perfilNome === "Administrador") 
         return res.redirect("./admin/painel");
       if (perfilNome === "Tecnico")
-        return res.redirect("/dashboard/tecnico");
+        return res.redirect("./tecnico/index");
       
     } catch (erro) {
       console.error("Erro no login:", erro);
