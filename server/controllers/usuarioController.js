@@ -76,11 +76,8 @@ module.exports = {
         [usuario.id_usuario, "LOGIN", "Acesso realizado com sucesso", req.ip || "127.0.0.1"]
       );
 
-      // Redirecionamento de acordo com o perfil
-      if (perfilNome === "Administrador") 
-        return res.redirect("/dashboard/admin");
-      if (perfilNome === "Tecnico")
-        return res.redirect("/dashboard/tecnico");
+      // Redirecionamento para o painel (para todos os perfis)
+      return res.redirect("/painel");
       
     } catch (erro) {
       console.error("Erro no login:", erro);
