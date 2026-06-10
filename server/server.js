@@ -52,10 +52,68 @@ app.get("/dashboard/admin", verificarAutenticacao, (req, res) => {
   res.render('dashboard/administrador/index');
 });
 
-app.get("/dashboard/tecnico", verificarAutenticacao, (req, res) => {
-  res.render('dashboard/tecnico/index');
+app.get("/tecnico", verificarAutenticacao, async (req, res) => {
+  try {
+    const db = require("./config/db.js");
+    
+    // Buscar total de ativos
+    const [ativos] = await db.execute("SELECT COUNT(*) as total FROM ativos WHERE status_cadastro = 'ATIVO'");
+    const totalAtivos = ativos[0].total;
+    
+    // Buscar contagem por status de monitoramento
+    const [statusMonitor] = await db.execute(`
+      SELECT 
+        COUNT(CASE WHEN status_monitoramento = 'NORMAL' THEN 1 END) as otimo,
+        COUNT(CASE WHEN status_monitoramento = 'ATENCAO' THEN 1 END) as atencao,
+        COUNT(CASE WHEN status_monitoramento = 'CRITICO' THEN 1 END) as critico
+      FROM monitoramentos
+      WHERE data_coleta >= DATE_SUB(NOW(), INTERVAL 1 DAY)
+    `);
+    
+    const stats = statusMonitor[0];
+    
+    // Buscar ativos por setor
+    const [setoresData] = await db.execute(`
+      SELECT setor as nome, COUNT(*) as q 
+      FROM ativos 
+      WHERE status_cadastro = 'ATIVO' AND setor IS NOT NULL
+      GROUP BY setor
+    `);
+    
+    // Buscar últimos eventos de monitoramento
+    const [eventosData] = await db.execute(`
+      SELECT 
+        DATE_FORMAT(m.data_coleta, '%Y-%m-%d %H:%i:%S') as dt,
+        a.nome_maquina as host,
+        CONCAT('CPU: ', m.uso_cpu, '% | Memória: ', m.uso_memoria, '%') as info
+      FROM monitoramentos m
+      JOIN ativos a ON m.id_ativo = a.id_ativo
+      ORDER BY m.data_coleta DESC
+      LIMIT 5
+    `);
+    
+    res.render('tecnico/painel', {
+      totalAtivos: totalAtivos,
+      otimo: stats.otimo || 0,
+      atencao: stats.atencao || 0,
+      critico: stats.critico || 0,
+      setores: setoresData || [],
+      eventos: eventosData || []
+    });
+  } catch (erro) {
+    console.error("Erro ao carregar painel técnico:", erro);
+    res.render('tecnico/painel', {
+      totalAtivos: 0,
+      otimo: 0,
+      atencao: 0,
+      critico: 0,
+      setores: [],
+      eventos: []
+    });
+  }
 });
 
+<<<<<<< HEAD
 app.get("/tecnico/gerenciar-computadores", verificarAutenticacao, (req, res) => {
   res.render('tecnico/gerenciar-computadores');
 });
@@ -65,8 +123,16 @@ app.get("/tecnico/relatorios", verificarAutenticacao, (req, res) => {
 });
 
 // Rota do Painel
+=======
+// Rota do Painel (apenas para administrador)
+>>>>>>> 285422a65b2c8d03fe692a6427ade0ca94260156
 app.get("/painel", verificarAutenticacao, async (req, res) => {
   try {
+    // Verifica se é administrador
+    if (req.usuario.perfil.toLowerCase() !== "administrador") {
+      return res.redirect("/tecnico");
+    }
+    
     // Importar model de ativos
     const db = require("./config/db.js");
     
@@ -125,6 +191,11 @@ app.get("/painel", verificarAutenticacao, async (req, res) => {
       eventos: []
     });
   }
+});
+
+// Rota para Gerenciar Computadores
+app.get("/gerenciar-computadores", verificarAutenticacao, (req, res) => {
+  res.render('admin/gerenciarPc', { usuario: req.session.user });
 });
 
 //Importar as rotas de usuário
