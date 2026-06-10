@@ -37,6 +37,10 @@ body::before {
 body.auth-page {
     min-height: 100vh;
     flex-direction: column;
+    background-image: url('/img/background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 body.auth-page .sidebar,
