@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pt-br">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Painel - Cybermonitoring</title>
+		<link rel="stylesheet" href="/css/style.css" />
+	</head>
+	<body class="auth-page">
+		<header class="header-sistema">
+			<h2>CYBERMONITORING</h2>
+			<nav class="nav-menu">
+				<span>Administrador</span>
+			</nav>
+		</header>
+
+		<main class="container dashboard-container">
+			<aside class="sidebar">
+				<div class="user-block">
+					<div class="avatar">User</div>
+					<div class="role">Administrador</div>
+				</div>
+				<ul class="menu">
+					<li class="active">Painel</li>
+					<li>Gerenciar Computadores</li>
+					<li>Gerenciar Usuários</li>
+					<li>Configurações</li>
+					<li>Relatórios</li>
+					<li>Histórico</li>
+				</ul>
+				<button class="btn logout">Sair</button>
+			</aside>
+
+			<section class="main-content">
+				<div class="grid-top">
+					<div class="card total-card">
+						<h3>Total de ativos</h3>
+						<% const totalAtivos = typeof totalAtivos !== 'undefined' ? totalAtivos : 4; %>
+						<div class="total-number"><%= totalAtivos %></div>
+					</div>
+
+					<div class="card status-card">
+						<h3>Status do ativo</h3>
+						<% const otimo = typeof otimo !== 'undefined' ? otimo : 1; %>
+						<% const atencao = typeof atencao !== 'undefined' ? atencao : 2; %>
+						<% const critico = typeof critico !== 'undefined' ? critico : 1; %>
+
+						<div class="status-body">
+							<div class="pie" id="dashboardPie" data-good="<%= otimo %>" data-warning="<%= atencao %>" data-critical="<%= critico %>"></div>
+							<div class="status-legend">
+								<div><span class="dot good"></span> Ótimo <span class="count" id="countGood"><%= otimo %></span></div>
+								<div><span class="dot warning"></span> Atenção <span class="count" id="countWarn"><%= atencao %></span></div>
+								<div><span class="dot critical"></span> Crítico <span class="count" id="countCrit"><%= critico %></span></div>
+							</div>
+						</div>
+					</div>
+
+					<div class="card sector-card">
+						<h3>Ativos por setor</h3>
+						<table class="sector-table">
+							<thead>
+								<tr><th>Setor</th><th>Quantidade</th></tr>
+							</thead>
+							<tbody>
+								<% const setores = typeof setores !== 'undefined' ? setores : [{nome:'DDS',q:2},{nome:'IPI',q:1},{nome:'CISCO',q:1}]; %>
+								<% setores.forEach(s => { %>
+									<tr><td><%= s.nome %></td><td><%= s.q %></td></tr>
+								<% }) %>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				<div class="card events-card">
+					<h3>Últimos Eventos</h3>
+					<div class="events-list">
+						<% const eventos = typeof eventos !== 'undefined' ? eventos : [
+							{dt:'2026-04-08 10:00:01', host:'DESKTOP-A80BPPL', info:'27,5 GB Livre(s) de 110 GB'},
+							{dt:'2026-04-08 09:08:12', host:'DESKTOP-A80BPPO', info:'20,1 GB Livre(s) de 110 GB'},
+							{dt:'2026-04-08 09:08:15', host:'DESKTOP-A80BPPA', info:'54,2 GB Livre(s) de 110 GB'},
+							{dt:'2026-04-08 09:10:15', host:'DESKTOP-A80BPPA', info:'1,2 GB Livre(s) de 110 GB'},
+						]; %>
+						<% eventos.forEach(ev => { %>
+							<div class="event-row">
+								<div class="event-date"><%= ev.dt %></div>
+								<div class="event-host"><%= ev.host %></div>
+								<div class="event-info"><span class="badge"><%= ev.info %></span></div>
+							</div>
+						<% }) %>
+					</div>
+				</div>
+			</section>
+		</main>
+
+		<footer class="footer-sistema">
+			<p>&copy; Cybermonitoring</p>
+		</footer>
+
+		<script src="/js/script.js" defer></script>
+	</body>
+</html>
