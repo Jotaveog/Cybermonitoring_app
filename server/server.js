@@ -57,8 +57,66 @@ app.get("/dashboard/tecnico", verificarAutenticacao, (req, res) => {
 });
 
 // Rota do Painel
-app.get("/painel", verificarAutenticacao, (req, res) => {
-  res.render('admin/painel');
+app.get("/painel", verificarAutenticacao, async (req, res) => {
+  try {
+    // Importar model de ativos
+    const db = require("./config/db.js");
+    
+    // Buscar total de ativos
+    const [ativos] = await db.execute("SELECT COUNT(*) as total FROM ativos WHERE status_cadastro = 'ATIVO'");
+    const totalAtivos = ativos[0].total;
+    
+    // Buscar contagem por status de monitoramento
+    const [statusMonitor] = await db.execute(`
+      SELECT 
+        COUNT(CASE WHEN status_monitoramento = 'NORMAL' THEN 1 END) as otimo,
+        COUNT(CASE WHEN status_monitoramento = 'ATENCAO' THEN 1 END) as atencao,
+        COUNT(CASE WHEN status_monitoramento = 'CRITICO' THEN 1 END) as critico
+      FROM monitoramentos
+      WHERE data_coleta >= DATE_SUB(NOW(), INTERVAL 1 DAY)
+    `);
+    
+    const stats = statusMonitor[0];
+    
+    // Buscar ativos por setor
+    const [setoresData] = await db.execute(`
+      SELECT setor as nome, COUNT(*) as q 
+      FROM ativos 
+      WHERE status_cadastro = 'ATIVO' AND setor IS NOT NULL
+      GROUP BY setor
+    `);
+    
+    // Buscar últimos eventos de monitoramento
+    const [eventosData] = await db.execute(`
+      SELECT 
+        DATE_FORMAT(m.data_coleta, '%Y-%m-%d %H:%i:%S') as dt,
+        a.nome_maquina as host,
+        CONCAT('CPU: ', m.uso_cpu, '% | Memória: ', m.uso_memoria, '%') as info
+      FROM monitoramentos m
+      JOIN ativos a ON m.id_ativo = a.id_ativo
+      ORDER BY m.data_coleta DESC
+      LIMIT 5
+    `);
+    
+    res.render('admin/painel', {
+      totalAtivos: totalAtivos,
+      otimo: stats.otimo || 0,
+      atencao: stats.atencao || 0,
+      critico: stats.critico || 0,
+      setores: setoresData || [],
+      eventos: eventosData || []
+    });
+  } catch (erro) {
+    console.error("Erro ao carregar painel:", erro);
+    res.render('admin/painel', {
+      totalAtivos: 0,
+      otimo: 0,
+      atencao: 0,
+      critico: 0,
+      setores: [],
+      eventos: []
+    });
+  }
 });
 
 //Importar as rotas de usuário

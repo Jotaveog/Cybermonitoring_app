@@ -78,7 +78,7 @@ module.exports = {
 
       // Redirecionamento de acordo com o perfil
       if (perfilNome === "Administrador") 
-        return res.redirect("./admin/painel");
+        return res.redirect("/painel");
       if (perfilNome === "Tecnico")
         return res.redirect("./tecnico/index");
       
