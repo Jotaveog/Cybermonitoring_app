@@ -44,6 +44,18 @@ app.get("/cadastro", (req, res) => {
   res.render('auth/cadastro');
 });
 
+// IMPORTAR MIDDLEWARES
+const { verificarAutenticacao } = require("./middlewares/authMiddlewares.js");
+
+// ROTAS PROTEGIDAS DOS DASHBOARDS
+app.get("/dashboard/admin", verificarAutenticacao, (req, res) => {
+  res.render('dashboard/administrador/index');
+});
+
+app.get("/dashboard/tecnico", verificarAutenticacao, (req, res) => {
+  res.render('dashboard/tecnico/index');
+});
+
 //Importar as rotas de usuário
 const usuariosRoutes = require("./routes/usuarioRoutes.js");
 // Requisições comecando com /usuarios é gerenciada pelo sub-arquivo de rotas

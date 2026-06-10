@@ -7,3 +7,5 @@
 - 'npm i' para instalar os pacotes necessários
 
 - crie o arquivo .env com os seguintes dados
+
+- seguir sempre o estrutura_cybermonitoring.md
