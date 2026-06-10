@@ -119,6 +119,11 @@ app.get("/painel", verificarAutenticacao, async (req, res) => {
   }
 });
 
+// Rota para Gerenciar Computadores
+app.get("/gerenciar-computadores", verificarAutenticacao, (req, res) => {
+  res.render('admin/gerenciarPc', { usuario: req.session.user });
+});
+
 //Importar as rotas de usuário
 const usuariosRoutes = require("./routes/usuarioRoutes.js");
 // Requisições comecando com /usuarios é gerenciada pelo sub-arquivo de rotas
