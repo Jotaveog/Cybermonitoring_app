@@ -12,7 +12,6 @@ CREATE TABLE IF NOT EXISTS usuarios (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(120) NOT NULL UNIQUE,
-        login VARCHAR(50) DEFAULT NULL UNIQUE,
     senha_hash VARCHAR(255) NOT NULL,
     status ENUM('ATIVO', 'INATIVO') DEFAULT 'ATIVO',
     ultimo_acesso DATETIME,
