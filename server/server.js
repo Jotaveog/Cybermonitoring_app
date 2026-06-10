@@ -113,7 +113,7 @@ app.get("/tecnico", verificarAutenticacao, async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
+
 app.get("/tecnico/gerenciar-computadores", verificarAutenticacao, (req, res) => {
   res.render('tecnico/gerenciar-computadores');
 });
@@ -123,9 +123,7 @@ app.get("/tecnico/relatorios", verificarAutenticacao, (req, res) => {
 });
 
 // Rota do Painel
-=======
 // Rota do Painel (apenas para administrador)
->>>>>>> 285422a65b2c8d03fe692a6427ade0ca94260156
 app.get("/painel", verificarAutenticacao, async (req, res) => {
   try {
     // Verifica se é administrador
