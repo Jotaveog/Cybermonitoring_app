@@ -35,3 +35,28 @@ document.addEventListener('DOMContentLoaded', () => {
         })
     }
 })
+
+// Dashboard pie rendering
+document.addEventListener('DOMContentLoaded', () => {
+    const pie = document.getElementById('dashboardPie')
+    if(!pie) return
+
+    const good = Number(pie.dataset.good || 0)
+    const warn = Number(pie.dataset.warning || 0)
+    const crit = Number(pie.dataset.critical || 0)
+    const total = good + warn + crit || 1
+
+    const pGood = Math.round((good / total) * 100)
+    const pWarn = Math.round((warn / total) * 100)
+    const pCrit = 100 - pGood - pWarn
+
+    pie.style.background = `conic-gradient(#f2e76b 0 ${pGood}%, #2ecc71 ${pGood}% ${pGood + pWarn}%, #e74c3c ${pGood + pWarn}% 100%)`
+
+    // Atualiza contadores (se existirem)
+    const gEl = document.getElementById('countGood')
+    const wEl = document.getElementById('countWarn')
+    const cEl = document.getElementById('countCrit')
+    if(gEl) gEl.textContent = good
+    if(wEl) wEl.textContent = warn
+    if(cEl) cEl.textContent = crit
+})
