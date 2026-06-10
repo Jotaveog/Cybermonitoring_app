@@ -1,5 +1,3 @@
-/* CRIANDO UM DESING SYSTEM PARA O SISTEMA */
-
 /* IMPORTAÇÃO DAS FONTES DO PROJETO */
 @import url("https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 
@@ -10,10 +8,8 @@
   --cor-texto-principal: #f4f3ff;
   --cor-texto-inverso: #ffffff;
   --cor-destaque: #58a6ff;
-  --cor-borda: rgba(255,255,255,0.14);
-  --cor-menu: rgba(6,10,18,0.95);
-
-  /* outras configurações */
+  --cor-borda: #ffffff24;
+  --cor-menu: #060a12f2;
   --radius-padrao: 22px;
   --fonte-principal: "Inter", sans-serif;
 }
