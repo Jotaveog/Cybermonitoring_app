@@ -27,7 +27,10 @@ router.get("/login", (req, res) => res.redirect("/login"));
 
 // Rota de cadastro de usuários
 // O multer, salva a imagem
-router.post("/cadastrar", upload.single("foto"), usuarioController.cadastrar);
+router.post("/cadastrar", upload.single("foto"), (req, res, next) => {
+  console.log('POST /usuarios/cadastrar', { body: req.body, file: req.file ? true : false });
+  next();
+}, usuarioController.cadastrar);
 
 // ROTAS PRIVADAS
 // Daqui pra baixo, só executa se tiver acesso para tal

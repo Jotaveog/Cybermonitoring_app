@@ -1,6 +1,12 @@
 // Importa o módulo mysql para conectar ao banco
 const mysql = require("mysql2/promise")
-
+// Verifica as variáveis de conexão antes de criar a pool
+console.log('DB ENV:', {
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD ? '****' : undefined
+});
 // Cria uma pool de conexão, várias conexões de uma vez, para evitar erros no banco
 const pool = mysql.createPool({
     host: process.env.DB_HOST, // Onde o banco está hospedado

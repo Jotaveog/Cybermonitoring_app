@@ -4,8 +4,8 @@ const app = express();
 // módulo do node para lidar com caminho de arquivos
 const path = require("path");
 
-// Importa o módulo do dotenv, lê o arquivo .env, e já configura inicialmente
-require('dotenv').config()
+// Importa o módulo do dotenv, lê o arquivo .env dentro da pasta server e já configura inicialmente
+require('dotenv').config({ path: path.join(__dirname, '.env') })
 
 // Define a porta do servidor com base nas variáveis de ambiente
 // Se der errado, e porte será a 5000
