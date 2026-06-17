@@ -1,122 +1,112 @@
-<!doctype html>
-<html lang="pt-br">
-<head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<title>Painel Administrador - Cybermonitoring</title>
-	<link rel="stylesheet" href="/css/style.css" />
-</head>
-<body>
-	<div class="page">
-		<!-- SIDEBAR -->
-		<aside class="sidebar">
-			<div class="brand">CYBERMONITORING</div>
-			
-			<div class="user-card">
-			<div style="font-weight: 600; margin-bottom: 4px;"><%= usuario.nome %></div>
-			<div style="font-size: 0.85rem; color: #9dd1ff;"><%= usuario.perfil %></div>
+<%- include('../layouts/header') %>
 
-			<nav>
-				<ul>
-				<li><a href="/painel" class="nav-link">Painel</a></li>
-				<li><a href="/gerenciar-computadores" class="nav-link">Gerenciar Computadores</a></li>
-				<li><a href="/usuarios" class="nav-link">Gerenciar Usuários</a></li>
-				<li><a href="#configuracoes" class="nav-link">Configurações</a></li>
-				<li><a href="#relatorios" class="nav-link">Relatórios</a></li>
-				<li><a href="#historico" class="nav-link">Histórico</a></li>
+	<div class="main">
+		<header>
+			<div>
+				<h1>Painel</h1>
+				<p>Visão geral do sistema</p>
+			</div>
+		</header>
 
-			<button class="logout" onclick="fetch('/usuarios/logout').then(() => window.location.href = '/login')">Sair</button>
-		</aside>
-
-		<!-- MAIN CONTENT -->
-		<div class="main">
-			<header>
-				<div>
-					<h1>Painel</h1>
-					<p>Visão geral do sistema</p>
+		<div class="content-area">
+			<!-- CARDS RESUMO -->
+			<div class="summary-grid">
+				<!-- TOTAL DE ATIVOS -->
+				<div class="summary-card">
+					<h3>Total de ativos</h3>
+					<p class="big-number green">
+						<%= totalAtivos %>
+					</p>
 				</div>
-			</header>
 
-			<div class="content-area">
-				<!-- CARDS RESUMO -->
-				<div class="summary-grid">
-					<!-- TOTAL DE ATIVOS -->
-					<div class="summary-card">
-						<h3>Total de ativos</h3>
-						<p class="big-number green"><%= totalAtivos %></p>
-					</div>
-
-					<!-- STATUS DO ATIVO -->
-					<div class="summary-card">
-						<h3>Status do ativo</h3>
-						<div class="chart-container">
-							<div class="donut"></div>
-							<div class="legend">
-								<span>Online <strong><%= otimo %></strong></span>
-								<span>Atenção <strong><%= atencao %></strong></span>
-								<span>Crítico <strong><%= critico %></strong></span>
-							</div>
+				<!-- STATUS DO ATIVO -->
+				<div class="summary-card">
+					<h3>Status do ativo</h3>
+					<div class="chart-container">
+						<div class="donut"></div>
+						<div class="legend">
+							<span>Online <strong>
+									<%= otimo %>
+								</strong></span>
+							<span>Atenção <strong>
+									<%= atencao %>
+								</strong></span>
+							<span>Crítico <strong>
+									<%= critico %>
+								</strong></span>
 						</div>
 					</div>
-
-					<!-- ATIVOS POR SETOR -->
-					<div class="summary-card">
-						<h3>Ativos por setor</h3>
-						<table class="list-table" style="font-size: 0.9rem;">
-							<thead>
-								<tr>
-									<th style="color: #9dd1ff;">Setor</th>
-									<th style="color: #9dd1ff;">Quantidade</th>
-								</tr>
-							</thead>
-							<tbody>
-								<% if (setores && setores.length > 0) { %>
-									<% setores.forEach(s => { %>
-										<tr>
-											<td><%= s.nome %></td>
-											<td><%= s.quantidade %></td>
-										</tr>
-									<% }) %>
-								<% } else { %>
-									<tr>
-										<td colspan="2" style="text-align: center;">Sem setores</td>
-									</tr>
-								<% } %>
-							</tbody>
-						</table>
-					</div>
 				</div>
 
-				<!-- ÚLTIMOS EVENTOS -->
-				<div class="wide-card">
-					<h3>Últimos Eventos</h3>
-					<table class="list-table-extended">
+				<!-- ATIVOS POR SETOR -->
+				<div class="summary-card">
+					<h3>Ativos por setor</h3>
+					<table class="list-table" style="font-size: 0.9rem;">
 						<thead>
 							<tr>
-								<th>Data/Hora</th>
-								<th>Host</th>
-								<th>Informações</th>
+								<th style="color: #9dd1ff;">Setor</th>
+								<th style="color: #9dd1ff;">Quantidade</th>
 							</tr>
 						</thead>
 						<tbody>
-							<% if (eventos && eventos.length > 0) { %>
-								<% eventos.forEach(ev => { %>
+							<% if (setores && setores.length> 0) { %>
+								<% setores.forEach(s=> { %>
 									<tr>
-										<td><%= ev.dt %></td>
-										<td><strong><%= ev.host %></strong></td>
-										<td><%= ev.info %></td>
+										<td>
+											<%= s.nome %>
+										</td>
+										<td>
+											<%= s.quantidade %>
+										</td>
 									</tr>
-								<% }) %>
-							<% } else { %>
-								<tr>
-									<td colspan="3" style="text-align: center; color: #888;">Nenhum evento registrado</td>
-								</tr>
-							<% } %>
+									<% }) %>
+										<% } else { %>
+											<tr>
+												<td colspan="2" style="text-align: center;">Sem setores</td>
+											</tr>
+											<% } %>
 						</tbody>
 					</table>
 				</div>
 			</div>
+
+			<!-- ÚLTIMOS EVENTOS -->
+			<div class="wide-card">
+				<h3>Últimos Eventos</h3>
+				<table class="list-table-extended">
+					<thead>
+						<tr>
+							<th>Data/Hora</th>
+							<th>Host</th>
+							<th>Informações</th>
+						</tr>
+					</thead>
+					<tbody>
+						<% if (eventos && eventos.length> 0) { %>
+							<% eventos.forEach(ev=> { %>
+								<tr>
+									<td>
+										<%= ev.dt %>
+									</td>
+									<td><strong>
+											<%= ev.host %>
+										</strong></td>
+									<td>
+										<%= ev.info %>
+									</td>
+								</tr>
+								<% }) %>
+									<% } else { %>
+										<tr>
+											<td colspan="3" style="text-align: center; color: #888;">Nenhum evento
+												registrado</td>
+										</tr>
+										<% } %>
+					</tbody>
+				</table>
+			</div>
 		</div>
+	</div>
 	</div>
 
 	<script src="/js/script.js" defer></script>
@@ -138,5 +128,6 @@
 			});
 		});
 	</script>
-</body>
-</html>
+	</body>
+
+	</html>
