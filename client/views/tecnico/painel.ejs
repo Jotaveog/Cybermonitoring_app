@@ -1,33 +1,4 @@
-<!doctype html>
-<html lang="pt-br">
-<head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<title>Painel Técnico - Cybermonitoring</title>
-	<link rel="stylesheet" href="/css/style.css" />
-</head>
-<body>
-	<div class="page">
-		<!-- SIDEBAR -->
-		<aside class="sidebar">
-			<div class="brand">CYBERMONITORING</div>
-			
-			<div class="user-card">
-				<div style="font-weight: 600; margin-bottom: 4px;">George</div>
-				<div style="font-size: 0.85rem; color: #9dd1ff;">Técnico</div>
-			</div>
-
-			<nav>
-				<ul>
-					<li><a href="/tecnico" class="active">Painel</a></li>
-					<li><a href="/tecnico/gerenciar-computadores">Gerenciar Computadores</a></li>
-					<li><a href="/tecnico/relatorios">Relatórios</a></li>
-					<li><a href="#historico">Histórico</a></li>
-				</ul>
-			</nav>
-
-			<button class="logout" onclick="fetch('/usuarios/logout').then(() => window.location.href = '/login')">Sair</button>
-		</aside>
+<%- include('../layouts/header') %>
 
 		<!-- MAIN CONTENT -->
 		<div class="main">
@@ -121,5 +92,23 @@
 	</div>
 
 	<script src="/js/script.js" defer></script>
+
+	<!-- SCRIPT PARA MARCAR LINK ATIVO NO MENU -->
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+			const navLinks = document.querySelectorAll('.sidebar nav a.nav-link');
+			const currentPath = window.location.pathname;
+
+			navLinks.forEach(link => {
+				const href = link.getAttribute('href');
+				// Remove classe active de todos
+				link.classList.remove('active');
+				// Verifica se a URL atual corresponde ao link
+				if (currentPath === href || currentPath.startsWith(href + '/')) {
+					link.classList.add('active');
+				}
+			});
+		});
+	</script>
 </body>
 </html>

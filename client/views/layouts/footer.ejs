@@ -14,6 +14,24 @@
     
     <!-- SCRIPT GERAL -->
     <script src="/js/script.js"></script>
+
+    <!-- SCRIPT PARA MARCAR LINK ATIVO NO MENU -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.sidebar nav a.nav-link');
+            const currentPath = window.location.pathname;
+
+            navLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                // Verifica se a URL atual corresponde ao link
+                if (currentPath === href || currentPath.startsWith(href + '/')) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

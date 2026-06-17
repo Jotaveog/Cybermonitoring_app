@@ -13,20 +13,17 @@
 			<div class="brand">CYBERMONITORING</div>
 			
 			<div class="user-card">
-				<div style="font-weight: 600; margin-bottom: 4px;">User</div>
-				<div style="font-size: 0.85rem; color: #9dd1ff;">Administrador</div>
-			</div>
+			<div style="font-weight: 600; margin-bottom: 4px;"><%= usuario.nome %></div>
+			<div style="font-size: 0.85rem; color: #9dd1ff;"><%= usuario.perfil %></div>
 
 			<nav>
 				<ul>
-					<li><a href="/painel" class="active">Painel</a></li>
-					<li><a href="/gerenciar-computadores">Gerenciar Computadores</a></li>
-					<li><a href="/usuarios">Gerenciar Usuários</a></li>
-					<li><a href="#configuracoes">Configurações</a></li>
-					<li><a href="#relatorios">Relatórios</a></li>
-					<li><a href="#historico">Histórico</a></li>
-				</ul>
-			</nav>
+				<li><a href="/painel" class="nav-link">Painel</a></li>
+				<li><a href="/gerenciar-computadores" class="nav-link">Gerenciar Computadores</a></li>
+				<li><a href="/usuarios" class="nav-link">Gerenciar Usuários</a></li>
+				<li><a href="#configuracoes" class="nav-link">Configurações</a></li>
+				<li><a href="#relatorios" class="nav-link">Relatórios</a></li>
+				<li><a href="#historico" class="nav-link">Histórico</a></li>
 
 			<button class="logout" onclick="fetch('/usuarios/logout').then(() => window.location.href = '/login')">Sair</button>
 		</aside>
@@ -123,5 +120,23 @@
 	</div>
 
 	<script src="/js/script.js" defer></script>
+
+	<!-- SCRIPT PARA MARCAR LINK ATIVO NO MENU -->
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+			const navLinks = document.querySelectorAll('.sidebar nav a.nav-link');
+			const currentPath = window.location.pathname;
+
+			navLinks.forEach(link => {
+				const href = link.getAttribute('href');
+				// Remove classe active de todos
+				link.classList.remove('active');
+				// Verifica se a URL atual corresponde ao link
+				if (currentPath === href || currentPath.startsWith(href + '/')) {
+					link.classList.add('active');
+				}
+			});
+		});
+	</script>
 </body>
 </html>
