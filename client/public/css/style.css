@@ -239,29 +239,32 @@ header p {
 
 .content-area {
   display: grid;
-  gap: 20px;
+  gap: 18px;
 }
 
 .summary-grid {
   display: grid;
   gap: 16px;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: 1.05fr 1.1fr 1.2fr;
+  align-items: stretch;
 }
 
 .summary-card,
 .wide-card {
-  background: #1E1E26;
-  border-radius: 12px;
-  padding: 20px;
-  border: 1px solid #2A2A35;
+  background: #171A27;
+  border-radius: 14px;
+  padding: 18px 20px;
+  border: 1px solid #2A2E45;
+  box-shadow: none;
 }
 
 .summary-card h3,
 .wide-card h3 {
   margin-top: 0;
   font-size: 0.95rem;
-  color: #cfd7ff;
+  color: #eef2ff;
   margin-bottom: 12px;
+  font-weight: 700;
 }
 
 .summary-card p.big-number {
@@ -276,10 +279,10 @@ header p {
 }
 
 .chart-container {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 170px 1fr;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .donut {
@@ -299,7 +302,7 @@ header p {
   content: "";
   width: 90px;
   height: 90px;
-  background: #1E1E26;
+  background: #171A27;
   border-radius: 50%;
   position: absolute;
   top: 35px;
@@ -309,25 +312,36 @@ header p {
 .legend {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   font-size: 12px;
   width: 100%;
 }
 
 .legend span {
   display: flex;
-  gap: 8px;
   align-items: center;
   justify-content: space-between;
+  gap: 10px;
+  color: #cfd7ff;
 }
 
-.legend span::before {
-  content: "";
-  width: 12px;
-  height: 12px;
-  border-radius: 2px;
-  background: currentColor;
-  flex-shrink: 0;
+
+
+.legend span:nth-child(1) {
+  color: #22c55e;
+}
+
+.legend span:nth-child(2) {
+  color: #eab308;
+}
+
+.legend span:nth-child(3) {
+  color: #ef4444;
+}
+
+.legend strong {
+  color: inherit;
+  font-weight: 700;
 }
 
 .dot {
