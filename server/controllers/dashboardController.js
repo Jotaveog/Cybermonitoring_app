@@ -2,6 +2,22 @@
 const ativoModel = require("../models/ativoModel.js");
 const monitoramentoModel = require("../models/monitoramentoModel.js");
 
+const setoresExemplo = [
+  { nome: 'TI', quantidade: 18 },
+  { nome: 'Financeiro', quantidade: 12 },
+  { nome: 'RH', quantidade: 9 },
+  { nome: 'Logística', quantidade: 7 },
+  { nome: 'Suporte', quantidade: 14 }
+];
+
+const eventosExemplo = [
+  { dt: '17/06/2026 09:30', host: 'SRV-01', info: 'Backup concluído com sucesso' },
+  { dt: '17/06/2026 09:15', host: 'PC-204', info: 'Atualização de antivírus realizada' },
+  { dt: '17/06/2026 08:50', host: 'SRV-03', info: 'Disco com 82% de utilização' },
+  { dt: '17/06/2026 08:20', host: 'ROTA-07', info: 'Conexão retomada após falha' },
+  { dt: '17/06/2026 07:55', host: 'PC-118', info: 'Login bloqueado por senha expirada' }
+];
+
 module.exports = {
   // Dashboard Admin - visão completa
   dashboardAdmin: async (req, res) => {
@@ -17,8 +33,8 @@ module.exports = {
         otimo: statusMonitor.normal || 0,
         atencao: statusMonitor.atencao || 0,
         critico: statusMonitor.critico || 0,
-        setores: setores || [],
-        eventos: ultimos_eventos || []
+        setores: setoresExemplo,
+        eventos: eventosExemplo
       });
     } catch (erro) {
       console.error("Erro ao carregar dashboard admin:", erro);
@@ -47,8 +63,8 @@ module.exports = {
         otimo: statusMonitor.normal || 0,
         atencao: statusMonitor.atencao || 0,
         critico: statusMonitor.critico || 0,
-        setores: setores || [],
-        eventos: ultimos_eventos || []
+        setores: setoresExemplo,
+        eventos: eventosExemplo
       });
     } catch (erro) {
       console.error("Erro ao carregar dashboard técnico:", erro);
