@@ -20,89 +20,49 @@
 <body>
     <!-- SE TIVER LOGADO - EXIBE SIDEBAR -->
     <% if (typeof usuario !=='undefined' && usuario) { %>
-    <div class="page">
-        <!-- SIDEBAR LATERAL -->
-        <aside class="sidebar">
-            <!-- LOGO/TÍTULO -->
-            <div class="sidebar-header">
-                <span class="logo-text">CYBERMONITORING</span>
-            </div>
+        <div class="page">
+            <!-- SIDEBAR LATERAL -->
+            <aside class="sidebar">
+                <!-- LOGO/TÍTULO -->
+                <div class="brand">CYBERMONITORING</div>
 
-            <!-- DADOS DO USUÁRIO -->
-            <div class="user-info">
-                <% if (usuario.foto) { %>
-                    <img src="/uploads/usuarios/<%= usuario.foto %>" alt="<%= usuario.nome %>" class="user-avatar">
-                <% } else { %>
-                    <div class="user-avatar-placeholder">
-                        <i class="fa-solid fa-user"></i>
+                <!-- DADOS DO USUÁRIO -->
+                <div class="user-card">
+                    <div style="font-weight: 600; margin-bottom: 4px;">
+                        <%= usuario.nome %>
                     </div>
-                <% } %>
-                <div class="user-details">
-                    <p class="user-name"><%= usuario.nome %></p>
-                    <p class="user-role"><%= usuario.perfil %></p>
+                    <div style="font-size: 0.85rem; color: #9dd1ff;">
+                        <%= usuario.perfil %>
+                    </div>
                 </div>
-            </div>
 
-            <!-- MENU NAVEGAÇÃO -->
-            <nav class="sidebar-nav">
-                <!-- MENU ADMINISTRADOR -->
-                <% if (usuario.perfil === 'Administrador') { %>
-                    <a href="/dashboard/admin" class="nav-item">
-                        <i class="fa-solid fa-chart-line"></i>
-                        <span>Painel</span>
-                    </a>
-                    <a href="/gerenciar-computadores" class="nav-item">
-                        <i class="fa-solid fa-computer"></i>
-                        <span>Gerenciar Computadores</span>
-                    </a>
-                    <a href="/usuarios" class="nav-item">
-                        <i class="fa-solid fa-users"></i>
-                        <span>Gerenciar Usuários</span>
-                    </a>
-                    <a href="/configuracoes" class="nav-item">
-                        <i class="fa-solid fa-gear"></i>
-                        <span>Configurações</span>
-                    </a>
-                    <a href="/relatorios" class="nav-item">
-                        <i class="fa-solid fa-file-chart-line"></i>
-                        <span>Relatórios</span>
-                    </a>
-                    <a href="/historico" class="nav-item">
-                        <i class="fa-solid fa-history"></i>
-                        <span>Histórico</span>
-                    </a>
+                <!-- MENU NAVEGAÇÃO -->
+                <nav>
+                    <ul>
+                        <!-- MENU ADMINISTRADOR -->
+                        <% if (usuario.perfil==='Administrador') { %>
+                            <li><a href="/painel" class="nav-link">Painel</a></li>
+                            <li><a href="/gerenciar-computadores" class="nav-link">Gerenciar Computadores</a></li>
+                            <li><a href="/usuarios" class="nav-link">Gerenciar Usuários</a></li>
+                            <li><a href="/configuracoes" class="nav-link">Configurações</a></li>
+                            <li><a href="/relatorios" class="nav-link">Relatórios</a></li>
+                            <li><a href="/historico" class="nav-link">Histórico</a></li>
+                        <% } %>
+
+                        <!-- MENU TÉCNICO -->
+                        <% if (usuario.perfil==='Tecnico') { %>
+                            <li><a href="/tecnico" class="nav-link">Painel</a></li>
+                            <li><a href="/tecnico/gerenciar-computadores" class="nav-link">Gerenciar Computadores</a></li>
+                            <li><a href="/tecnico/relatorios" class="nav-link">Relatórios</a></li>
+                            <li><a href="#historico" class="nav-link">Histórico</a></li>
+                        <% } %>
+                    </ul>
+                </nav>
+
+                <!-- BOTÃO SAIR -->
+                <button class="logout" onclick="fetch('/usuarios/logout').then(() => window.location.href = '/login')">Sair</button>
+            </aside>
+
+            <!-- CONTEÚDO PRINCIPAL -->
+            <div class="main-wrapper">
                 <% } %>
-
-                <!-- MENU TÉCNICO -->
-                <% if (usuario.perfil === 'Tecnico') { %>
-                    <a href="/dashboard/tecnico" class="nav-item">
-                        <i class="fa-solid fa-chart-line"></i>
-                        <span>Painel</span>
-                    </a>
-                    <a href="/monitoramentos" class="nav-item">
-                        <i class="fa-solid fa-wifi"></i>
-                        <span>Monitoramentos</span>
-                    </a>
-                    <a href="/ativos" class="nav-item">
-                        <i class="fa-solid fa-server"></i>
-                        <span>Ativos</span>
-                    </a>
-                    <a href="/relatorios" class="nav-item">
-                        <i class="fa-solid fa-file-chart-line"></i>
-                        <span>Relatórios</span>
-                    </a>
-                <% } %>
-            </nav>
-
-            <!-- BOTÃO SAIR -->
-            <div class="sidebar-footer">
-                <a href="/usuarios/logout" class="btn-logout">
-                    <i class="fa-solid fa-sign-out-alt"></i>
-                    <span>Sair</span>
-                </a>
-            </div>
-        </aside>
-
-        <!-- CONTEÚDO PRINCIPAL -->
-        <div class="main-wrapper">
-    <% } %>
