@@ -51,6 +51,13 @@ module.exports = {
     return linhas;
   },
 
+  // Listar perfis disponíveis
+  listarPerfis: async () => {
+    const query = `SELECT id_perfil, nome_perfil FROM perfis ORDER BY id_perfil ASC`;
+    const [linhas] = await db.execute(query);
+    return linhas;
+  },
+
   // UPDATE - Atualizar informações do usuário
   atualizarUsuario: async (id, nome, email, status) => {
     const query = `UPDATE usuarios 
@@ -58,6 +65,19 @@ module.exports = {
                    WHERE id_usuario = ?`;
     const [resultado] = await db.execute(query, [nome, email, status, id]);
     return resultado.affectedRows;
+  },
+
+  // Atualizar usuário completo (nome, email, perfil, status e opcionalmente senha)
+  atualizarUsuarioCompleto: async (id, nome, email, id_perfil, status, senha_hash) => {
+    if (senha_hash) {
+      const query = `UPDATE usuarios SET nome = ?, email = ?, id_perfil = ?, status = ?, senha_hash = ? WHERE id_usuario = ?`;
+      const [resultado] = await db.execute(query, [nome, email, id_perfil, status, senha_hash, id]);
+      return resultado.affectedRows;
+    } else {
+      const query = `UPDATE usuarios SET nome = ?, email = ?, id_perfil = ?, status = ? WHERE id_usuario = ?`;
+      const [resultado] = await db.execute(query, [nome, email, id_perfil, status, id]);
+      return resultado.affectedRows;
+    }
   },
 
   // UPDATE - Atualizar último acesso

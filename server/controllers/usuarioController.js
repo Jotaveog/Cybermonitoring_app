@@ -99,8 +99,18 @@ module.exports = {
   // CRUD
   // Criar Usuários
 
-  renderizarCadastro: (req, res) => {
-    res.render("usuarios/cadastro");
+  renderizarCadastro: async (req, res) => {
+    // Busca perfis e usuários para popular o select e a listagem
+    try {
+      const [perfis, usuarios] = await Promise.all([
+        usuarioModel.listarPerfis(),
+        usuarioModel.listarUsuarios()
+      ]);
+      res.render('usuarios/cadastro', { perfis, usuarios });
+    } catch (err) {
+      console.error('Erro ao carregar perfis/usuarios:', err);
+      res.status(500).render('erro', { mensagem: 'Erro ao carregar página de cadastro' });
+    }
   },
 
   cadastrar: async (req, res) => { // async porque tem operações assíncronas dentro da função (bcrypt e model)
@@ -110,13 +120,21 @@ module.exports = {
     const { nome, email, senha, id_perfil } = req.body;
     const perfilId = id_perfil ? parseInt(id_perfil, 10) : 2;
 
-    if (perfilId === 1) // 1 representa o perfil de administrador
-      return res
-        .status(403)
-        .render("erro", {
-          mensagem:
-            "Não é permitido criar usuários com perfil de administrador",
-        });
+    // Permite criar administrador apenas se o usuário autenticado for administrador
+    if (perfilId === 1) {
+      let allowAdminCreate = false;
+      if (req.cookies && req.cookies.token) {
+        try {
+          const dec = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
+          if (dec.perfil && dec.perfil.toString().toLowerCase() === 'administrador') allowAdminCreate = true;
+        } catch (e) {
+          // token inválido, não permite
+        }
+      }
+      if (!allowAdminCreate) {
+        return res.status(403).render('erro', { mensagem: 'Não é permitido criar usuários com perfil de administrador' });
+      }
+    }
 
         // Criptografa a senha antes de salvar no banco
         const senhaHash = await bcrypt.hash(senha, 10);
@@ -149,6 +167,45 @@ module.exports = {
         }
     },
 
+    // Renderizar edição
+    renderizarEdicao: async (req, res) => {
+      try {
+        const { id } = req.params;
+        if (!id || isNaN(id)) return res.status(400).render('erro', { mensagem: 'ID inválido' });
+
+        const usuario = await usuarioModel.buscarPorId(id);
+        if (!usuario) return res.status(404).render('erro', { mensagem: 'Usuário não encontrado' });
+
+        const perfis = await usuarioModel.listarPerfis();
+        res.render('usuarios/editar', { usuario, perfis });
+      } catch (erro) {
+        console.error('Erro ao carregar edição:', erro);
+        res.status(500).render('erro', { mensagem: 'Erro interno ao carregar edição' });
+      }
+    },
+
+    // Atualizar usuário
+    atualizar: async (req, res) => {
+      try {
+        const { id } = req.params;
+        const { nome, email, status, id_perfil, senha } = req.body;
+        if (!id || isNaN(id)) return res.status(400).render('erro', { mensagem: 'ID inválido' });
+
+        let senhaHash = null;
+        if (senha && senha.length >= 6) {
+          senhaHash = await bcrypt.hash(senha, 10);
+        }
+
+        const linhas = await usuarioModel.atualizarUsuarioCompleto(id, nome, email, id_perfil || 2, status || 'ATIVO', senhaHash);
+        if (linhas === 0) return res.status(404).render('erro', { mensagem: 'Usuário não encontrado' });
+
+        res.redirect('/usuarios');
+      } catch (erro) {
+        console.error('Erro ao atualizar usuário:', erro);
+        res.status(500).render('erro', { mensagem: 'Erro interno ao atualizar usuário' });
+      }
+    },
+
     // READ - LISTAR USUÁRIOS
     listar: async(req,res) => {
       try{
@@ -160,7 +217,32 @@ module.exports = {
           // Se deu erro
           res.status(500).render('erro', {mensagem: "Erro ao listar usuários"})
         }
+    },
+
+    // DELETE - Deletar usuário (apenas admin)
+    deletar: async (req, res) => {
+      try {
+        const { id } = req.params;
+        if (!id || isNaN(id)) {
+          return res.status(400).render('erro', { mensagem: 'ID inválido' });
+        }
+
+        const linhas = await usuarioModel.deletarUsuario(id);
+        if (linhas === 0) {
+          return res.status(404).render('erro', { mensagem: 'Usuário não encontrado' });
+        }
+
+        // Redireciona para a lista de usuários
+        res.redirect('/usuarios');
+      } catch (erro) {
+        console.error('Erro ao deletar usuário:', erro);
+        res.status(500).render('erro', { mensagem: 'Erro interno ao deletar usuário' });
+      }
     }
+
 }
 
+
  
+
+

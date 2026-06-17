@@ -1,234 +1,125 @@
-// importação e uso do módulo express
+/**
+ * ========================================
+ * CYBERMONITORING - SERVER.JS
+ * Sistema de Monitoramento de TI
+ * ========================================
+ * Arquivo principal do servidor Express
+ * Responsável por: middleware, rotas públicas, inicialização
+ */
+
+// Importações essenciais
 const express = require("express");
-const app = express();
-// módulo do node para lidar com caminho de arquivos
 const path = require("path");
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
-// Importa o módulo do dotenv, lê o arquivo .env dentro da pasta server e já configura inicialmente
-require('dotenv').config({ path: path.join(__dirname, '.env') })
-
-// Define a porta do servidor com base nas variáveis de ambiente
-// Se der errado, e porte será a 5000
+// Inicializar app Express
+const app = express();
 const port = process.env.PORT || 5000;
 
-// MIDDLEWARE PARA ENTENDER O JSON
-// Lê os dados em JSON
-app.use(express.json()) 
-// Servidor está apto a ler os dados dos formulário
-app.use(express.urlencoded({ extended: true })) 
-// Permite ler cookies e alterar também
-app.use(require('cookie-parser')())
+// ========================================
+// MIDDLEWARES GLOBAIS
+// ========================================
 
-// CONFIGURAÇÃO DO EJS E PASTAS DO FRONT END
-// Define o EJS como engine do front
+// Middleware para parsear JSON e formulários
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(require('cookie-parser')());
+
+// ========================================
+// CONFIGURAÇÃO DE VIEWS E ARQUIVOS ESTÁTICOS
+// ========================================
+
+// Configurar EJS como template engine
 app.set("view engine", "ejs");
-// Aponta para o express e ejs onde estão as páginas
 app.set("views", path.join(__dirname, "../client/views"));
-// Deixa a pasta public acessível ao usuário
+
+// Servir arquivos estáticos (CSS, JS, imagens)
 app.use(express.static(path.join(__dirname, "../client/public")));
 
+// ========================================
 // ROTAS PÚBLICAS
-// Criação de rotas padrão
+// ========================================
+
+// Rota raiz - redireciona para login
 app.get("/", (req, res) => {
-  // Redireciona pra tela de login
-  res.status(200).redirect("/login");
+  res.redirect("/login");
 });
 
-//Rota que retorna a página de login
+// Rota de login
 app.get("/login", (req, res) => {
   res.render('auth/login');
 });
 
-// Rota que retorna a página de cadastro de usuário
+// Rota de cadastro
 app.get("/cadastro", (req, res) => {
   res.render('auth/cadastro');
 });
 
-// IMPORTAR MIDDLEWARES
-const { verificarAutenticacao } = require("./middlewares/authMiddlewares.js");
+// ========================================
+// MIDDLEWARES DE AUTENTICAÇÃO
+// ========================================
 
-// ROTAS PROTEGIDAS DOS DASHBOARDS
-app.get("/dashboard/admin", verificarAutenticacao, (req, res) => {
-  res.render('dashboard/administrador/index');
-});
+const { verificarAutenticacao, somenteAdmin, somenteTenico } = require("./middlewares/authMiddlewares.js");
 
-app.get("/tecnico", verificarAutenticacao, async (req, res) => {
-  try {
-    const db = require("./config/db.js");
-    
-    // Buscar total de ativos
-    const [ativos] = await db.execute("SELECT COUNT(*) as total FROM ativos WHERE status_cadastro = 'ATIVO'");
-    const totalAtivos = ativos[0].total;
-    
-    // Buscar contagem por status de monitoramento
-    const [statusMonitor] = await db.execute(`
-      SELECT 
-        COUNT(CASE WHEN status_monitoramento = 'NORMAL' THEN 1 END) as otimo,
-        COUNT(CASE WHEN status_monitoramento = 'ATENCAO' THEN 1 END) as atencao,
-        COUNT(CASE WHEN status_monitoramento = 'CRITICO' THEN 1 END) as critico
-      FROM monitoramentos
-      WHERE data_coleta >= DATE_SUB(NOW(), INTERVAL 1 DAY)
-    `);
-    
-    const stats = statusMonitor[0];
-    
-    // Buscar ativos por setor
-    const [setoresData] = await db.execute(`
-      SELECT setor as nome, COUNT(*) as q 
-      FROM ativos 
-      WHERE status_cadastro = 'ATIVO' AND setor IS NOT NULL
-      GROUP BY setor
-    `);
-    
-    // Buscar últimos eventos de monitoramento
-    const [eventosData] = await db.execute(`
-      SELECT 
-        DATE_FORMAT(m.data_coleta, '%Y-%m-%d %H:%i:%S') as dt,
-        a.nome_maquina as host,
-        CONCAT('CPU: ', m.uso_cpu, '% | Memória: ', m.uso_memoria, '%') as info
-      FROM monitoramentos m
-      JOIN ativos a ON m.id_ativo = a.id_ativo
-      ORDER BY m.data_coleta DESC
-      LIMIT 5
-    `);
-    
-    res.render('tecnico/painel', {
-      totalAtivos: totalAtivos,
-      otimo: stats.otimo || 0,
-      atencao: stats.atencao || 0,
-      critico: stats.critico || 0,
-      setores: setoresData || [],
-      eventos: eventosData || []
-    });
-  } catch (erro) {
-    console.error("Erro ao carregar painel técnico:", erro);
-    res.render('tecnico/painel', {
-      totalAtivos: 0,
-      otimo: 0,
-      atencao: 0,
-      critico: 0,
-      setores: [],
-      eventos: []
-    });
-  }
-});
+// ========================================
+// ROTAS PROTEGIDAS - DASHBOARDS
+// ========================================
 
+const dashboardController = require("./controllers/dashboardController.js");
 
-app.get("/tecnico/gerenciar-computadores", verificarAutenticacao, (req, res) => {
-  res.render('tecnico/gerenciar-computadores');
-});
+// Dashboard Admin
+app.get("/painel", verificarAutenticacao, somenteAdmin, dashboardController.dashboardAdmin);
+app.get("/dashboard/admin", verificarAutenticacao, somenteAdmin, dashboardController.dashboardAdmin);
 
-app.get("/tecnico/relatorios", verificarAutenticacao, (req, res) => {
-  res.render('tecnico/relatorios');
-});
+// Dashboard Técnico
+app.get("/tecnico", verificarAutenticacao, somenteTenico, dashboardController.dashboardTecnico);
+app.get("/dashboard/tecnico", verificarAutenticacao, somenteTenico, dashboardController.dashboardTecnico);
 
-// Rota do Painel
-// Rota do Painel (apenas para administrador)
-app.get("/painel", verificarAutenticacao, async (req, res) => {
-  try {
-    // Verifica se é administrador
-    if (req.usuario.perfil.toLowerCase() !== "administrador") {
-      return res.redirect("/tecnico");
-    }
-    
-    // Importar model de ativos
-    const db = require("./config/db.js");
-    
-    // Buscar total de ativos
-    const [ativos] = await db.execute("SELECT COUNT(*) as total FROM ativos WHERE status_cadastro = 'ATIVO'");
-    const totalAtivos = ativos[0].total;
-    
-    // Buscar contagem por status de monitoramento
-    const [statusMonitor] = await db.execute(`
-      SELECT 
-        COUNT(CASE WHEN status_monitoramento = 'NORMAL' THEN 1 END) as otimo,
-        COUNT(CASE WHEN status_monitoramento = 'ATENCAO' THEN 1 END) as atencao,
-        COUNT(CASE WHEN status_monitoramento = 'CRITICO' THEN 1 END) as critico
-      FROM monitoramentos
-      WHERE data_coleta >= DATE_SUB(NOW(), INTERVAL 1 DAY)
-    `);
-    
-    const stats = statusMonitor[0];
-    
-    // Buscar ativos por setor
-    const [setoresData] = await db.execute(`
-      SELECT setor as nome, COUNT(*) as q 
-      FROM ativos 
-      WHERE status_cadastro = 'ATIVO' AND setor IS NOT NULL
-      GROUP BY setor
-    `);
-    
-    // Buscar últimos eventos de monitoramento
-    const [eventosData] = await db.execute(`
-      SELECT 
-        DATE_FORMAT(m.data_coleta, '%Y-%m-%d %H:%i:%S') as dt,
-        a.nome_maquina as host,
-        CONCAT('CPU: ', m.uso_cpu, '% | Memória: ', m.uso_memoria, '%') as info
-      FROM monitoramentos m
-      JOIN ativos a ON m.id_ativo = a.id_ativo
-      ORDER BY m.data_coleta DESC
-      LIMIT 5
-    `);
-    
-    res.render('admin/painel', {
-      totalAtivos: totalAtivos,
-      otimo: stats.otimo || 0,
-      atencao: stats.atencao || 0,
-      critico: stats.critico || 0,
-      setores: setoresData || [],
-      eventos: eventosData || []
-    });
-  } catch (erro) {
-    console.error("Erro ao carregar painel:", erro);
-    res.render('admin/painel', {
-      totalAtivos: 0,
-      otimo: 0,
-      atencao: 0,
-      critico: 0,
-      setores: [],
-      eventos: []
-    });
-  }
-});
+// Gerenciador de Computadores (Admin)
+app.get("/gerenciar-computadores", verificarAutenticacao, somenteAdmin, dashboardController.gerenciarComputadoresAdmin);
+app.get("/admin/gerenciar-computadores", verificarAutenticacao, somenteAdmin, dashboardController.gerenciarComputadoresAdmin);
 
-// Rota para Gerenciar Computadores
-app.get("/gerenciar-computadores", verificarAutenticacao, (req, res) => {
-  res.render('admin/gerenciarPc', { usuario: req.session.user });
-});
+// Gerenciador de Computadores (Técnico)
+app.get("/tecnico/gerenciar-computadores", verificarAutenticacao, somenteTenico, dashboardController.gerenciarComputadoresTecnico);
 
-//Importar as rotas de usuário
+// Relatórios (Técnico)
+app.get("/tecnico/relatorios", verificarAutenticacao, somenteTenico, dashboardController.relatorios);
+
+// ========================================
+// ROTAS MODULARES
+// ========================================
+
+// Rotas de Usuários (login, cadastro, gerenciar)
 const usuariosRoutes = require("./routes/usuarioRoutes.js");
-// Requisições comecando com /usuarios é gerenciada pelo sub-arquivo de rotas
 app.use("/usuarios", usuariosRoutes);
 
-// Importar as rotas de produtos
-const produtosRoutes = require("./routes/produtosRoutes.js")
-// Requisições começando com /produtos é gerenciada pelo sub-arquivo de rotas
-app.use("/produtos", produtosRoutes);
+// Rotas de Ativos (CRUD principal do sistema)
+const ativoRoutes = require("./routes/ativoRoutes.js");
+app.use("/ativos", ativoRoutes);
 
 
-// //Função para subir o servidor
-// app.listen(port, () => {
-//   console.log(`Servidor ativo na porta: ${port}`);
-//   console.log(`Link: http://localhost:${port}`);
-// });
+// ========================================
+// INICIALIZAÇÃO DO SERVIDOR
+// ========================================
 
-// Traz as configurações do banco
 const pool = require("./config/db.js");
-//Cria uma conexão teste com o banco
+
 (async () => {
   try {
-    // Se o banco de dados estiver ativo, ai sim o servidor será iniciado
+    // Testa conexão com banco de dados
     await pool.getConnection();
-    console.log("Banco conectado");
-    // Se o banco de dados estiver ativo, ai sim o servidor será iniciado
+    console.log("✓ Banco de dados conectado");
+
+    // Inicia servidor Express
     app.listen(port, () => {
-      console.log(`Link: http://localhost:${port}`);
-      console.log(`Servidor funcionando na porta ${port}`);
+      console.log("========================================");
+      console.log("   CYBERMONITORING - SERVIDOR ATIVO");
+      console.log(`   Porta: ${port}`);
+      console.log(`   URL: http://localhost:${port}`);
+      console.log("========================================");
     });
   } catch (erro) {
-    // Se deu erro, avisa e encerra a tentativa
-    console.log("Erro ao tentar conectar com o banco de dados");
+    console.error("✗ Erro ao conectar com o banco de dados:", erro.message);
     process.exit(1);
   }
 })();

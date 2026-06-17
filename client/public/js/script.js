@@ -60,3 +60,167 @@ document.addEventListener('DOMContentLoaded', () => {
     if(wEl) wEl.textContent = warn
     if(cEl) cEl.textContent = crit
 })
+
+// Logout handler
+document.addEventListener('DOMContentLoaded', () => {
+    const logoutBtn = document.querySelector('.logout')
+    if(logoutBtn) {
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault()
+            fetch('/usuarios/logout')
+                .then(() => window.location.href = '/login')
+                .catch(err => console.error('Erro:', err))
+        })
+    }
+})
+
+// Gerenciar Ativos (CRUD) - conecta a UI com as rotas /ativos
+document.addEventListener('DOMContentLoaded', () => {
+    // Detecta se estamos na página de gerenciar computadores
+    const form = document.getElementById('formAativo')
+    const tableBody = document.querySelector('.card-list table tbody')
+    const filterSetor = document.getElementById('filterSetor')
+    const filterStatus = document.getElementById('filterStatus')
+
+    if (!form || !tableBody) return
+
+    let editId = null
+
+    async function loadAtivos() {
+        try {
+            const res = await fetch('/ativos')
+            const json = await res.json()
+            if (!json.sucesso) throw new Error(json.mensagem || 'Erro ao carregar')
+
+            renderTable(json.dados || [])
+        } catch (err) {
+            console.error('Erro ao carregar ativos:', err)
+            tableBody.innerHTML = '<tr><td colspan="6">Erro ao carregar ativos</td></tr>'
+        }
+    }
+
+    function renderTable(ativos) {
+        // Aplicar filtros
+        const setor = filterSetor ? filterSetor.value : ''
+        const status = filterStatus ? filterStatus.value : ''
+
+        const rows = ativos.filter(a => {
+            if (setor && a.setor !== setor) return false
+            if (status) {
+                const s = (a.status_cadastro || '').toLowerCase()
+                if (status === 'ativo' && s !== 'ativo') return false
+                if (status === 'inativo' && s !== 'inativo') return false
+            }
+            return true
+        }).map(a => {
+            return `
+                <tr data-id="${a.id_ativo}">
+                    <td>${a.id_ativo || a.nome_maquina}</td>
+                    <td>${a.nome_maquina || ''}<br><small>${a.ip || ''}</small></td>
+                    <td>${a.mac || a.mac_address || ''}</td>
+                    <td>${a.setor || ''}</td>
+                    <td>${a.so || ''}</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning btn-edit">Editar</button>
+                        <button class="btn btn-sm btn-danger btn-delete">Apagar</button>
+                    </td>
+                </tr>
+            `
+        }).join('')
+
+        tableBody.innerHTML = rows || '<tr><td colspan="6" class="text-center">Nenhum ativo encontrado</td></tr>'
+
+        // Bind actions
+        tableBody.querySelectorAll('.btn-delete').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const tr = e.target.closest('tr')
+                const id = tr.dataset.id
+                if (!confirm('Confirmar exclusão do ativo?')) return
+                try {
+                    const resp = await fetch('/ativos/' + id, { method: 'DELETE' })
+                    const j = await resp.json()
+                    if (!j.sucesso) throw new Error(j.mensagem || 'Erro')
+                    loadAtivos()
+                } catch (err) {
+                    console.error('Erro ao deletar ativo:', err)
+                    alert('Erro ao deletar ativo')
+                }
+            })
+        })
+
+        tableBody.querySelectorAll('.btn-edit').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const tr = e.target.closest('tr')
+                const id = tr.dataset.id
+                try {
+                    const resp = await fetch('/ativos/' + id)
+                    const j = await resp.json()
+                    if (!j.sucesso) throw new Error(j.mensagem || 'Erro')
+                    populateForm(j.dados)
+                } catch (err) {
+                    console.error('Erro ao obter ativo:', err)
+                    alert('Erro ao obter ativo para edição')
+                }
+            })
+        })
+    }
+
+    function populateForm(a) {
+        editId = a.id_ativo
+        form.querySelector('[name="ip"]').value = a.ip || ''
+        form.querySelector('[name="nomeMaquina"]').value = a.nome_maquina || ''
+        form.querySelector('[name="setor"]').value = a.setor || ''
+        form.querySelector('[name="laboratorio"]').value = a.tipo || ''
+        form.querySelector('[name="so"]').value = a.so || ''
+        form.querySelector('[name="observacoes"]').value = a.descricao || ''
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault()
+        const data = new FormData(form)
+        const payload = {
+            nome_maquina: data.get('nomeMaquina'),
+            ip: data.get('ip'),
+            setor: data.get('setor'),
+            tipo: data.get('laboratorio') || data.get('patrimonio') || null,
+            so: data.get('so'),
+            descricao: data.get('observacoes')
+        }
+
+        try {
+            let resp
+            if (editId) {
+                resp = await fetch('/ativos/' + editId, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                })
+            } else {
+                resp = await fetch('/ativos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                })
+            }
+
+            const j = await resp.json()
+            if (!j.sucesso) throw new Error(j.mensagem || 'Erro')
+            // reset form
+            editId = null
+            form.reset()
+            loadAtivos()
+            alert(j.mensagem || 'Operação realizada com sucesso')
+        } catch (err) {
+            console.error('Erro ao salvar ativo:', err)
+            alert('Erro ao salvar ativo')
+        }
+    })
+
+    // filtros
+    if (filterSetor) filterSetor.addEventListener('change', loadAtivos)
+    if (filterStatus) filterStatus.addEventListener('change', loadAtivos)
+
+    // inicial
+    loadAtivos()
+})

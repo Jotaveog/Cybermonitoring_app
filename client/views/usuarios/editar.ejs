@@ -1,0 +1,57 @@
+<%- include('../layouts/header') %>
+
+<main class="container-fluid user-management" style="padding:20px;">
+  <div class="row mb-3">
+    <div class="col-12">
+      <h2>Editar Usuário</h2>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card summary-card">
+        <form action="/usuarios/<%= usuario.id_usuario %>/editar" method="POST" class="row g-3 mt-2">
+          <div class="col-md-4">
+            <label class="form-label">Nome</label>
+            <input name="nome" type="text" class="form-control form-control-sm" value="<%= usuario.nome %>" required>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Email</label>
+            <input name="email" type="email" class="form-control form-control-sm" value="<%= usuario.email %>" required>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Role</label>
+            <select name="id_perfil" class="form-control form-control-sm">
+              <% if (perfis && perfis.length) { %>
+                <% perfis.forEach(p => { %>
+                  <option value="<%= p.id_perfil %>" <%= (p.id_perfil == usuario.id_perfil) ? 'selected' : '' %>><%= p.nome_perfil %></option>
+                <% }) %>
+              <% } %>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Senha (deixe em branco para não alterar)</label>
+            <input name="senha" type="password" class="form-control form-control-sm" placeholder="Nova senha">
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label">Status</label>
+            <select name="status" class="form-control form-control-sm">
+              <option value="ATIVO" <%= usuario.status === 'ATIVO' ? 'selected' : '' %>>Ativo</option>
+              <option value="INATIVO" <%= usuario.status !== 'ATIVO' ? 'selected' : '' %>>Inativo</option>
+            </select>
+          </div>
+
+          <div class="col-12 mt-2">
+            <button class="btn auth-button" type="submit">Salvar Alterações</button>
+            <a href="/usuarios" class="btn btn-secondary ms-2">Voltar</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+

@@ -1,0 +1,33 @@
+<table class="table table-striped table-hover">
+  <thead>
+    <tr>
+      <th>Nome</th>
+      <th>Email</th>
+      <th>Role</th>
+      <th>Status</th>
+      <th style="width:180px">Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if (usuarios && usuarios.length > 0) { %>
+      <% usuarios.forEach(u => { %>
+        <tr>
+          <td><strong><%= u.nome %></strong></td>
+          <td><%= u.email %></td>
+          <td><%= u.nome_perfil %></td>
+          <td><span class="badge status-<%= u.status === 'ATIVO' ? 'ativo' : 'inativo' %>"><%= u.status === 'ATIVO' ? 'Ativo' : 'Inativo' %></span></td>
+          <td>
+            <a href="/usuarios/<%= u.id_usuario %>/editar" class="btn btn-sm btn-warning">Editar</a>
+            <form action="/usuarios/deletar/<%= u.id_usuario %>" method="POST" style="display:inline-block;margin-left:8px;">
+              <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja deletar este usuário?');">Deletar</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    <% } else { %>
+      <tr>
+        <td colspan="5" class="text-center text-muted">Nenhum usuário cadastrado</td>
+      </tr>
+    <% } %>
+  </tbody>
+</table>

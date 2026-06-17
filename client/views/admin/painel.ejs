@@ -1,100 +1,127 @@
 <!doctype html>
 <html lang="pt-br">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>Painel - Cybermonitoring</title>
-		<link rel="stylesheet" href="/css/style.css" />
-	</head>
-	<body class="auth-page">
-		<header class="header-sistema">
-			<h2>CYBERMONITORING</h2>
-			<nav class="nav-menu">
-				<span>Administrador</span>
-			</nav>
-		</header>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Painel Administrador - Cybermonitoring</title>
+	<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+	<div class="page">
+		<!-- SIDEBAR -->
+		<aside class="sidebar">
+			<div class="brand">CYBERMONITORING</div>
+			
+			<div class="user-card">
+				<div style="font-weight: 600; margin-bottom: 4px;">User</div>
+				<div style="font-size: 0.85rem; color: #9dd1ff;">Administrador</div>
+			</div>
 
-		<main class="container dashboard-container">
-			<aside class="sidebar">
-				<div class="user-block">
-					<div class="avatar">User</div>
-					<div class="role">Administrador</div>
-				</div>
-				<ul class="menu">
-					<li class="active">Painel</li>
-					<li>Gerenciar Computadores</li>
-					<li>Gerenciar Usuários</li>
-					<li>Configurações</li>
-					<li>Relatórios</li>
-					<li>Histórico</li>
+			<nav>
+				<ul>
+					<li><a href="/painel" class="active">Painel</a></li>
+					<li><a href="/gerenciar-computadores">Gerenciar Computadores</a></li>
+					<li><a href="/usuarios">Gerenciar Usuários</a></li>
+					<li><a href="#configuracoes">Configurações</a></li>
+					<li><a href="#relatorios">Relatórios</a></li>
+					<li><a href="#historico">Histórico</a></li>
 				</ul>
-				<button class="btn logout">Sair</button>
-			</aside>
+			</nav>
 
-			<section class="main-content">
-				<div class="grid-top">
-					<div class="card total-card">
-						<h3>Total de ativos</h3>
-					<div class="total-number"><%= totalAtivos %></div>
+			<button class="logout" onclick="fetch('/usuarios/logout').then(() => window.location.href = '/login')">Sair</button>
+		</aside>
+
+		<!-- MAIN CONTENT -->
+		<div class="main">
+			<header>
+				<div>
+					<h1>Painel</h1>
+					<p>Visão geral do sistema</p>
 				</div>
+			</header>
 
-				<div class="card status-card">
-					<h3>Status do ativo</h3>
+			<div class="content-area">
+				<!-- CARDS RESUMO -->
+				<div class="summary-grid">
+					<!-- TOTAL DE ATIVOS -->
+					<div class="summary-card">
+						<h3>Total de ativos</h3>
+						<p class="big-number green"><%= totalAtivos %></p>
+					</div>
 
-						<div class="status-body">
-							<div class="pie" id="dashboardPie" data-good="<%= otimo %>" data-warning="<%= atencao %>" data-critical="<%= critico %>"></div>
-							<div class="status-legend">
-								<div><span class="dot good"></span> Ótimo <span class="count" id="countGood"><%= otimo %></span></div>
-								<div><span class="dot warning"></span> Atenção <span class="count" id="countWarn"><%= atencao %></span></div>
-								<div><span class="dot critical"></span> Crítico <span class="count" id="countCrit"><%= critico %></span></div>
+					<!-- STATUS DO ATIVO -->
+					<div class="summary-card">
+						<h3>Status do ativo</h3>
+						<div class="chart-container">
+							<div class="donut"></div>
+							<div class="legend">
+								<span><span class="dot good"></span> Online <strong><%= otimo %></strong></span>
+								<span><span class="dot warning"></span> Atenção <strong><%= atencao %></strong></span>
+								<span><span class="dot critical"></span> Crítico <strong><%= critico %></strong></span>
 							</div>
 						</div>
 					</div>
 
-					<div class="card sector-card">
+					<!-- ATIVOS POR SETOR -->
+					<div class="summary-card">
 						<h3>Ativos por setor</h3>
-						<table class="sector-table">
+						<table class="list-table" style="font-size: 0.9rem;">
 							<thead>
-								<tr><th>Setor</th><th>Quantidade</th></tr>
+								<tr>
+									<th style="color: #9dd1ff;">Setor</th>
+									<th style="color: #9dd1ff;">Quantidade</th>
+								</tr>
 							</thead>
 							<tbody>
 								<% if (setores && setores.length > 0) { %>
 									<% setores.forEach(s => { %>
-										<tr><td><%= s.nome %></td><td><%= s.q %></td></tr>
+										<tr>
+											<td><%= s.nome %></td>
+											<td><%= s.quantidade %></td>
+										</tr>
 									<% }) %>
 								<% } else { %>
-									<tr><td colspan="2">Nenhum setor encontrado</td></tr>
+									<tr>
+										<td colspan="2" style="text-align: center;">Sem setores</td>
+									</tr>
 								<% } %>
 							</tbody>
 						</table>
 					</div>
 				</div>
 
-				<div class="card events-card">
+				<!-- ÚLTIMOS EVENTOS -->
+				<div class="wide-card">
 					<h3>Últimos Eventos</h3>
-					<div class="events-list">
-					<% if (eventos && eventos.length > 0) { %>
-						<% eventos.forEach(ev => { %>
-							<div class="event-row">
-								<div class="event-date"><%= ev.dt %></div>
-								<div class="event-host"><%= ev.host %></div>
-								<div class="event-info"><span class="badge"><%= ev.info %></span></div>
-							</div>
-						<% }) %>
-					<% } else { %>
-						<div class="event-row">
-							<p>Nenhum evento registrado</p>
-						</div>
-					<% } %>
-					</div>
+					<table class="list-table-extended">
+						<thead>
+							<tr>
+								<th>Data/Hora</th>
+								<th>Host</th>
+								<th>Informações</th>
+							</tr>
+						</thead>
+						<tbody>
+							<% if (eventos && eventos.length > 0) { %>
+								<% eventos.forEach(ev => { %>
+									<tr>
+										<td><%= ev.dt %></td>
+										<td><strong><%= ev.host %></strong></td>
+										<td><%= ev.info %></td>
+									</tr>
+								<% }) %>
+							<% } else { %>
+								<tr>
+									<td colspan="3" style="text-align: center; color: #888;">Nenhum evento registrado</td>
+								</tr>
+							<% } %>
+						</tbody>
+					</table>
 				</div>
-			</section>
-		</main>
+			</div>
+		</div>
+	</div>
 
-		<footer class="footer-sistema">
-			<p>&copy; Cybermonitoring</p>
-		</footer>
-
-		<script src="/js/script.js" defer></script>
-	</body>
+	<script src="/js/script.js" defer></script>
+</body>
 </html>

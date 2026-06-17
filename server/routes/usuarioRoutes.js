@@ -43,4 +43,13 @@ router.get("/", usuarioController.listar);
 //Retornar a página de cadastro
 router.get("/cadastro", usuarioController.renderizarCadastro);
 
+// Página de edição
+router.get('/:id/editar', usuarioController.renderizarEdicao);
+
+// Atualizar usuário (via formulário POST)
+router.post('/:id/editar', usuarioController.atualizar);
+
+// Deletar usuário (via formulário POST)
+router.post('/deletar/:id', usuarioController.deletar);
+
 module.exports = router;
