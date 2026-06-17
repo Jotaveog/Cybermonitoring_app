@@ -39,3 +39,6 @@ async function seed() {
 }
 
 seed();
+
+
+// node scripts/seedAdmin.js admin@cyber.local Admin@123
