@@ -1,189 +1,130 @@
-/* IMPORTAÇÃO DAS FONTES DO PROJETO */
-@import url("https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
-
-/*CRIANDO VARIÁVEIS DE CORES PARA O PROJETO */
-:root {
-  --cor-fundo: #12121A;
-  --cor-primaria: #e5eaf2;
-  --cor-texto-principal: #f4f3ff;
-  --cor-texto-inverso: #ffffff;
-  --cor-destaque: #58a6ff;
-  --cor-borda: #ffffff24;
-  --cor-menu: #060a12f2;
-  --radius-padrao: 22px;
-  --fonte-principal: "Inter", sans-serif;
+* {
+  box-sizing: border-box;
 }
 
-body{
-    background-color: var(--cor-fundo);
-    color: var(--cor-primaria);
-    font-family: var(--fonte-principal);
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
-}
-
-body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: radial-gradient(circle at top left, rgba(88,166,255,0.18), transparent 28%),
-                radial-gradient(circle at bottom right, rgba(255,255,255,0.07), transparent 24%);
-    pointer-events: none;
+body {
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+  background: #12121A;
+  color: #e3e6ff;
 }
 
 /* ========== AUTH PAGES (Login/Cadastro) ========== */
 body.auth-page {
   min-height: 100vh;
   display: flex;
-  flex-direction: column;
-  background-image: url('/img/background.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-body.dashboard-page {
-  min-height: 100vh;
-  flex-direction: column;
-  background-color: var(--cor-fundo);
-  background-image:
-      radial-gradient(circle at top left, rgba(88,166,255,0.16), transparent 26%),
-      radial-gradient(circle at bottom right, rgba(255,255,255,0.08), transparent 18%);
-}
-
-body.dashboard-page main {
-  min-height: calc(100vh - 90px);
-}
-
-body.auth-page .sidebar,
-body.auth-page .main-wrapper {
-  display: none !important;
-}
-
-body.auth-page main {
-  min-height: 100vh;
-}
-
-/* CAIXA PRINCIPAL DO MAIN */
-/* estilo apenas para a página de login e cadastro */
-.login-container{
-  display: flex;
-  justify-content: center;
   align-items: center;
-  flex-grow: 1;
-  padding: 40px 20px;
-  position: relative;
-  z-index: 1;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(18, 18, 26, 0.8), rgba(30, 30, 38, 0.8)), url('/img/background.png') center/cover no-repeat fixed;
 }
 
-.auth-card,
-.auth-card-wide {
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
   width: 100%;
-  max-width: 420px;
-  padding: 32px 30px;
-  border-radius: 28px;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(7,11,22,0.92);
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
-  backdrop-filter: blur(14px);
+  padding: 20px;
+}
+
+.auth-card {
+  background: rgba(30, 30, 38, 0.9);
+  border: 1px solid rgba(42, 42, 53, 0.6);
+  border-radius: 12px;
+  padding: 40px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
 }
 
 .auth-card-wide {
-  max-width: 520px;
+  max-width: 480px;
 }
 
 .auth-card-header {
-  margin-bottom: 32px;
+  text-align: center;
+  margin-bottom: 30px;
 }
 
 .auth-card-header h1 {
-  margin: 0;
-  font-size: 2.25rem;
-  letter-spacing: -0.04em;
-  color: var(--cor-texto-principal);
+  margin: 0 0 10px;
+  font-size: 1.8rem;
+  color: #fff;
+  letter-spacing: 1px;
+  font-weight: 700;
 }
 
 .auth-card-header p {
-  margin: 10px 0 0;
-  color: rgba(229,234,242,0.76);
-  font-size: 0.98rem;
+  margin: 0;
+  color: #9dd1ff;
+  font-size: 0.9rem;
 }
 
-.auth-form .form-group {
-  margin-bottom: 18px;
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.auth-form label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 0.95rem;
-  color: rgba(229,234,242,0.9);
-  letter-spacing: 0.01em;
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.auth-form .form-control {
-  width: 100%;
-  padding: 14px 14px;
-  border: 1px solid rgba(255,255,255,0.16);
-  background-color: rgba(255,255,255,0.05);
-  color: var(--cor-texto-principal);
-  margin-bottom: 0;
-  border-radius: 16px;
-  font-size: 1rem;
+.form-group label {
+  font-size: 0.85rem;
+  color: #cfd7ff;
+  font-weight: 500;
 }
 
-.auth-form .form-control::placeholder {
-  color: rgba(229,234,242,0.55);
+.form-control {
+  padding: 11px 13px;
+  border: 1px solid #34416e;
+  border-radius: 6px;
+  background: rgba(18, 18, 26, 0.8);
+  color: #fff;
+  font-size: 0.9rem;
+  transition: all 0.3s;
 }
 
-.auth-form .form-control:focus {
-  border-color: rgba(88,166,255,0.9);
-  box-shadow: 0 0 0 4px rgba(88,166,255,0.12);
+.form-control:focus {
   outline: none;
+  border-color: #3b82f6;
+  background: rgba(18, 18, 26, 0.95);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* CSS DOS BOTÕES */
-.btn{
-  background-color: var(--cor-destaque);
-  color: #58a6ff;
+.btn.auth-button {
+  padding: 11px 16px;
+  margin-top: 8px;
+  background: #3b82f6;
   border: none;
-  padding: 14px 20px;
-  font-weight: 700;
+  border-radius: 6px;
+  color: #fff;
+  font-weight: 600;
   cursor: pointer;
-  border-radius: 16px;
-  text-transform: none;
-  transition: all 0.25s ease;
-  text-decoration: none;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
+  transition: all 0.2s;
+  font-size: 0.95rem;
 }
 
-.btn:hover{
+.btn.auth-button:hover {
+  background: #2563eb;
   transform: translateY(-1px);
-  box-shadow: 0 16px 28px rgba(88,166,255,0.22);
-}
-
-.auth-button {
-  width: 100%;
-  margin-top: 6px;
-  font-size: 1rem;
 }
 
 .auth-link-row {
-  margin-top: 22px;
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  color: rgba(229,234,242,0.85);
-  font-size: 0.95rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #9dd1ff;
+  margin-top: 8px;
 }
 
 .auth-link-row a {
-  color: var(--cor-destaque);
+  color: #3b82f6;
   text-decoration: none;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .auth-link-row a:hover {
