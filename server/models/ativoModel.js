@@ -51,10 +51,10 @@ module.exports = {
 
   // CREATE - Criar novo ativo
   criarAtivo: async (dados) => {
-    const { nome_maquina, ip, setor, tipo, so, descricao } = dados;
-    const query = `INSERT INTO ativos (nome_maquina, ip, setor, tipo, so, descricao, status_cadastro)
-                   VALUES (?, ?, ?, ?, ?, ?, 'ATIVO')`;
-    const [resultado] = await db.execute(query, [nome_maquina, ip, setor, tipo, so, descricao]);
+    const { nome_maquina, ip, setor, laboratorio, sistema_operacional, patrimonio, numero_serie, mac_address } = dados;
+    const query = `INSERT INTO ativos (nome_maquina, patrimonio, numero_serie, ip, mac_address, setor, laboratorio, sistema_operacional, status_cadastro)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'ATIVO')`;
+    const [resultado] = await db.execute(query, [nome_maquina, patrimonio, numero_serie, ip, mac_address, setor, laboratorio, sistema_operacional]);
     return resultado.insertId;
   },
 
@@ -90,11 +90,11 @@ module.exports = {
 
   // UPDATE - Atualizar ativo
   atualizarAtivo: async (id, dados) => {
-    const { nome_maquina, ip, setor, tipo, so, descricao, status_cadastro } = dados;
+    const { nome_maquina, ip, setor, laboratorio, sistema_operacional, patrimonio, numero_serie, mac_address, status_cadastro } = dados;
     const query = `UPDATE ativos 
-                   SET nome_maquina = ?, ip = ?, setor = ?, tipo = ?, so = ?, descricao = ?, status_cadastro = ?
+                   SET nome_maquina = ?, patrimonio = ?, numero_serie = ?, ip = ?, mac_address = ?, setor = ?, laboratorio = ?, sistema_operacional = ?, status_cadastro = ?
                    WHERE id_ativo = ?`;
-    const [resultado] = await db.execute(query, [nome_maquina, ip, setor, tipo, so, descricao, status_cadastro, id]);
+    const [resultado] = await db.execute(query, [nome_maquina, patrimonio, numero_serie, ip, mac_address, setor, laboratorio, sistema_operacional, status_cadastro, id]);
     return resultado.affectedRows;
   },
 

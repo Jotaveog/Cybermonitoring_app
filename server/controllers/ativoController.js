@@ -39,7 +39,7 @@ module.exports = {
   // CREATE - Criar novo ativo
   criar: async (req, res) => {
     try {
-      const { nome_maquina, ip, setor, tipo, so, descricao } = req.body;
+      const { nome_maquina, ip, setor, laboratorio, so, patrimonio, numero_serie, mac_address } = req.body;
 
       // Validar campos obrigatórios
       if (!nome_maquina || !ip) {
@@ -57,9 +57,11 @@ module.exports = {
         nome_maquina,
         ip,
         setor: setor || null,
-        tipo: tipo || null,
-        so: so || null,
-        descricao: descricao || null
+        laboratorio: laboratorio || null,
+        sistema_operacional: so || null,
+        patrimonio: patrimonio || null,
+        numero_serie: numero_serie || null,
+        mac_address: mac_address || null
       });
 
       // Registrar log do sistema
@@ -79,7 +81,7 @@ module.exports = {
   atualizar: async (req, res) => {
     try {
       const { id } = req.params;
-      const { nome_maquina, ip, setor, tipo, so, descricao, status_cadastro } = req.body;
+      const { nome_maquina, ip, setor, laboratorio, so, patrimonio, numero_serie, mac_address, status_cadastro } = req.body;
 
       if (!id || isNaN(id)) {
         return res.status(400).json({ sucesso: false, mensagem: "ID inválido" });
@@ -95,9 +97,11 @@ module.exports = {
         nome_maquina,
         ip,
         setor: setor || null,
-        tipo: tipo || null,
-        so: so || null,
-        descricao: descricao || null,
+        laboratorio: laboratorio || null,
+        sistema_operacional: so || null,
+        patrimonio: patrimonio || null,
+        numero_serie: numero_serie || null,
+        mac_address: mac_address || null,
         status_cadastro: status_cadastro || 'ATIVO'
       });
 

@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td>${a.nome_maquina || ''}<br><small>${a.ip || ''}</small></td>
                     <td>${a.mac || a.mac_address || ''}</td>
                     <td>${a.setor || ''}</td>
-                    <td>${a.so || ''}</td>
+                    <td>${a.sistema_operacional || a.so || ''}</td>
                     <td>
                         <button class="btn btn-sm btn-warning btn-edit">Editar</button>
                         <button class="btn btn-sm btn-danger btn-delete">Apagar</button>
@@ -169,10 +169,14 @@ document.addEventListener('DOMContentLoaded', () => {
         editId = a.id_ativo
         form.querySelector('[name="ip"]').value = a.ip || ''
         form.querySelector('[name="nomeMaquina"]').value = a.nome_maquina || ''
+        form.querySelector('[name="idComputador"]').value = a.patrimonio || ''
+        form.querySelector('[name="macAddress"]').value = a.mac_address || ''
+        form.querySelector('[name="patrimonio"]').value = a.patrimonio || ''
+        form.querySelector('[name="numeroSerie"]').value = a.numero_serie || ''
         form.querySelector('[name="setor"]').value = a.setor || ''
-        form.querySelector('[name="laboratorio"]').value = a.tipo || ''
-        form.querySelector('[name="so"]').value = a.so || ''
-        form.querySelector('[name="observacoes"]').value = a.descricao || ''
+        form.querySelector('[name="laboratorio"]').value = a.laboratorio || ''
+        form.querySelector('[name="so"]').value = a.sistema_operacional || a.so || ''
+        form.querySelector('[name="observacoes"]').value = ''
         window.scrollTo({ top: 0, behavior: 'smooth' })
     }
 
@@ -182,10 +186,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const payload = {
             nome_maquina: data.get('nomeMaquina'),
             ip: data.get('ip'),
+            patrimonio: data.get('patrimonio') || data.get('idComputador') || null,
+            numero_serie: data.get('numeroSerie') || null,
+            mac_address: data.get('macAddress') || null,
             setor: data.get('setor'),
-            tipo: data.get('laboratorio') || data.get('patrimonio') || null,
-            so: data.get('so'),
-            descricao: data.get('observacoes')
+            laboratorio: data.get('laboratorio') || null,
+            so: data.get('so') || null
         }
 
         try {
