@@ -28,13 +28,20 @@ module.exports = {
       const setores = await ativoModel.contarPorSetor();
       const ultimos_eventos = await monitoramentoModel.buscarUltimos(5);
 
+      // Mapear dados do banco para o formato da view
+      const eventosFormatados = ultimos_eventos.map(evento => ({
+        dt: new Date(evento.data_coleta).toLocaleString('pt-BR'),
+        host: evento.nome_maquina,
+        info: evento.observacoes || `[${evento.status_monitoramento}] CPU: ${evento.uso_cpu}% | Memória: ${evento.uso_memoria}% | Disco: ${evento.uso_disco}%`
+      }));
+
       res.render('admin/painel', {
         totalAtivos: totalAtivos,
         otimo: statusMonitor.normal || 0,
         atencao: statusMonitor.atencao || 0,
         critico: statusMonitor.critico || 0,
         setores: setores || [],
-        eventos: ultimos_eventos.length ? ultimos_eventos : eventosExemplo
+        eventos: eventosFormatados.length ? eventosFormatados : eventosExemplo
       });
     } catch (erro) {
       console.error("Erro ao carregar dashboard admin:", erro);
@@ -58,13 +65,20 @@ module.exports = {
       const setores = await ativoModel.contarPorSetor();
       const ultimos_eventos = await monitoramentoModel.buscarUltimos(5);
 
+      // Mapear dados do banco para o formato da view
+      const eventosFormatados = ultimos_eventos.map(evento => ({
+        dt: new Date(evento.data_coleta).toLocaleString('pt-BR'),
+        host: evento.nome_maquina,
+        info: evento.observacoes || `[${evento.status_monitoramento}] CPU: ${evento.uso_cpu}% | Memória: ${evento.uso_memoria}% | Disco: ${evento.uso_disco}%`
+      }));
+
       res.render('tecnico/painel', {
         totalAtivos: totalAtivos,
         otimo: statusMonitor.normal || 0,
         atencao: statusMonitor.atencao || 0,
         critico: statusMonitor.critico || 0,
         setores: setores || [],
-        eventos: ultimos_eventos.length ? ultimos_eventos : eventosExemplo
+        eventos: eventosFormatados.length ? eventosFormatados : eventosExemplo
       });
     } catch (erro) {
       console.error("Erro ao carregar dashboard técnico:", erro);

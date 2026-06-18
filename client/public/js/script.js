@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const pWarn = Math.round((warn / total) * 100)
     const pCrit = 100 - pGood - pWarn
 
-    pie.style.background = `conic-gradient(#f2e76b 0 ${pGood}%, #2ecc71 ${pGood}% ${pGood + pWarn}%, #e74c3c ${pGood + pWarn}% 100%)`
+    pie.style.background = `conic-gradient(#2ecc71 0% ${pGood}%, #f2e76b ${pGood}% ${pGood + pWarn}%, #e74c3c ${pGood + pWarn}% 100%)`
 
     // Atualiza contadores (se existirem)
     const gEl = document.getElementById('countGood')
