@@ -1,0 +1,333 @@
+<%- include('../layouts/header') %>
+
+    <div class="main">
+        <header class="page-header">
+            <div>
+                <h1>Relatórios</h1>
+                <p>Exportação de dados</p>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <div class="wide-card report-panel">
+                <div class="report-panel-header">
+                    <div>
+                        <h3>Filtros do Relatório</h3>
+                        <p>Veja os ativos e exporte apenas o que precisa.</p>
+                    </div>
+                </div>
+
+                <div class="report-filter-row no-print">
+                    <select id="reportSetor">
+                        <option value="">Todos os setores</option>
+                    </select>
+                    <select id="reportStatus">
+                        <option value="">Todos os status</option>
+                        <option value="NORMAL">Bom</option>
+                        <option value="ATENCAO">Atenção</option>
+                        <option value="CRITICO">Crítico</option>
+                    </select>
+                    <input type="text" placeholder="Buscar..." id="searchReport">
+                </div>
+
+                <div class="report-actions no-print">
+                    <button type="button" class="btn btn-primary" onclick="exportPDF()">📄 PDF</button>
+                    <button type="button" class="btn btn-primary" onclick="exportExcel()">📊 Excel</button>
+                    <button type="button" class="btn btn-secondary" onclick="printReport()">🖨️ Imprimir</button>
+                </div>
+            </div>
+
+            <div id="reportContent" class="wide-card report-summary-section">
+                <div class="report-summary-grid">
+                    <div class="summary-card report-metric-card">
+                        <h3>Total</h3>
+                        <p class="big-number green"><%= totalAtivos || 0 %></p>
+                    </div>
+                    <div class="summary-card report-metric-card">
+                        <h3>Online</h3>
+                        <p class="big-number green"><%= onlineCount || 0 %></p>
+                    </div>
+                    <div class="summary-card report-metric-card">
+                        <h3>Atenção</h3>
+                        <p class="big-number warning"><%= statusResumo.atencao || 0 %></p>
+                    </div>
+                    <div class="summary-card report-metric-card">
+                        <h3>Crítico</h3>
+                        <p class="big-number critical"><%= statusResumo.critico || 0 %></p>
+                    </div>
+                </div>
+
+                <div class="table-responsive report-table-wrapper">
+                    <table class="list-table-extended report-table" id="reportTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome / IP</th>
+                                <th>MAC</th>
+                                <th>Setor</th>
+                                <th>Status</th>
+                                <th>SO</th>
+                                <th>Última atualização</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="historySection" class="wide-card report-history-section">
+                <div class="report-panel-header">
+                    <div>
+                        <h3>Filtros do Histórico</h3>
+                        <p>Busque eventos por ativo ou período.</p>
+                    </div>
+                </div>
+
+                <div class="report-filter-row no-print">
+                    <input type="text" id="historySearch" placeholder="Buscar por ativo..." onkeyup="renderHistory()">
+                    <input type="date" id="historyDateStart" onchange="renderHistory()">
+                    <input type="date" id="historyDateEnd" onchange="renderHistory()">
+                </div>
+
+                <div class="report-actions no-print">
+                    <button type="button" class="btn btn-primary" onclick="exportHistoryPDF()">📄 Exportar PDF</button>
+                    <button type="button" class="btn btn-primary" onclick="exportHistoryExcel()">📊 Exportar Excel</button>
+                    <button type="button" class="btn btn-secondary" onclick="clearHistory()">🗑️ Limpar Histórico</button>
+                </div>
+
+                <div class="history-container">
+                    <h3>Eventos Registrados</h3>
+                    <div class="table-responsive">
+                        <table class="list-table-extended" id="historyTable">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Hora</th>
+                                    <th>Ativo</th>
+                                    <th>Tipo de Evento</th>
+                                    <th style="text-align: center">Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div id="historyStats" class="history-stats"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const reportData = <%- JSON.stringify(ativos || []) %>;
+    const historicoData = <%- JSON.stringify(historico || []) %>;
+
+    const statusLabel = {
+        NORMAL: 'Bom',
+        ATENCAO: 'Atenção',
+        CRITICO: 'Crítico'
+    };
+
+    const statusClass = {
+        NORMAL: 'good',
+        ATENCAO: 'warning',
+        CRITICO: 'critical'
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        fillSetorOptions();
+        renderReport();
+        renderHistory();
+
+        document.getElementById('reportSetor').addEventListener('change', renderReport);
+        document.getElementById('reportStatus').addEventListener('change', renderReport);
+        document.getElementById('searchReport').addEventListener('input', renderReport);
+    });
+
+    function fillSetorOptions() {
+        const setorSelect = document.getElementById('reportSetor');
+        const setores = Array.from(new Set(reportData.map(item => item.setor).filter(Boolean))).sort();
+        setores.forEach(setor => {
+            const option = document.createElement('option');
+            option.value = setor;
+            option.textContent = setor;
+            setorSelect.appendChild(option);
+        });
+    }
+
+    function renderReport() {
+        const setor = document.getElementById('reportSetor').value;
+        const status = document.getElementById('reportStatus').value;
+        const search = document.getElementById('searchReport').value.toLowerCase();
+
+        const filtered = reportData.filter(item => {
+            if (setor && item.setor !== setor) return false;
+            if (status && item.status_monitoramento !== status) return false;
+            if (search) {
+                const text = `${item.nome_maquina || ''} ${item.ip || ''} ${item.setor || ''}`.toLowerCase();
+                if (!text.includes(search)) return false;
+            }
+            return true;
+        });
+
+        const tbody = document.querySelector('#reportTable tbody');
+        if (!tbody) return;
+
+        tbody.innerHTML = filtered.map(item => {
+            const label = statusLabel[item.status_monitoramento] || 'Sem status';
+            const chipClass = statusClass[item.status_monitoramento] || 'good';
+            const updated = item.ultima_atualizacao ? new Date(item.ultima_atualizacao).toLocaleString('pt-BR') : '-';
+            return `
+                <tr>
+                    <td>${item.patrimonio || item.id_ativo || item.nome_maquina || '-'}</td>
+                    <td>${item.nome_maquina || '-' }<br><small>${item.ip || ''}</small></td>
+                    <td>${item.mac_address || item.mac || '-'}</td>
+                    <td>${item.setor || '-'}</td>
+                    <td><span class="status-chip ${chipClass}">${label}</span></td>
+                    <td>${item.sistema_operacional || item.so || '-'}</td>
+                    <td>${updated}</td>
+                </tr>
+            `;
+        }).join('');
+
+        if (!filtered.length) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#999;">Nenhum ativo encontrado</td></tr>';
+        }
+    }
+
+    function renderHistory() {
+        const search = document.getElementById('historySearch').value.toLowerCase();
+        const start = document.getElementById('historyDateStart').value;
+        const end = document.getElementById('historyDateEnd').value;
+
+        const filtered = historicoData.filter(item => {
+            if (search) {
+                const text = `${item.nome_maquina || ''} ${item.tipo_evento || ''}`.toLowerCase();
+                if (!text.includes(search)) return false;
+            }
+            if (start && new Date(item.data_registro) < new Date(start)) return false;
+            if (end && new Date(item.data_registro) > new Date(end + 'T23:59:59')) return false;
+            return true;
+        });
+
+        const tbody = document.querySelector('#historyTable tbody');
+        tbody.innerHTML = filtered.map(item => {
+            const datetime = item.data_registro ? new Date(item.data_registro) : null;
+            const data = datetime ? datetime.toLocaleDateString('pt-BR') : '-';
+            const hora = datetime ? datetime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '-';
+            return `
+                <tr>
+                    <td>${data}</td>
+                    <td>${hora}</td>
+                    <td>${item.nome_maquina || '-'}</td>
+                    <td>${item.tipo_evento || '-'}</td>
+                    <td style="text-align:center">${item.observacao || '-'}</td>
+                </tr>
+            `;
+        }).join('');
+
+        if (!filtered.length) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#999;">Nenhum evento encontrado</td></tr>';
+        }
+
+        const counts = filtered.reduce((acc, item) => {
+            const type = item.tipo_evento || 'Outro';
+            acc[type] = (acc[type] || 0) + 1;
+            return acc;
+        }, {});
+
+        const stats = Object.entries(counts).map(([key, value]) => `<div>${key}: <strong>${value}</strong></div>`).join('');
+        document.getElementById('historyStats').innerHTML = `<strong>Total de eventos:</strong> ${filtered.length}<div style="margin-top:8px">${stats}</div>`;
+    }
+
+    function downloadCSV(csvContent, filename) {
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function exportExcel() {
+        const rows = Array.from(document.querySelectorAll('#reportTable tbody tr'));
+        const csv = ['ID,Nome/IP,MAC,Setor,Status,SO,Última atualização'];
+        rows.forEach(row => {
+            const cols = Array.from(row.children).map(td => td.textContent.replace(/\n/g, ' ').trim());
+            csv.push(cols.join(','));
+        });
+        downloadCSV(csv.join('\n'), 'relatorio-ativos.csv');
+    }
+
+    function exportHistoryExcel() {
+        const rows = Array.from(document.querySelectorAll('#historyTable tbody tr'));
+        const csv = ['Data,Hora,Ativo,Tipo de Evento,Ação'];
+        rows.forEach(row => {
+            const cols = Array.from(row.children).map(td => td.textContent.replace(/\n/g, ' ').trim());
+            csv.push(cols.join(','));
+        });
+        downloadCSV(csv.join('\n'), 'historico-eventos.csv');
+    }
+
+    function exportPDF() {
+        const printContent = document.getElementById('reportContent').innerHTML;
+        const win = window.open('', '_blank');
+        win.document.write(`<!DOCTYPE html><html><head><title>Relatório</title><style>body{font-family:Arial,sans-serif;color:#111;background:#fff;padding:20px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #ddd;padding:8px;text-align:left;}th{background:#f5f5f5;}</style></head><body><h2>Relatório de Ativos</h2>${printContent}</body></html>`);
+        win.document.close();
+        win.focus();
+        win.print();
+    }
+
+    function exportHistoryPDF() {
+        const historyContent = document.querySelector('#historySection .history-container').innerHTML;
+        const win = window.open('', '_blank');
+        win.document.write(`<!DOCTYPE html><html><head><title>Histórico</title><style>body{font-family:Arial,sans-serif;color:#111;background:#fff;padding:20px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #ddd;padding:8px;text-align:left;}th{background:#f5f5f5;}</style></head><body><h2>Histórico de Eventos</h2>${historyContent}</body></html>`);
+        win.document.close();
+        win.focus();
+        win.print();
+    }
+
+    async function clearHistory() {
+        if (!confirm('Deseja realmente limpar todo o histórico de eventos?')) return;
+        try {
+            const res = await fetch('/admin/relatorios/limpar-historico', { method: 'POST' });
+            const json = await res.json();
+            if (!json.sucesso) throw new Error(json.mensagem || 'Erro');
+            historicoData.length = 0;
+            renderHistory();
+            alert('Histórico limpo com sucesso');
+        } catch (err) {
+            console.error(err);
+            alert('Erro ao limpar histórico');
+        }
+    }
+
+    function printReport() {
+        window.print();
+    }
+</script>
+
+<script src="/js/script.js" defer></script>
+
+<!-- SCRIPT PARA MARCAR LINK ATIVO NO MENU -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const navLinks = document.querySelectorAll('.sidebar nav a.nav-link');
+        const currentPath = window.location.pathname;
+
+        navLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            if (currentPath === href || currentPath.startsWith(href + '/')) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    });
+</script>
+</body>
+</html>
+

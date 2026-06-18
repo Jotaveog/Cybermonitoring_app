@@ -224,3 +224,84 @@ document.addEventListener('DOMContentLoaded', () => {
     // inicial
     loadAtivos()
 })
+
+// --- Gerenciar Usuários (básico) ---
+document.addEventListener('DOMContentLoaded', () => {
+    const userForm = document.getElementById('userForm')
+    const usersTable = document.getElementById('usersTable')
+
+    if (!userForm) return
+
+    window.clearUserForm = function() {
+        userForm.reset()
+    }
+
+    window.saveUser = async function(e) {
+        e.preventDefault()
+        const nome = document.getElementById('userNameInput').value.trim()
+        const email = document.getElementById('userEmailInput').value.trim()
+        const senha = document.getElementById('userPasswordInput').value || ''
+        const role = document.getElementById('userRoleSelect').value
+
+        if (!nome || !email) {
+            alert('Nome e email são obrigatórios')
+            return
+        }
+
+        try {
+            const fd = new FormData()
+            fd.append('nome', nome)
+            fd.append('email', email)
+            fd.append('senha', senha)
+            // mapping basic role to perfil id if needed
+            fd.append('id_perfil', role === 'admin' ? '1' : '2')
+
+            const res = await fetch('/usuarios/cadastrar', { method: 'POST', body: fd })
+            if (res.ok) return window.location.reload()
+            const txt = await res.text()
+            console.error('Erro salvar usuário', res.status, txt)
+            alert('Erro ao salvar usuário')
+        } catch (err) {
+            console.error(err)
+            alert('Erro ao salvar usuário')
+        }
+    }
+
+    // optional: attempt to populate usersTable if an API exists
+    async function loadUsers() {
+        if (!usersTable) return
+        try {
+            const r = await fetch('/api/usuarios')
+            if (!r.ok) return
+            const j = await r.json()
+            const rows = (j.usuarios || []).map(u => `
+                <tr data-id="${u.id_usuario}">
+                    <td>${u.nome}</td>
+                    <td>${u.email}</td>
+                    <td>${u.nome_perfil || ''}</td>
+                    <td>${u.status || ''}</td>
+                    <td style="text-align:center">
+                        <a href="/usuarios/${u.id_usuario}/editar" class="btn btn-sm btn-warning">Editar</a>
+                    </td>
+                </tr>
+            `).join('')
+            usersTable.querySelector('tbody').innerHTML = rows || '<tr><td colspan="5" class="text-center">Nenhum usuário</td></tr>'
+        } catch (_) {
+            // ignore
+        }
+    }
+
+    loadUsers()
+})
+
+// Relatórios Admin - renderização e exportação de dados
+document.addEventListener('DOMContentLoaded', () => {
+    const reportsSection = document.getElementById('reportsSection');
+    if (!reportsSection) return;
+
+    if (typeof renderReport === 'function') {
+        fillSetorOptions();
+        renderReport();
+        renderHistory();
+    }
+});

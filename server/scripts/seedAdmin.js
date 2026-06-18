@@ -9,7 +9,7 @@ const bcrypt = require('bcrypt');
 async function seed() {
   try {
     const email = process.argv[2] || process.env.SEED_ADMIN_EMAIL || 'admin@cyber.local';
-    const senha = process.argv[3] || process.env.SEED_ADMIN_PASS || 'Admin@123';
+    const senha = process.argv[3] || process.env.SEED_ADMIN_PASS || '123';
 
     // Verifica se já existe
     const [rows] = await db.execute('SELECT id_usuario FROM usuarios WHERE email = ?', [email]);
@@ -41,4 +41,4 @@ async function seed() {
 seed();
 
 
-// node scripts/seedAdmin.js admin@cyber.local Admin@123
+// node scripts/seedAdmin.js adm@gmail.com 123

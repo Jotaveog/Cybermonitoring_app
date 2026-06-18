@@ -2,25 +2,42 @@
 const db = require("../config/db.js");
 
 module.exports = {
-  // Busca todos os ativos ativos
+  // Busca todos os ativos ativos com o último monitoramento registrado
   listarAtivos: async () => {
-    const query = `SELECT a.*, m.status_monitoramento, m.uso_cpu, m.uso_memoria
+    const query = `SELECT a.*, m.status_monitoramento, m.uso_cpu, m.uso_memoria, m.data_coleta AS ultima_atualizacao
                    FROM ativos a
-                   LEFT JOIN monitoramentos m ON a.id_ativo = m.id_ativo
+                   LEFT JOIN monitoramentos m ON m.id_monitoramento = (
+                     SELECT id_monitoramento
+                     FROM monitoramentos
+                     WHERE id_ativo = a.id_ativo
+                     ORDER BY data_coleta DESC
+                     LIMIT 1
+                   )
                    WHERE a.status_cadastro = 'ATIVO'
                    ORDER BY a.nome_maquina ASC`;
     const [linhas] = await db.execute(query);
     return linhas;
   },
 
-  // Busca ativo por ID
+  // Busca ativo por ID com o último monitoramento registrado
   buscarPorId: async (id) => {
-    const query = `SELECT a.*, m.status_monitoramento, m.uso_cpu, m.uso_memoria, m.data_coleta
+    const query = `SELECT a.*, m.status_monitoramento, m.uso_cpu, m.uso_memoria, m.data_coleta AS ultima_atualizacao
                    FROM ativos a
-                   LEFT JOIN monitoramentos m ON a.id_ativo = m.id_ativo
+                   LEFT JOIN monitoramentos m ON m.id_monitoramento = (
+                     SELECT id_monitoramento
+                     FROM monitoramentos
+                     WHERE id_ativo = a.id_ativo
+                     ORDER BY data_coleta DESC
+                     LIMIT 1
+                   )
                    WHERE a.id_ativo = ? AND a.status_cadastro = 'ATIVO'`;
     const [linhas] = await db.execute(query, [id]);
     return linhas[0];
+  },
+
+  // Busca ativos com dados de relatório (mesma base de listarAtivos)
+  listarAtivosRelatorio: async () => {
+    return await module.exports.listarAtivos();
   },
 
   // Busca ativos por setor

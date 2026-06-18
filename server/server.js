@@ -76,14 +76,18 @@ app.get("/tecnico", verificarAutenticacao, somenteTenico, dashboardController.da
 app.get("/dashboard/tecnico", verificarAutenticacao, somenteTenico, dashboardController.dashboardTecnico);
 
 // Gerenciador de Computadores (Admin)
-app.get("/gerenciar-computadores", verificarAutenticacao, somenteAdmin, dashboardController.gerenciarComputadoresAdmin);
-app.get("/admin/gerenciar-computadores", verificarAutenticacao, somenteAdmin, dashboardController.gerenciarComputadoresAdmin);
+app.get("/gerenciar-computadoresAdmin", verificarAutenticacao, somenteAdmin, dashboardController.gerenciarComputadoresAdmin);
+app.get("/admin/gerenciar-computadoresAdmin", verificarAutenticacao, somenteAdmin, dashboardController.gerenciarComputadoresAdmin);
 
 // Gerenciador de Computadores (Técnico)
 app.get("/tecnico/gerenciar-computadores", verificarAutenticacao, somenteTenico, dashboardController.gerenciarComputadoresTecnico);
 
 // Relatórios (Técnico)
 app.get("/tecnico/relatorios", verificarAutenticacao, somenteTenico, dashboardController.relatorios);
+
+// Relatórios (Admin)
+app.get("/admin/relatorios", verificarAutenticacao, somenteAdmin, dashboardController.relatoriosAdmin);
+app.post("/admin/relatorios/limpar-historico", verificarAutenticacao, somenteAdmin, dashboardController.limparHistorico);
 
 // ========================================
 // ROTAS MODULARES

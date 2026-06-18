@@ -66,6 +66,25 @@ module.exports = {
     return linhas;
   },
 
+  // Buscar eventos de histórico de status
+  buscarHistoricoEventos: async (limite = 100) => {
+    const query = `SELECT h.*, a.nome_maquina,
+                          CONCAT(h.status_anterior, ' → ', h.status_novo) AS tipo_evento
+                   FROM historico_status h
+                   JOIN ativos a ON h.id_ativo = a.id_ativo
+                   ORDER BY h.data_registro DESC
+                   LIMIT ?`;
+    const [linhas] = await db.execute(query, [limite]);
+    return linhas;
+  },
+
+  // Limpar histórico de status
+  limparHistorico: async () => {
+    const query = `DELETE FROM historico_status`;
+    const [resultado] = await db.execute(query);
+    return resultado.affectedRows;
+  },
+
   // Estatísticas de monitoramento (para relatórios)
   buscarEstatisticas: async (data_inicio, data_fim) => {
     const query = `SELECT 
