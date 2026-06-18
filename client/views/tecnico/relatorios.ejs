@@ -41,19 +41,19 @@
                 <div class="report-summary-grid">
                     <div class="summary-card report-metric-card">
                         <h3>Total</h3>
-                        <p class="big-number green"><%= totalAtivos || 0 %></p>
+                        <p id="reportTotal" class="big-number green"><%= totalAtivos || 0 %></p>
                     </div>
                     <div class="summary-card report-metric-card">
                         <h3>Normal</h3>
-                        <p class="big-number green"><%= onlineCount || 0 %></p>
+                        <p id="reportNormal" class="big-number green"><%= onlineCount || 0 %></p>
                     </div>
                     <div class="summary-card report-metric-card">
                         <h3>Atenção</h3>
-                        <p class="big-number warning"><%= statusResumo.atencao || 0 %></p>
+                        <p id="reportAtencao" class="big-number warning"><%= statusResumo.atencao || 0 %></p>
                     </div>
                     <div class="summary-card report-metric-card">
                         <h3>Crítico</h3>
-                        <p class="big-number critical"><%= statusResumo.critico || 0 %></p>
+                        <p id="reportCritico" class="big-number critical"><%= statusResumo.critico || 0 %></p>
                     </div>
                 </div>
 

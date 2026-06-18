@@ -315,30 +315,51 @@ function fillSetorOptions() {
     })
 }
 
+function normalizeText(value) {
+    return (value || '').toString().trim().toLowerCase()
+}
+
 function renderReport() {
-    const setor = document.getElementById('reportSetor')?.value || ''
-    const status = document.getElementById('reportStatus')?.value || ''
-    const query = (document.getElementById('searchReport')?.value || '').toLowerCase()
+    const setor = normalizeText(document.getElementById('reportSetor')?.value)
+    const status = normalizeText(document.getElementById('reportStatus')?.value)
+    const query = normalizeText(document.getElementById('searchReport')?.value)
     const tbody = document.querySelector('#reportTable tbody')
     if (!tbody) return
 
     const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.dataset.fallback !== 'true')
     let visibleCount = 0
+    let normalCount = 0
+    let atencaoCount = 0
+    let criticoCount = 0
 
     rows.forEach(row => {
-        const rowSetor = (row.dataset.setor || '').toLowerCase()
-        const rowStatus = (row.dataset.status || '').toLowerCase()
-        const rowNome = (row.dataset.nome || '').toLowerCase()
-        const rowIp = (row.dataset.ip || '').toLowerCase()
+        const rowSetor = normalizeText(row.dataset.setor)
+        const rowStatus = normalizeText(row.dataset.status)
+        const rowText = normalizeText(row.textContent)
 
-        const matchesSetor = !setor || rowSetor === setor.toLowerCase()
-        const matchesStatus = !status || rowStatus === status.toLowerCase()
-        const matchesQuery = !query || rowNome.includes(query) || rowIp.includes(query)
+        const matchesSetor = !setor || rowSetor === setor
+        const matchesStatus = !status || rowStatus === status
+        const matchesQuery = !query || rowText.includes(query)
 
         const visible = matchesSetor && matchesStatus && matchesQuery
         row.style.display = visible ? '' : 'none'
-        if (visible) visibleCount++
+        if (visible) {
+            visibleCount++
+            if (rowStatus === 'normal') normalCount++
+            else if (rowStatus === 'atencao') atencaoCount++
+            else if (rowStatus === 'critico') criticoCount++
+        }
     })
+
+    const totalEl = document.getElementById('reportTotal')
+    const normalEl = document.getElementById('reportNormal')
+    const atencaoEl = document.getElementById('reportAtencao')
+    const criticoEl = document.getElementById('reportCritico')
+
+    if (totalEl) totalEl.textContent = visibleCount
+    if (normalEl) normalEl.textContent = normalCount
+    if (atencaoEl) atencaoEl.textContent = atencaoCount
+    if (criticoEl) criticoEl.textContent = criticoCount
 
     let fallbackRow = tbody.querySelector('tr[data-fallback="true"]')
     if (!fallbackRow) {
@@ -518,16 +539,24 @@ async function clearHistory() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const reportsSection = document.getElementById('reportsSection')
-    if (!reportsSection) return
+    const reportTable = document.getElementById('reportTable')
+    if (!reportTable) return
+
+    window.reportSetores = Array.isArray(window.reportSetores) ? window.reportSetores : []
 
     fillSetorOptions()
     renderReport()
     renderHistory()
 
-    document.getElementById('reportSetor')?.addEventListener('change', renderReport)
-    document.getElementById('reportStatus')?.addEventListener('change', renderReport)
-    document.getElementById('searchReport')?.addEventListener('input', renderReport)
+    const reportSetor = document.getElementById('reportSetor')
+    const reportStatus = document.getElementById('reportStatus')
+    const searchReport = document.getElementById('searchReport')
+
+    reportSetor?.addEventListener('change', renderReport)
+    reportStatus?.addEventListener('change', renderReport)
+    searchReport?.addEventListener('input', renderReport)
+    searchReport?.addEventListener('keyup', renderReport)
+
     document.getElementById('historySearch')?.addEventListener('input', renderHistory)
     document.getElementById('historyDateStart')?.addEventListener('change', renderHistory)
     document.getElementById('historyDateEnd')?.addEventListener('change', renderHistory)
