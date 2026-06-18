@@ -25,7 +25,7 @@
 					<div class="chart-container">
 						<div class="donut" id="dashboardPie" data-good="<%= otimo %>" data-warning="<%= atencao %>" data-critical="<%= critico %>"></div>
 						<div class="legend">
-							<span>Online <strong id="countGood">
+							<span>Normal <strong id="countGood">
 									<%= otimo %>
 								</strong></span>
 							<span>Atenção <strong id="countWarn">
@@ -79,6 +79,7 @@
 							<th>Data/Hora</th>
 							<th>Host</th>
 							<th>Informações</th>
+							<th class="center-cell">Status</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -94,11 +95,14 @@
 									<td>
 										<%= ev.info %>
 									</td>
+									<td class="center-cell">
+										<%- include('../layouts/status_chip', { status: ev.status }) %>
+									</td>
 								</tr>
 								<% }) %>
 									<% } else { %>
 										<tr>
-											<td colspan="3" style="text-align: center; color: #888;">Nenhum evento
+											<td colspan="4" style="text-align: center; color: #888;">Nenhum evento
 												registrado</td>
 										</tr>
 										<% } %>
