@@ -667,10 +667,11 @@ textarea.form-control {
 .report-summary-section,
 .report-history-section {
   border: 1px solid rgba(255,255,255,0.08);
-  background: #151825;
-  padding: 22px;
-  border-radius: 22px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14);
+  background: rgba(30, 30, 38, 0.94);
+  padding: 24px;
+  border-radius: 24px;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(14px);
 }
 
 .report-panel-header {
@@ -682,13 +683,13 @@ textarea.form-control {
 
 .report-panel-header h3 {
   margin: 0;
-  font-size: 1.05rem;
-  color: #eef2ff;
+  font-size: 1.1rem;
+  color: #f8fbff;
 }
 
 .report-panel-header p {
   margin: 0;
-  color: #a8b4d3;
+  color: #bbc7e8;
 }
 
 .report-filter-row,
@@ -703,12 +704,12 @@ textarea.form-control {
 
 .report-filter-row select,
 .report-filter-row input {
-  background: #121627;
-  color: #e3e6ff;
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 14px;
-  padding: 12px 14px;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.15);
+  background: #1e1e26;
+  color: #e8ebff;
+  border: 1px solid #2a2a35;
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.18);
 }
 
 .report-filter-row select {
@@ -716,29 +717,191 @@ textarea.form-control {
 }
 
 .report-actions {
-  grid-template-columns: repeat(3, minmax(120px, 1fr));
+  grid-template-columns: repeat(3, minmax(140px, 1fr));
 }
 
 .report-actions .btn {
-  min-height: 46px;
-  font-weight: 600;
+  min-height: 48px;
+  font-weight: 700;
   border-radius: 14px;
-  box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+  box-shadow: 0 16px 30px rgba(0,0,0,0.16);
+  transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 .report-actions .btn-primary {
-  background: #2563eb;
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
   border: none;
+  color: #fff;
 }
 
 .report-actions .btn-primary:hover {
-  background: #1d4ed8;
+  background: linear-gradient(135deg, #1d4ed8, #4338ca);
+  transform: translateY(-1px);
 }
 
 .report-actions .btn-secondary {
-  background: #232a3a;
-  color: #d3d7ff;
+  background: #2a2a35;
+  color: #e3e6ff;
   border: 1px solid rgba(255,255,255,0.08);
+}
+
+.report-actions .btn-secondary:hover {
+  background: #343a4b;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.status-chip.good { background: #22c55e; }
+.status-chip.warning { background: #f59e0b; }
+.status-chip.critical { background: #ef4444; }
+.status-chip.other { background: #6b7280; }
+
+.report-summary-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  margin-bottom: 24px;
+}
+
+.report-metric-card {
+  padding: 20px;
+  background: #1e2536;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.report-metric-card h3 {
+  margin: 0;
+  color: #d6dff5;
+  font-size: 0.95rem;
+}
+
+.report-metric-card p.big-number {
+  font-size: 2.8rem;
+}
+
+.report-table-wrapper {
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.report-table thead {
+  background: #171d2f;
+}
+
+.report-table th,
+.report-table td {
+  padding: 16px 14px;
+}
+
+.report-table th {
+  font-size: 0.85rem;
+  color: #9fc2ff;
+  letter-spacing: 0.01em;
+}
+
+.report-table td {
+  color: #e8ebff;
+  background: #161b28;
+}
+
+.report-table tbody tr:hover td {
+  background: #1f2639;
+}
+
+.report-table td small {
+  display: block;
+  margin-top: 6px;
+  color: #9bb0d6;
+  font-size: 0.82rem;
+}
+
+.history-container {
+  background: #1e2639;
+  border-radius: 20px;
+  padding: 24px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.history-container h3 {
+  margin-top: 0;
+}
+
+#historyStats {
+  margin-top: 18px;
+  color: #c5cfe3;
+  font-size: 0.93rem;
+}
+
+.report-metric-card {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(17, 23, 39, 0.96), #1d2334);
+  border-color: rgba(255,255,255,0.08);
+}
+
+.report-metric-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.18), transparent 40%);
+  pointer-events: none;
+}
+
+.report-metric-card h3,
+.report-metric-card p.big-number {
+  position: relative;
+  z-index: 1;
+}
+
+.report-actions .btn {
+  min-height: 50px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+}
+
+.report-actions .btn-primary {
+  letter-spacing: 0.01em;
+}
+
+.report-actions .btn-secondary {
+  color: #e3e6ff;
+}
+
+.report-table th {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.report-table td {
+  transition: background-color 0.2s ease;
+}
+
+.report-table tbody tr:hover td {
+  background: rgba(52, 65, 129, 0.17);
+}
+
+.report-history-section {
+  padding-top: 28px;
+}
+
+.history-container {
+  border-radius: 20px;
+  padding: 20px;
+}
+
+.report-filter-row input,
+.report-filter-row select {
+  min-height: 48px;
 }
 
 .report-filter-row input::placeholder,

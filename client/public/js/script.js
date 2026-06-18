@@ -295,13 +295,234 @@ document.addEventListener('DOMContentLoaded', () => {
 })
 
 // Relatórios Admin - renderização e exportação de dados
-document.addEventListener('DOMContentLoaded', () => {
-    const reportsSection = document.getElementById('reportsSection');
-    if (!reportsSection) return;
+function fillSetorOptions() {
+    const select = document.getElementById('reportSetor')
+    if (!select || !Array.isArray(window.reportSetores)) return
 
-    if (typeof renderReport === 'function') {
-        fillSetorOptions();
-        renderReport();
-        renderHistory();
+    const existing = Array.from(select.options).map(opt => opt.value)
+    window.reportSetores.forEach(setor => {
+        if (!setor || existing.includes(setor.nome)) return
+        const option = document.createElement('option')
+        option.value = setor.nome
+        option.textContent = setor.nome
+        select.appendChild(option)
+    })
+}
+
+function renderReport() {
+    const setor = document.getElementById('reportSetor')?.value || ''
+    const status = document.getElementById('reportStatus')?.value || ''
+    const query = (document.getElementById('searchReport')?.value || '').toLowerCase()
+    const tbody = document.querySelector('#reportTable tbody')
+    if (!tbody) return
+
+    const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.dataset.fallback !== 'true')
+    let visibleCount = 0
+
+    rows.forEach(row => {
+        const rowSetor = (row.dataset.setor || '').toLowerCase()
+        const rowStatus = (row.dataset.status || '').toLowerCase()
+        const rowNome = (row.dataset.nome || '').toLowerCase()
+        const rowIp = (row.dataset.ip || '').toLowerCase()
+
+        const matchesSetor = !setor || rowSetor === setor.toLowerCase()
+        const matchesStatus = !status || rowStatus === status.toLowerCase()
+        const matchesQuery = !query || rowNome.includes(query) || rowIp.includes(query)
+
+        const visible = matchesSetor && matchesStatus && matchesQuery
+        row.style.display = visible ? '' : 'none'
+        if (visible) visibleCount++
+    })
+
+    let fallbackRow = tbody.querySelector('tr[data-fallback="true"]')
+    if (!fallbackRow) {
+        fallbackRow = document.createElement('tr')
+        fallbackRow.dataset.fallback = 'true'
+        fallbackRow.innerHTML = '<td colspan="7" style="text-align:center; color:#999;">Nenhum ativo encontrado</td>'
+        tbody.appendChild(fallbackRow)
     }
-});
+
+    fallbackRow.style.display = visibleCount === 0 ? '' : 'none'
+}
+
+function renderHistory() {
+    const search = (document.getElementById('historySearch')?.value || '').toLowerCase()
+    const start = document.getElementById('historyDateStart')?.value
+    const end = document.getElementById('historyDateEnd')?.value
+    const tbody = document.querySelector('#historyTable tbody')
+    if (!tbody) return
+
+    const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.dataset.fallback !== 'true')
+    let visibleCount = 0
+
+    rows.forEach(row => {
+        const rowAtivo = (row.dataset.ativo || '').toLowerCase()
+        const rowData = row.dataset.data || ''
+
+        const matchesText = !search || rowAtivo.includes(search)
+        const matchesStart = !start || rowData >= start
+        const matchesEnd = !end || rowData <= end
+
+        const visible = matchesText && matchesStart && matchesEnd
+        row.style.display = visible ? '' : 'none'
+        if (visible) visibleCount++
+    })
+
+    let fallbackRow = tbody.querySelector('tr[data-fallback="true"]')
+    if (!fallbackRow) {
+        fallbackRow = document.createElement('tr')
+        fallbackRow.dataset.fallback = 'true'
+        fallbackRow.innerHTML = '<td colspan="5" style="text-align:center; color:#999;">Nenhum evento encontrado</td>'
+        tbody.appendChild(fallbackRow)
+    }
+    fallbackRow.style.display = visibleCount === 0 ? '' : 'none'
+}
+
+function exportHTMLTableAsCSV(tableId, filename) {
+    const table = document.getElementById(tableId)
+    if (!table) return
+
+    const rows = Array.from(table.querySelectorAll('tbody tr'))
+        .filter(row => row.style.display !== 'none' && row.dataset.fallback !== 'true')
+
+    if (!rows.length) {
+        alert('Nenhum registro disponível para exportar.')
+        return
+    }
+
+    const csv = [
+        Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim()).join(','),
+        ...rows.map(row => Array.from(row.querySelectorAll('td')).map(cell => `"${cell.textContent.trim().replace(/"/g, '""')}"`).join(','))
+    ].join('\r\n')
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.setAttribute('download', filename)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(link.href)
+}
+
+function exportTableToPDF(tableId, title) {
+    const table = document.getElementById(tableId)
+    if (!table) return
+
+    const clone = table.cloneNode(true)
+    clone.querySelectorAll('tr').forEach(row => {
+        if (row.style.display === 'none' || row.dataset.fallback === 'true') {
+            row.remove()
+        }
+    })
+
+    const html = `
+        <html>
+            <head>
+                <title>${title}</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 24px; color: #111; }
+                    table { width: 100%; border-collapse: collapse; }
+                    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+                    th { background: #f4f4f4; }
+                </style>
+            </head>
+            <body>
+                <h1>${title}</h1>
+                ${clone.outerHTML}
+            </body>
+        </html>`
+
+    const printWindow = window.open('', '_blank')
+    if (!printWindow) {
+        alert('Não foi possível abrir a janela de impressão. Verifique as configurações do navegador.')
+        return
+    }
+    printWindow.document.write(html)
+    printWindow.document.close()
+    printWindow.focus()
+    setTimeout(() => printWindow.print(), 500)
+}
+
+function exportWord() {
+    const table = document.getElementById('reportTable')
+    if (!table) return
+
+    const clone = table.cloneNode(true)
+    clone.querySelectorAll('tr').forEach(row => {
+        if (row.style.display === 'none' || row.dataset.fallback === 'true') {
+            row.remove()
+        }
+    })
+
+    const html = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+            <head>
+                <meta charset="utf-8">
+                <title>Relatório de Ativos</title>
+            </head>
+            <body>
+                <h1>Relatório de Ativos</h1>
+                ${clone.outerHTML}
+            </body>
+        </html>`
+
+    const blob = new Blob(['\ufeff', html], { type: 'application/msword' })
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.download = 'relatorio_ativos.doc'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(link.href)
+}
+
+function printReport() {
+    window.print()
+}
+
+function exportPDF() {
+    exportTableToPDF('reportTable', 'Relatório de Ativos')
+}
+
+function exportExcel() {
+    exportHTMLTableAsCSV('reportTable', 'relatorio_ativos.csv')
+}
+
+function exportHistoryPDF() {
+    exportTableToPDF('historyTable', 'Histórico de Eventos')
+}
+
+function exportHistoryExcel() {
+    exportHTMLTableAsCSV('historyTable', 'historico_eventos.csv')
+}
+
+async function clearHistory() {
+    if (!confirm('Deseja limpar todo o histórico de eventos? Esta ação não pode ser desfeita.')) return
+
+    try {
+        const res = await fetch('/admin/relatorios/limpar-historico', { method: 'POST' })
+        const json = await res.json()
+        if (!json.sucesso) throw new Error(json.mensagem || 'Erro ao limpar histórico')
+        window.location.reload()
+    } catch (erro) {
+        console.error('Erro ao limpar histórico:', erro)
+        alert('Não foi possível limpar o histórico.')
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const reportsSection = document.getElementById('reportsSection')
+    if (!reportsSection) return
+
+    fillSetorOptions()
+    renderReport()
+    renderHistory()
+
+    document.getElementById('reportSetor')?.addEventListener('change', renderReport)
+    document.getElementById('reportStatus')?.addEventListener('change', renderReport)
+    document.getElementById('searchReport')?.addEventListener('input', renderReport)
+    document.getElementById('historySearch')?.addEventListener('input', renderHistory)
+    document.getElementById('historyDateStart')?.addEventListener('change', renderHistory)
+    document.getElementById('historyDateEnd')?.addEventListener('change', renderHistory)
+})
