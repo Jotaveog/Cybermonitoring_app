@@ -20,6 +20,19 @@ async function seed() {
 
     const hash = await bcrypt.hash(senha, 10);
 
+    // Garante os perfis padrão necessários para o administrador
+    const perfisDefaults = [
+      { id_perfil: 1, nome_perfil: 'Administrador' },
+      { id_perfil: 2, nome_perfil: 'Tecnico' }
+    ];
+
+    for (const perfil of perfisDefaults) {
+      await db.execute(
+        'INSERT INTO perfis (id_perfil, nome_perfil) VALUES (?, ?) ON DUPLICATE KEY UPDATE nome_perfil = VALUES(nome_perfil)',
+        [perfil.id_perfil, perfil.nome_perfil]
+      );
+    }
+
     const nome = 'Administrador';
     const id_perfil = 1; // assumindo 1 = Administrador
 

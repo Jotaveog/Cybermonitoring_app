@@ -69,13 +69,14 @@ module.exports = {
 
   // Atualizar usuário completo (nome, email, perfil, status e opcionalmente senha)
   atualizarUsuarioCompleto: async (id, nome, email, id_perfil, status, senha_hash) => {
+    const perfilId = id_perfil && Number(id_perfil) ? Number(id_perfil) : 2;
     if (senha_hash) {
       const query = `UPDATE usuarios SET nome = ?, email = ?, id_perfil = ?, status = ?, senha_hash = ? WHERE id_usuario = ?`;
-      const [resultado] = await db.execute(query, [nome, email, id_perfil, status, senha_hash, id]);
+      const [resultado] = await db.execute(query, [nome, email, perfilId, status, senha_hash, id]);
       return resultado.affectedRows;
     } else {
       const query = `UPDATE usuarios SET nome = ?, email = ?, id_perfil = ?, status = ? WHERE id_usuario = ?`;
-      const [resultado] = await db.execute(query, [nome, email, id_perfil, status, id]);
+      const [resultado] = await db.execute(query, [nome, email, perfilId, status, id]);
       return resultado.affectedRows;
     }
   },

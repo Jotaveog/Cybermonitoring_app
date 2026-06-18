@@ -4,12 +4,13 @@ const db = require("../config/db.js");
 module.exports = {
   // Busca últimos monitoramentos
   buscarUltimos: async (limite = 10) => {
+    const limit = Number(limite) || 10;
     const query = `SELECT m.*, a.nome_maquina
                    FROM monitoramentos m
                    JOIN ativos a ON m.id_ativo = a.id_ativo
                    ORDER BY m.data_coleta DESC
-                   LIMIT ?`;
-    const [linhas] = await db.execute(query, [limite]);
+                   LIMIT ${limit}`;
+    const [linhas] = await db.execute(query);
     return linhas;
   },
 
@@ -55,26 +56,28 @@ module.exports = {
 
   // Buscar eventos críticos recentes
   buscarEventosCriticos: async (limite = 10) => {
+    const limit = Number(limite) || 10;
     const query = `SELECT m.*, a.nome_maquina
                    FROM monitoramentos m
                    JOIN ativos a ON m.id_ativo = a.id_ativo
                    WHERE m.status_monitoramento = 'CRITICO'
                    AND m.data_coleta >= DATE_SUB(NOW(), INTERVAL 7 DAY)
                    ORDER BY m.data_coleta DESC
-                   LIMIT ?`;
-    const [linhas] = await db.execute(query, [limite]);
+                   LIMIT ${limit}`;
+    const [linhas] = await db.execute(query);
     return linhas;
   },
 
   // Buscar eventos de histórico de status
   buscarHistoricoEventos: async (limite = 100) => {
+    const limit = Number(limite) || 100;
     const query = `SELECT h.*, a.nome_maquina,
                           CONCAT(h.status_anterior, ' → ', h.status_novo) AS tipo_evento
                    FROM historico_status h
                    JOIN ativos a ON h.id_ativo = a.id_ativo
                    ORDER BY h.data_registro DESC
-                   LIMIT ?`;
-    const [linhas] = await db.execute(query, [limite]);
+                   LIMIT ${limit}`;
+    const [linhas] = await db.execute(query);
     return linhas;
   },
 

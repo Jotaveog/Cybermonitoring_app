@@ -191,12 +191,17 @@ module.exports = {
         const { nome, email, status, id_perfil, senha } = req.body;
         if (!id || isNaN(id)) return res.status(400).render('erro', { mensagem: 'ID inválido' });
 
+        if (senha && senha.trim() !== '' && senha.length < 6) {
+          return res.status(400).render('erro', { mensagem: 'A senha deve ter pelo menos 6 caracteres' });
+        }
+
         let senhaHash = null;
-        if (senha && senha.length >= 6) {
+        if (senha && senha.trim() !== '') {
           senhaHash = await bcrypt.hash(senha, 10);
         }
 
-        const linhas = await usuarioModel.atualizarUsuarioCompleto(id, nome, email, id_perfil || 2, status || 'ATIVO', senhaHash);
+        const perfilId = id_perfil && Number(id_perfil) ? Number(id_perfil) : 2;
+        const linhas = await usuarioModel.atualizarUsuarioCompleto(id, nome, email, perfilId, status || 'ATIVO', senhaHash);
         if (linhas === 0) return res.status(404).render('erro', { mensagem: 'Usuário não encontrado' });
 
         res.redirect('/usuarios');

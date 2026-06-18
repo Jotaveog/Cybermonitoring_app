@@ -7,6 +7,12 @@ CREATE TABLE IF NOT EXISTS perfis (
     nome_perfil VARCHAR(50) NOT NULL UNIQUE
 );
 
+INSERT INTO perfis (id_perfil, nome_perfil)
+VALUES
+    (1, 'Administrador'),
+    (2, 'Tecnico')
+ON DUPLICATE KEY UPDATE nome_perfil = VALUES(nome_perfil);
+
 --  USUÁRIOS
 CREATE TABLE IF NOT EXISTS usuarios (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
@@ -84,33 +90,6 @@ CREATE TABLE IF NOT EXISTS logs_sistema (
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
 );
 
--- DADOS DE TESTE ADICIONAIS PARA SETORES CISCO, CAC E HTC-DDS-3-23
-DELETE m FROM monitoramentos m
-JOIN ativos a ON m.id_ativo = a.id_ativo
-WHERE a.patrimonio IN (
-  'CISCO-0001','CISCO-0002','CISCO-0003','CISCO-0004','CISCO-0005',
-  'CISCO-0006','CISCO-0007','CISCO-0008','CISCO-0009','CISCO-0010',
-  'CISCO-0011','CISCO-0012','CISCO-0013','CISCO-0014','CISCO-0015',
-  'CISCO-0016','CISCO-0017','CISCO-0018','CISCO-0019','CISCO-0020',
-  'CISCO-0021','CISCO-0022','CISCO-0023','CISCO-0024','CISCO-0025',
-  'CISCO-0026','CISCO-0027','CISCO-0028','CISCO-0029','CISCO-0030',
-  'CAC-0001','CAC-0002','CAC-0003','CAC-0004','CAC-0005',
-  'HTC-DDS-3-23-01','HTC-DDS-3-23-02','HTC-DDS-3-23-03','HTC-DDS-3-23-04'
-);
-
-DELETE h FROM historico_status h
-JOIN ativos a ON h.id_ativo = a.id_ativo
-WHERE a.patrimonio IN (
-  'CISCO-0001','CISCO-0002','CISCO-0003','CISCO-0004','CISCO-0005',
-  'CISCO-0006','CISCO-0007','CISCO-0008','CISCO-0009','CISCO-0010',
-  'CISCO-0011','CISCO-0012','CISCO-0013','CISCO-0014','CISCO-0015',
-  'CISCO-0016','CISCO-0017','CISCO-0018','CISCO-0019','CISCO-0020',
-  'CISCO-0021','CISCO-0022','CISCO-0023','CISCO-0024','CISCO-0025',
-  'CISCO-0026','CISCO-0027','CISCO-0028','CISCO-0029','CISCO-0030',
-  'CAC-0001','CAC-0002','CAC-0003','CAC-0004','CAC-0005',
-  'HTC-DDS-3-23-01','HTC-DDS-3-23-02','HTC-DDS-3-23-03','HTC-DDS-3-23-04'
-);
-
 INSERT INTO ativos (nome_maquina, patrimonio, numero_serie, ip, mac_address, setor, laboratorio, sistema_operacional, status_cadastro) VALUES
 ('CISCO-0001', 'CISCO-0001', 'SN-CISCO-001', '10.1.0.11', '00:1A:2B:3C:4D:10', 'CISCO', 'Rack A1', 'Windows 11', 'ATIVO'),
 ('CISCO-0002', 'CISCO-0002', 'SN-CISCO-002', '10.1.0.12', '00:1A:2B:3C:4D:11', 'CISCO', 'Rack A1', 'Windows 11', 'ATIVO'),
@@ -137,7 +116,7 @@ INSERT INTO ativos (nome_maquina, patrimonio, numero_serie, ip, mac_address, set
 ('CISCO-0023', 'CISCO-0023', 'SN-CISCO-023', '10.1.0.33', '00:1A:2B:3C:4D:26', 'CISCO', 'Rack A8', 'Ubuntu 24.04', 'ATIVO'),
 ('CISCO-0024', 'CISCO-0024', 'SN-CISCO-024', '10.1.0.34', '00:1A:2B:3C:4D:27', 'CISCO', 'Rack A9', 'Windows 11', 'ATIVO'),
 ('CISCO-0025', 'CISCO-0025', 'SN-CISCO-025', '10.1.0.35', '00:1A:2B:3C:4D:28', 'CISCO', 'Rack A9', 'Windows 10', 'ATIVO'),
-('CISCO-0026', 'CISCO-0026', 'SN-CISCO-026', '10.1.0.36', 'CISCO', 'Rack A9', 'Ubuntu 24.04', 'ATIVO'),
+('CISCO-0026', 'CISCO-0026', 'SN-CISCO-026', '10.1.0.36','00:1A:2B:3C:4D:29',  'CISCO', 'Rack A9', 'Ubuntu 24.04', 'ATIVO'),
 ('CISCO-0027', 'CISCO-0027', 'SN-CISCO-027', '10.1.0.37', '00:1A:2B:3C:4D:2A', 'CISCO', 'Rack B1', 'Windows 11', 'ATIVO'),
 ('CISCO-0028', 'CISCO-0028', 'SN-CISCO-028', '10.1.0.38', '00:1A:2B:3C:4D:2B', 'CISCO', 'Rack B1', 'Windows 10', 'ATIVO'),
 ('CISCO-0029', 'CISCO-0029', 'SN-CISCO-029', '10.1.0.39', '00:1A:2B:3C:4D:2C', 'CISCO', 'Rack B1', 'Ubuntu 24.04', 'ATIVO'),
