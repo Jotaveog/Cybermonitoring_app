@@ -65,16 +65,25 @@ module.exports = {
     return resultado[0].total;
   },
 
-  // Contar ativos por status de monitoramento
+  // Contar ativos por status de monitoramento (usando o último monitoramento de cada ativo)
   contarPorStatusMonitoramento: async () => {
-    const query = `SELECT 
-                    COUNT(CASE WHEN m.status_monitoramento = 'NORMAL' THEN 1 END) as normal,
-                    COUNT(CASE WHEN m.status_monitoramento = 'ATENCAO' THEN 1 END) as atencao,
-                    COUNT(CASE WHEN m.status_monitoramento = 'CRITICO' THEN 1 END) as critico
-                   FROM monitoramentos m
-                   WHERE m.data_coleta >= DATE_SUB(NOW(), INTERVAL 1 DAY)`;
-    const [resultado] = await db.execute(query);
-    return resultado[0];
+    try {
+      // Use listarAtivos() que já traz os dados corretos com o último monitoramento
+      const ativos = await module.exports.listarAtivos();
+      let normal = 0, atencao = 0, critico = 0;
+      
+      ativos.forEach(ativo => {
+        const status = (ativo.status_monitoramento || '').toUpperCase();
+        if (status === 'NORMAL') normal++;
+        else if (status === 'ATENCAO') atencao++;
+        else if (status === 'CRITICO') critico++;
+      });
+      
+      return { normal, atencao, critico };
+    } catch (erro) {
+      console.error('Erro em contarPorStatusMonitoramento:', erro);
+      return { normal: 0, atencao: 0, critico: 0 };
+    }
   },
 
   // Contar ativos por setor

@@ -155,7 +155,14 @@ module.exports.relatoriosAdmin = async (req, res) => {
     const ativos = await ativoModel.listarAtivosRelatorio();
     const setores = await ativoModel.contarPorSetor();
     const statusResumo = await ativoModel.contarPorStatusMonitoramento();
-    const historico = await monitoramentoModel.buscarHistoricoEventos(100);
+
+    let historico = []
+    try {
+      historico = await monitoramentoModel.buscarHistoricoEventos(100)
+    } catch (histErro) {
+      console.error("Erro ao buscar histórico de eventos:", histErro)
+      historico = []
+    }
 
     const totalAtivos = ativos.length;
     const onlineCount = (statusResumo && statusResumo.normal) ? statusResumo.normal : ativos.filter(a => a.status_monitoramento !== null && a.status_monitoramento !== undefined).length;
@@ -164,7 +171,7 @@ module.exports.relatoriosAdmin = async (req, res) => {
       ativos: ativos || [],
       setores: setores || [],
       statusResumo: statusResumo || { normal: 0, atencao: 0, critico: 0 },
-      historico: historico || [],
+      historico,
       totalAtivos,
       onlineCount
     });

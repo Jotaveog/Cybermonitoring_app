@@ -72,12 +72,12 @@ module.exports = {
   buscarHistoricoEventos: async (limite = 100) => {
     const limit = Number(limite) || 100;
     const query = `SELECT h.*, a.nome_maquina,
-                          CONCAT(h.status_anterior, ' → ', h.status_novo) AS tipo_evento
+                          CONCAT_WS(' -> ', h.status_anterior, h.status_novo) AS tipo_evento
                    FROM historico_status h
                    JOIN ativos a ON h.id_ativo = a.id_ativo
                    ORDER BY h.data_registro DESC
-                   LIMIT ${limit}`;
-    const [linhas] = await db.execute(query);
+                   LIMIT ?`;
+    const [linhas] = await db.execute(query, [limit]);
     return linhas;
   },
 
