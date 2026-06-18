@@ -55,3 +55,4 @@ seed();
 
 
 // node scripts/seedAdmin.js adm@gmail.com 123
+// login tecnico: 	caio@gmail.com 	caio@gmail.com
