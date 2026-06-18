@@ -789,7 +789,7 @@ textarea.form-control {
 
 .report-metric-card {
   padding: 18px;
-  background: #171d24;
+  background: #2A2A35;
   border: 1px solid rgba(255,255,255,0.06);
 }
 
@@ -870,7 +870,7 @@ textarea.form-control {
 .report-metric-card {
   position: relative;
   overflow: hidden;
-  background-color: #1d2334;
+  background-color: #2A2A35;
   border-color: rgba(255,255,255,0.08);
 }
 
@@ -943,7 +943,7 @@ textarea.form-control {
 
 .report-metric-card {
   padding: 18px;
-  background: #171a26;
+  background: #2A2A35;
   border: 1px solid rgba(255,255,255,0.06);
 }
 
@@ -954,7 +954,7 @@ textarea.form-control {
 }
 
 .report-table thead {
-  background: #181c2b;
+  background: #2A2A35;
 }
 
 .report-table th,
@@ -1050,7 +1050,7 @@ textarea.form-control {
   text-align: left;
   border-bottom: 1px solid #2A2A35;
   font-size: 0.9rem;
-  background: #17171d !important;
+  background: #2A2A35 !important;
 }
 
 .table td {
