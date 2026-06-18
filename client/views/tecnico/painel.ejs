@@ -22,11 +22,11 @@
 					<div class="summary-card">
 						<h3>Status do ativo</h3>
 						<div class="chart-container">
-							<div class="donut"></div>
+							<div class="donut" id="dashboardPie" data-good="<%= otimo %>" data-warning="<%= atencao %>" data-critical="<%= critico %>"></div>
 							<div class="legend">
-								<span>Online <strong><%= otimo %></strong></span>
-								<span>Atenção <strong><%= atencao %></strong></span>
-								<span>Crítico <strong><%= critico %></strong></span>
+								<span>Online <strong id="countGood"><%= otimo %></strong></span>
+								<span>Atenção <strong id="countWarn"><%= atencao %></strong></span>
+								<span>Crítico <strong id="countCrit"><%= critico %></strong></span>
 							</div>
 						</div>
 					</div>
