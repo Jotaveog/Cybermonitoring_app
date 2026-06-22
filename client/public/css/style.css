@@ -1269,9 +1269,9 @@ body.auth-page .auth-card::before {
 
 body.auth-page .auth-card .form-control,
 body.auth-page .auth-card .form-control:focus {
-  background: #0e1222 !important;
+  background: #2A2A35 !important;
   color: #f7f9ff !important;
-  border-color: #3a447a !important;
+  border-color: #12121A !important;
   box-shadow: none !important;
 }
 
