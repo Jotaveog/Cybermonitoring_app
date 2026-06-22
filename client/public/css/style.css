@@ -14,7 +14,7 @@ body.auth-page {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-image: url('/img/background.png');
+  background-color: linear-gradient(135deg, #1e1e26 0%, #17171d 100%);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

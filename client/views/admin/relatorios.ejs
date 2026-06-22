@@ -67,7 +67,7 @@
                                 <th>Setor</th>
                                 <th>Status</th>
                                 <th>SO</th>
-                                <th>Cadastro</th>
+                                <th>Última atualização</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -80,7 +80,7 @@
                                         <td><%= item.setor || '-' %></td>
                                         <td class="center-cell"><%- include('../layouts/status_chip', { status: item.status_monitoramento }) %></td>
                                         <td><%= item.sistema_operacional || item.so || '-' %></td>
-                                        <td><%= item.tipo || '-' %></td>
+                                        <td><%= item.ultima_atualizacao ? new Date(item.ultima_atualizacao).toLocaleString('pt-BR') : '-' %></td>
                                     </tr>
                                 <% }) %>
                             <% } else { %>
@@ -93,27 +93,8 @@
         </div>
     </div>
 
+           
+
     <script>
         window.reportSetores = <%- JSON.stringify(setores || []) %> || [];
     </script>
-
-    <script src="/js/script.js" defer></script>
-
-    <!-- SCRIPT PARA MARCAR LINK ATIVO NO MENU -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const navLinks = document.querySelectorAll('.sidebar nav a.nav-link');
-            const currentPath = window.location.pathname;
-
-            navLinks.forEach(link => {
-                const href = link.getAttribute('href');
-                link.classList.remove('active');
-                if (currentPath === href || currentPath.startsWith(href + '/')) {
-                    link.classList.add('active');
-                }
-            });
-        });
-    </script>
-</div>
-</body>
-</html>
