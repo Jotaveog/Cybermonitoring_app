@@ -9,48 +9,7 @@ body {
   color: #e3e6ff;
 }
 
-/* ========== AUTH PAGES (Login/Cadastro) ========== */
-body.auth-page {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-image: url('/img/background.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-
-body.auth-page .sidebar,
-body.auth-page .main-wrapper {
-  display: none !important;
-}
-
-body.auth-page main {
-  min-height: 100vh;
-}
-
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-grow: 1;
-  padding: 40px 20px;
-  position: relative;
-  z-index: 1;
-}
-
-.auth-card,
-.auth-card-wide {
-  width: 100%;
-  max-width: 420px;
-  padding: 32px 30px;
-  border-radius: 28px;
-  border: 1px solid #2A2A35;
-  background: #17171D;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
-  backdrop-filter: blur(14px);
-}
+/* Auth-specific styles moved to /css/auth.css to avoid interfering with other pages */
 
 .auth-card-wide {
   max-width: 520px;

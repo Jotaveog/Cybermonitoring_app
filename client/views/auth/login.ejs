@@ -3,12 +3,17 @@
 <!-- MAIN: A classe login-container usa o Flexbox do Body para centralizar a div interna no meio do espaço livre -->
 <main class="login-container">
     <div class="auth-card">
-        <div class="auth-card-header">
-            <h1>CyberMonitoring</h1>
-            <p>Faça login para acessar o painel de monitoramento</p>
-        </div>
+        <div class="auth-card-main">
+            <div class="auth-card-header">
+                <div class="auth-brand">
+                    <div>
+                        <h1 class="project-name">Faça seu login.</h1>
+                        <p>Entre para acessar o painel de monitoramento</p>
+                    </div>
+                </div>
+            </div>
 
-        <form action="/usuarios/login" method="POST" class="auth-form">
+            <form action="/usuarios/login" method="POST" class="auth-form">
             <div class="form-group">
                 <label for="email_login">
                     <i class="fa-solid fa-envelope"></i>
@@ -33,7 +38,11 @@
                 <span>Novo?</span>
                 <a href="/cadastro">Cadastre-se</a>
             </div>
-        </form>
+            </form>
+        </div>
+        <div class="auth-card-side">
+            <!-- Espaço decorativo à direita; você pode adicionar imagem ou ilustração aqui -->
+        </div>
     </div>
 </main>
 
