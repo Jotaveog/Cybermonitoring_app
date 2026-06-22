@@ -33,11 +33,12 @@ module.exports = {
   },
 
   // CREATE - Criar novo usuário
-  criarUsuario: async (nome, email, senha_hash, id_perfil) => {
+  criarUsuario: async (nome, email, senha_hash, id_perfil, status = 'ATIVO') => {
     const perfilId = id_perfil && Number(id_perfil) ? Number(id_perfil) : 2;
+    const statusUsuario = status && (status === 'ATIVO' || status === 'INATIVO') ? status : 'ATIVO';
     const query = `INSERT INTO usuarios (nome, email, senha_hash, id_perfil, status)
-                   VALUES (?, ?, ?, ?, 'ATIVO')`;
-    const [resultado] = await db.execute(query, [nome, email, senha_hash, perfilId]);
+                   VALUES (?, ?, ?, ?, ?)`;
+    const [resultado] = await db.execute(query, [nome, email, senha_hash, perfilId, statusUsuario]);
     return resultado.insertId;
   },
 

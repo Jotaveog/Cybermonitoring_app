@@ -40,8 +40,11 @@ router.use(somenteAdmin);
 // Obtém a lista de usuários
 router.get("/", usuarioController.listar);
 
-//Retornar a página de cadastro
-router.get("/cadastro", usuarioController.renderizarCadastro);
+// API - Buscar dados do usuário (retorna JSON)
+router.get("/api/dados/:id", usuarioController.obterDados);
+
+//Redirecionar a página de cadastro para a lista (agora tudo na mesma página)
+router.get("/cadastro", (req, res) => res.redirect("/usuarios"));
 
 // Página de edição
 router.get('/:id/editar', usuarioController.renderizarEdicao);

@@ -117,8 +117,9 @@ module.exports = {
     
     try {
     // Pega as infomações das caixinhas da view, de acordo com o name delas
-    const { nome, email, senha, id_perfil } = req.body;
+    const { nome, email, senha, id_perfil, status } = req.body;
     const perfilId = id_perfil ? parseInt(id_perfil, 10) : 2;
+    const statusUsuario = status && (status === 'ATIVO' || status === 'INATIVO') ? status : 'ATIVO';
 
     // Permite criar administrador apenas se o usuário autenticado for administrador
     if (perfilId === 1) {
@@ -140,7 +141,7 @@ module.exports = {
         const senhaHash = await bcrypt.hash(senha, 10);
 
         // Chama o model passando as informações para criar o usuário (agora sem login)
-        await usuarioModel.criarUsuario(nome, email, senhaHash, perfilId);
+        await usuarioModel.criarUsuario(nome, email, senhaHash, perfilId, statusUsuario);
 
         // Variável para definir para onde o usuário será redirecionado após criar o novo usuário
         let redirecionadoPara = "/login";
@@ -215,13 +216,36 @@ module.exports = {
     listar: async(req,res) => {
       try{
           // Se deu certo
-          const usuarios = await usuarioModel.listarUsuarios()
-          res.render('usuarios/listar', { usuarios })
+          const [usuarios, perfis] = await Promise.all([
+            usuarioModel.listarUsuarios(),
+            usuarioModel.listarPerfis()
+          ]);
+          res.render('usuarios/listar', { usuarios, perfis })
       }
       catch(erro){
           // Se deu erro
           res.status(500).render('erro', {mensagem: "Erro ao listar usuários"})
         }
+    },
+
+    // API - Obter dados do usuário em JSON
+    obterDados: async (req, res) => {
+      try {
+        const { id } = req.params;
+        if (!id || isNaN(id)) {
+          return res.status(400).json({ erro: 'ID inválido' });
+        }
+
+        const usuario = await usuarioModel.buscarPorId(id);
+        if (!usuario) {
+          return res.status(404).json({ erro: 'Usuário não encontrado' });
+        }
+
+        res.json(usuario);
+      } catch (erro) {
+        console.error('Erro ao buscar dados do usuário:', erro);
+        res.status(500).json({ erro: 'Erro ao buscar dados do usuário' });
+      }
     },
 
     // DELETE - Deletar usuário (apenas admin)

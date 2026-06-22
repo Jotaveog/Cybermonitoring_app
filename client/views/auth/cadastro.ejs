@@ -2,45 +2,55 @@
 <%- include('../layouts/header-auth')  %>
 
 <main class="login-container">
-    <div class="auth-card auth-card-wide">
-        <div class="auth-card-header">
-            <h1>Cadastro</h1>
-            <p>Faça seu cadastro para acessar o painel de monitoramento</p>
+    <div class="auth-card">
+        <div class="auth-card-main">
+            <div class="auth-card-header">
+                <div class="auth-brand">
+                    <div>
+                        <h1 class="project-name">Cadastro</h1>
+                        <p>Faça seu cadastro para acessar o painel de monitoramento</p>
+                    </div>
+                </div>
+            </div>
+
+            <form action="/usuarios/cadastrar" method="post" class="auth-form" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="nome">
+                        <i class="fa-solid fa-user"></i>
+                        Nome completo
+                    </label>
+                    <input type="text" id="nome" name="nome" class="form-control" placeholder="Nome do usuário" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">
+                        <i class="fa-solid fa-envelope"></i>
+                        E-mail
+                    </label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="Seu e-mail" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="senha">
+                        <i class="fa-solid fa-lock"></i>
+                        Senha
+                    </label>
+                    <input type="password" id="senha" name="senha" class="form-control" placeholder="Mínimo 6 caracteres" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary auth-button">
+                    Cadastrar
+                </button>
+
+                <div class="auth-link-row">
+                    <span>Já tem conta?</span>
+                    <a href="/login">Faça Login</a>
+                </div>
+            </form>
         </div>
-
-        <form action="/usuarios/cadastrar" method="post" class="auth-form" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="nome">
-                    Nome completo
-                </label>
-                <input type="text" id="nome" name="nome" class="form-control" placeholder="Nome do usuário" required>
-            </div>
-
-            <div class="form-group">
-                <label for="email">
-                    E-mail
-                </label>
-                <input type="email" id="email" name="email" class="form-control" placeholder="Seu e-mail" required>
-            </div>
-
-            <!-- removido campo de login: autenticação será por email -->
-
-            <div class="form-group">
-                <label for="senha">
-                    Senha
-                </label>
-                <input type="password" id="senha" name="senha" class="form-control" placeholder="Mínimo 6 caracteres" required>
-            </div>
-
-            <button type="submit" class="btn btn-primary auth-button">
-                Cadastrar
-            </button>
-
-            <div class="auth-link-row">
-                <span>Já tem conta?</span>
-                <a href="/login">Faça Login</a>
-            </div>
-        </form>
+        <div class="auth-card-side">
+            <!-- Espaço decorativo à direita; você pode adicionar imagem ou ilustração aqui -->
+        </div>
     </div>
 </main>
 
