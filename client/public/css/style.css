@@ -1342,3 +1342,68 @@ body.auth-page .auth-card .btn.auth-button {
     left: 30px;
   }
 }
+
+/* ========== USER MANAGEMENT CUSTOMIZATIONS ========== */
+
+/* Card Form Header com borda azul */
+.main .card-form .card-header {
+  background: #17171d;
+  border-left: 4px solid #3b82f6;
+}
+
+.main .card-form .card-header .card-title {
+  color: #3b82f6;
+  font-weight: 700;
+}
+
+/* Melhor espaçamento do formulário */
+.main .card-form .card-body form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.main .card-form .card-body form .col-12 {
+  grid-column: 1 / -1;
+}
+
+/* Button Group styling */
+.main .button-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 0;
+}
+
+.main .button-group .btn {
+  flex: 0 1 auto;
+  min-width: 120px;
+}
+
+.main .button-group .btn-save {
+  background: #3b82f6;
+  color: #fff;
+}
+
+.main .button-group .btn-save:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.main .button-group .btn-clear {
+  background: #4b5563;
+  color: #e3e6ff;
+}
+
+.main .button-group .btn-clear:hover {
+  background: #5a6370;
+  transform: translateY(-1px);
+}
+
+/* Card List Header */
+.main .card-list .card-header {
+  background: #17171d;
+}
+
+.main .card-list .card-header .card-title {
+  color: #e3e6ff;
+}
