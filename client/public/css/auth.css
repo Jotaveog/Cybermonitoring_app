@@ -23,7 +23,7 @@ body.auth-page {
   width: 62px;
   height: 62px;
   object-fit: contain;
-  filter: brightness(0) invert(22%) sepia(59%) saturate(3600%) hue-rotate(207deg) brightness(0.8) contrast(1.05);
+  filter: brightness(0) invert(1);
 }
 
 @media (max-width: 600px) {
@@ -102,14 +102,20 @@ body.auth-page {
 
 .auth-form .form-group { margin-bottom: 22px; }
 
-.auth-form label { color: #b9b9c8; font-size: 0.9rem; display:block; margin-bottom:8px; font-weight: 700; }
+.auth-form label {
+  color: #b9b9c8;
+  font-size: 0.9rem;
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
 
 .auth-form .form-control {
   width: 100%;
   padding: 14px 16px;
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.04);
-  background: rgba(20,20,22,0.55);
+  background: #1E1E26;
   color: #fff;
   font-size: 1rem;
   transition: box-shadow .18s, border-color .15s;
@@ -123,6 +129,11 @@ body.auth-page {
 .auth-form .form-group:focus-within .form-control {
   box-shadow: 0 6px 30px rgba(124,58,237,0.18), 0 0 0 4px rgba(124,58,237,0.08);
   border-color: rgba(124,58,237,0.6);
+}
+
+.auth-form .form-control:focus {
+  background: #1E1E26;
+  outline: none;
 }
 
 .auth-form .form-control::placeholder { color: #8b8b96; }
