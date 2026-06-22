@@ -2,25 +2,42 @@
 const db = require("../config/db.js");
 
 module.exports = {
-  // Busca todos os ativos ativos
+  // Busca todos os ativos ativos com o último monitoramento registrado
   listarAtivos: async () => {
-    const query = `SELECT a.*, m.status_monitoramento, m.uso_cpu, m.uso_memoria
+    const query = `SELECT a.*, m.status_monitoramento, m.uso_cpu, m.uso_memoria, m.data_coleta AS ultima_atualizacao
                    FROM ativos a
-                   LEFT JOIN monitoramentos m ON a.id_ativo = m.id_ativo
+                   LEFT JOIN monitoramentos m ON m.id_monitoramento = (
+                     SELECT id_monitoramento
+                     FROM monitoramentos
+                     WHERE id_ativo = a.id_ativo
+                     ORDER BY data_coleta DESC
+                     LIMIT 1
+                   )
                    WHERE a.status_cadastro = 'ATIVO'
                    ORDER BY a.nome_maquina ASC`;
     const [linhas] = await db.execute(query);
     return linhas;
   },
 
-  // Busca ativo por ID
+  // Busca ativo por ID com o último monitoramento registrado
   buscarPorId: async (id) => {
-    const query = `SELECT a.*, m.status_monitoramento, m.uso_cpu, m.uso_memoria, m.data_coleta
+    const query = `SELECT a.*, m.status_monitoramento, m.uso_cpu, m.uso_memoria, m.data_coleta AS ultima_atualizacao
                    FROM ativos a
-                   LEFT JOIN monitoramentos m ON a.id_ativo = m.id_ativo
+                   LEFT JOIN monitoramentos m ON m.id_monitoramento = (
+                     SELECT id_monitoramento
+                     FROM monitoramentos
+                     WHERE id_ativo = a.id_ativo
+                     ORDER BY data_coleta DESC
+                     LIMIT 1
+                   )
                    WHERE a.id_ativo = ? AND a.status_cadastro = 'ATIVO'`;
     const [linhas] = await db.execute(query, [id]);
     return linhas[0];
+  },
+
+  // Busca ativos com dados de relatório (mesma base de listarAtivos)
+  listarAtivosRelatorio: async () => {
+    return await module.exports.listarAtivos();
   },
 
   // Busca ativos por setor
@@ -34,10 +51,10 @@ module.exports = {
 
   // CREATE - Criar novo ativo
   criarAtivo: async (dados) => {
-    const { nome_maquina, ip, setor, tipo, so, descricao } = dados;
-    const query = `INSERT INTO ativos (nome_maquina, ip, setor, tipo, so, descricao, status_cadastro)
-                   VALUES (?, ?, ?, ?, ?, ?, 'ATIVO')`;
-    const [resultado] = await db.execute(query, [nome_maquina, ip, setor, tipo, so, descricao]);
+    const { nome_maquina, ip, setor, laboratorio, sistema_operacional, patrimonio, numero_serie, mac_address } = dados;
+    const query = `INSERT INTO ativos (nome_maquina, patrimonio, numero_serie, ip, mac_address, setor, laboratorio, sistema_operacional, status_cadastro)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'ATIVO')`;
+    const [resultado] = await db.execute(query, [nome_maquina, patrimonio, numero_serie, ip, mac_address, setor, laboratorio, sistema_operacional]);
     return resultado.insertId;
   },
 
@@ -48,16 +65,25 @@ module.exports = {
     return resultado[0].total;
   },
 
-  // Contar ativos por status de monitoramento
+  // Contar ativos por status de monitoramento (usando o último monitoramento de cada ativo)
   contarPorStatusMonitoramento: async () => {
-    const query = `SELECT 
-                    COUNT(CASE WHEN m.status_monitoramento = 'NORMAL' THEN 1 END) as normal,
-                    COUNT(CASE WHEN m.status_monitoramento = 'ATENCAO' THEN 1 END) as atencao,
-                    COUNT(CASE WHEN m.status_monitoramento = 'CRITICO' THEN 1 END) as critico
-                   FROM monitoramentos m
-                   WHERE m.data_coleta >= DATE_SUB(NOW(), INTERVAL 1 DAY)`;
-    const [resultado] = await db.execute(query);
-    return resultado[0];
+    try {
+      // Use listarAtivos() que já traz os dados corretos com o último monitoramento
+      const ativos = await module.exports.listarAtivos();
+      let normal = 0, atencao = 0, critico = 0;
+      
+      ativos.forEach(ativo => {
+        const status = (ativo.status_monitoramento || '').toUpperCase();
+        if (status === 'NORMAL') normal++;
+        else if (status === 'ATENCAO') atencao++;
+        else if (status === 'CRITICO') critico++;
+      });
+      
+      return { normal, atencao, critico };
+    } catch (erro) {
+      console.error('Erro em contarPorStatusMonitoramento:', erro);
+      return { normal: 0, atencao: 0, critico: 0 };
+    }
   },
 
   // Contar ativos por setor
@@ -73,11 +99,11 @@ module.exports = {
 
   // UPDATE - Atualizar ativo
   atualizarAtivo: async (id, dados) => {
-    const { nome_maquina, ip, setor, tipo, so, descricao, status_cadastro } = dados;
+    const { nome_maquina, ip, setor, laboratorio, sistema_operacional, patrimonio, numero_serie, mac_address, status_cadastro } = dados;
     const query = `UPDATE ativos 
-                   SET nome_maquina = ?, ip = ?, setor = ?, tipo = ?, so = ?, descricao = ?, status_cadastro = ?
+                   SET nome_maquina = ?, patrimonio = ?, numero_serie = ?, ip = ?, mac_address = ?, setor = ?, laboratorio = ?, sistema_operacional = ?, status_cadastro = ?
                    WHERE id_ativo = ?`;
-    const [resultado] = await db.execute(query, [nome_maquina, ip, setor, tipo, so, descricao, status_cadastro, id]);
+    const [resultado] = await db.execute(query, [nome_maquina, patrimonio, numero_serie, ip, mac_address, setor, laboratorio, sistema_operacional, status_cadastro, id]);
     return resultado.affectedRows;
   },
 

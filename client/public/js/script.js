@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const pWarn = Math.round((warn / total) * 100)
     const pCrit = 100 - pGood - pWarn
 
-    pie.style.background = `conic-gradient(#f2e76b 0 ${pGood}%, #2ecc71 ${pGood}% ${pGood + pWarn}%, #e74c3c ${pGood + pWarn}% 100%)`
+    pie.style.background = `conic-gradient(#2ecc71 0% ${pGood}%, #f2e76b ${pGood}% ${pGood + pWarn}%, #e74c3c ${pGood + pWarn}% 100%)`
 
     // Atualiza contadores (se existirem)
     const gEl = document.getElementById('countGood')
@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td>${a.nome_maquina || ''}<br><small>${a.ip || ''}</small></td>
                     <td>${a.mac || a.mac_address || ''}</td>
                     <td>${a.setor || ''}</td>
-                    <td>${a.so || ''}</td>
+                    <td>${a.sistema_operacional || a.so || ''}</td>
                     <td>
                         <button class="btn btn-sm btn-warning btn-edit">Editar</button>
                         <button class="btn btn-sm btn-danger btn-delete">Apagar</button>
@@ -169,10 +169,14 @@ document.addEventListener('DOMContentLoaded', () => {
         editId = a.id_ativo
         form.querySelector('[name="ip"]').value = a.ip || ''
         form.querySelector('[name="nomeMaquina"]').value = a.nome_maquina || ''
+        form.querySelector('[name="idComputador"]').value = a.patrimonio || ''
+        form.querySelector('[name="macAddress"]').value = a.mac_address || ''
+        form.querySelector('[name="patrimonio"]').value = a.patrimonio || ''
+        form.querySelector('[name="numeroSerie"]').value = a.numero_serie || ''
         form.querySelector('[name="setor"]').value = a.setor || ''
-        form.querySelector('[name="laboratorio"]').value = a.tipo || ''
-        form.querySelector('[name="so"]').value = a.so || ''
-        form.querySelector('[name="observacoes"]').value = a.descricao || ''
+        form.querySelector('[name="laboratorio"]').value = a.laboratorio || ''
+        form.querySelector('[name="so"]').value = a.sistema_operacional || a.so || ''
+        form.querySelector('[name="observacoes"]').value = ''
         window.scrollTo({ top: 0, behavior: 'smooth' })
     }
 
@@ -182,10 +186,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const payload = {
             nome_maquina: data.get('nomeMaquina'),
             ip: data.get('ip'),
+            patrimonio: data.get('patrimonio') || data.get('idComputador') || null,
+            numero_serie: data.get('numeroSerie') || null,
+            mac_address: data.get('macAddress') || null,
             setor: data.get('setor'),
-            tipo: data.get('laboratorio') || data.get('patrimonio') || null,
-            so: data.get('so'),
-            descricao: data.get('observacoes')
+            laboratorio: data.get('laboratorio') || null,
+            so: data.get('so') || null
         }
 
         try {
@@ -223,4 +229,335 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // inicial
     loadAtivos()
+})
+
+// --- Gerenciar Usuários (básico) ---
+document.addEventListener('DOMContentLoaded', () => {
+    const userForm = document.getElementById('userForm')
+    const usersTable = document.getElementById('usersTable')
+
+    if (!userForm) return
+
+    window.clearUserForm = function() {
+        userForm.reset()
+    }
+
+    window.saveUser = async function(e) {
+        e.preventDefault()
+        const nome = document.getElementById('userNameInput').value.trim()
+        const email = document.getElementById('userEmailInput').value.trim()
+        const senha = document.getElementById('userPasswordInput').value || ''
+        const role = document.getElementById('userRoleSelect').value
+
+        if (!nome || !email) {
+            alert('Nome e email são obrigatórios')
+            return
+        }
+
+        try {
+            const fd = new FormData()
+            fd.append('nome', nome)
+            fd.append('email', email)
+            fd.append('senha', senha)
+            // mapping basic role to perfil id if needed
+            fd.append('id_perfil', role === 'admin' ? '1' : '2')
+
+            const res = await fetch('/usuarios/cadastrar', { method: 'POST', body: fd })
+            if (res.ok) return window.location.reload()
+            const txt = await res.text()
+            console.error('Erro salvar usuário', res.status, txt)
+            alert('Erro ao salvar usuário')
+        } catch (err) {
+            console.error(err)
+            alert('Erro ao salvar usuário')
+        }
+    }
+
+    // optional: attempt to populate usersTable if an API exists
+    async function loadUsers() {
+        if (!usersTable) return
+        try {
+            const r = await fetch('/api/usuarios')
+            if (!r.ok) return
+            const j = await r.json()
+            const rows = (j.usuarios || []).map(u => `
+                <tr data-id="${u.id_usuario}">
+                    <td>${u.nome}</td>
+                    <td>${u.email}</td>
+                    <td>${u.nome_perfil || ''}</td>
+                    <td>${u.status || ''}</td>
+                    <td style="text-align:center">
+                        <a href="/usuarios/${u.id_usuario}/editar" class="btn btn-sm btn-warning">Editar</a>
+                    </td>
+                </tr>
+            `).join('')
+            usersTable.querySelector('tbody').innerHTML = rows || '<tr><td colspan="5" class="text-center">Nenhum usuário</td></tr>'
+        } catch (_) {
+            // ignore
+        }
+    }
+
+    loadUsers()
+})
+
+// Relatórios Admin - renderização e exportação de dados
+function fillSetorOptions() {
+    const select = document.getElementById('reportSetor')
+    if (!select || !Array.isArray(window.reportSetores)) return
+
+    const existing = Array.from(select.options).map(opt => opt.value)
+    window.reportSetores.forEach(setor => {
+        if (!setor || existing.includes(setor.nome)) return
+        const option = document.createElement('option')
+        option.value = setor.nome
+        option.textContent = setor.nome
+        select.appendChild(option)
+    })
+}
+
+function normalizeText(value) {
+    return (value || '').toString().trim().toLowerCase()
+}
+
+function renderReport() {
+    const setor = normalizeText(document.getElementById('reportSetor')?.value)
+    const status = normalizeText(document.getElementById('reportStatus')?.value)
+    const query = normalizeText(document.getElementById('searchReport')?.value)
+    const tbody = document.querySelector('#reportTable tbody')
+    if (!tbody) return
+
+    const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.dataset.fallback !== 'true')
+    let visibleCount = 0
+    let normalCount = 0
+    let atencaoCount = 0
+    let criticoCount = 0
+
+    rows.forEach(row => {
+        const rowSetor = normalizeText(row.dataset.setor)
+        const rowStatus = normalizeText(row.dataset.status)
+        const rowText = normalizeText(row.textContent)
+
+        const matchesSetor = !setor || rowSetor === setor
+        const matchesStatus = !status || rowStatus === status
+        const matchesQuery = !query || rowText.includes(query)
+
+        const visible = matchesSetor && matchesStatus && matchesQuery
+        row.style.display = visible ? '' : 'none'
+        if (visible) {
+            visibleCount++
+            if (rowStatus === 'normal') normalCount++
+            else if (rowStatus === 'atencao') atencaoCount++
+            else if (rowStatus === 'critico') criticoCount++
+        }
+    })
+
+    const totalEl = document.getElementById('reportTotal')
+    const normalEl = document.getElementById('reportNormal')
+    const atencaoEl = document.getElementById('reportAtencao')
+    const criticoEl = document.getElementById('reportCritico')
+
+    if (totalEl) totalEl.textContent = visibleCount
+    if (normalEl) normalEl.textContent = normalCount
+    if (atencaoEl) atencaoEl.textContent = atencaoCount
+    if (criticoEl) criticoEl.textContent = criticoCount
+
+    let fallbackRow = tbody.querySelector('tr[data-fallback="true"]')
+    if (!fallbackRow) {
+        fallbackRow = document.createElement('tr')
+        fallbackRow.dataset.fallback = 'true'
+        fallbackRow.innerHTML = '<td colspan="7" style="text-align:center; color:#999;">Nenhum ativo encontrado</td>'
+        tbody.appendChild(fallbackRow)
+    }
+
+    fallbackRow.style.display = visibleCount === 0 ? '' : 'none'
+}
+
+function renderHistory() {
+    const search = (document.getElementById('historySearch')?.value || '').toLowerCase()
+    const start = document.getElementById('historyDateStart')?.value
+    const end = document.getElementById('historyDateEnd')?.value
+    const tbody = document.querySelector('#historyTable tbody')
+    if (!tbody) return
+
+    const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.dataset.fallback !== 'true')
+    let visibleCount = 0
+
+    rows.forEach(row => {
+        const rowAtivo = (row.dataset.ativo || '').toLowerCase()
+        const rowData = row.dataset.data || ''
+
+        const matchesText = !search || rowAtivo.includes(search)
+        const matchesStart = !start || rowData >= start
+        const matchesEnd = !end || rowData <= end
+
+        const visible = matchesText && matchesStart && matchesEnd
+        row.style.display = visible ? '' : 'none'
+        if (visible) visibleCount++
+    })
+
+    let fallbackRow = tbody.querySelector('tr[data-fallback="true"]')
+    if (!fallbackRow) {
+        fallbackRow = document.createElement('tr')
+        fallbackRow.dataset.fallback = 'true'
+        fallbackRow.innerHTML = '<td colspan="5" style="text-align:center; color:#999;">Nenhum evento encontrado</td>'
+        tbody.appendChild(fallbackRow)
+    }
+    fallbackRow.style.display = visibleCount === 0 ? '' : 'none'
+}
+
+function exportHTMLTableAsCSV(tableId, filename) {
+    const table = document.getElementById(tableId)
+    if (!table) return
+
+    const rows = Array.from(table.querySelectorAll('tbody tr'))
+        .filter(row => row.style.display !== 'none' && row.dataset.fallback !== 'true')
+
+    if (!rows.length) {
+        alert('Nenhum registro disponível para exportar.')
+        return
+    }
+
+    const csv = [
+        Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim()).join(','),
+        ...rows.map(row => Array.from(row.querySelectorAll('td')).map(cell => `"${cell.textContent.trim().replace(/"/g, '""')}"`).join(','))
+    ].join('\r\n')
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.setAttribute('download', filename)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(link.href)
+}
+
+function exportTableToPDF(tableId, title) {
+    const table = document.getElementById(tableId)
+    if (!table) return
+
+    const clone = table.cloneNode(true)
+    clone.querySelectorAll('tr').forEach(row => {
+        if (row.style.display === 'none' || row.dataset.fallback === 'true') {
+            row.remove()
+        }
+    })
+
+    const html = `
+        <html>
+            <head>
+                <title>${title}</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 24px; color: #111; }
+                    table { width: 100%; border-collapse: collapse; }
+                    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+                    th { background: #f4f4f4; }
+                </style>
+            </head>
+            <body>
+                <h1>${title}</h1>
+                ${clone.outerHTML}
+            </body>
+        </html>`
+
+    const printWindow = window.open('', '_blank')
+    if (!printWindow) {
+        alert('Não foi possível abrir a janela de impressão. Verifique as configurações do navegador.')
+        return
+    }
+    printWindow.document.write(html)
+    printWindow.document.close()
+    printWindow.focus()
+    setTimeout(() => printWindow.print(), 500)
+}
+
+function exportWord() {
+    const table = document.getElementById('reportTable')
+    if (!table) return
+
+    const clone = table.cloneNode(true)
+    clone.querySelectorAll('tr').forEach(row => {
+        if (row.style.display === 'none' || row.dataset.fallback === 'true') {
+            row.remove()
+        }
+    })
+
+    const html = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+            <head>
+                <meta charset="utf-8">
+                <title>Relatório de Ativos</title>
+            </head>
+            <body>
+                <h1>Relatório de Ativos</h1>
+                ${clone.outerHTML}
+            </body>
+        </html>`
+
+    const blob = new Blob(['\ufeff', html], { type: 'application/msword' })
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.download = 'relatorio_ativos.doc'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(link.href)
+}
+
+function printReport() {
+    window.print()
+}
+
+function exportPDF() {
+    exportTableToPDF('reportTable', 'Relatório de Ativos')
+}
+
+function exportExcel() {
+    exportHTMLTableAsCSV('reportTable', 'relatorio_ativos.csv')
+}
+
+function exportHistoryPDF() {
+    exportTableToPDF('historyTable', 'Histórico de Eventos')
+}
+
+function exportHistoryExcel() {
+    exportHTMLTableAsCSV('historyTable', 'historico_eventos.csv')
+}
+
+async function clearHistory() {
+    if (!confirm('Deseja limpar todo o histórico de eventos? Esta ação não pode ser desfeita.')) return
+
+    try {
+        const res = await fetch('/admin/relatorios/limpar-historico', { method: 'POST' })
+        const json = await res.json()
+        if (!json.sucesso) throw new Error(json.mensagem || 'Erro ao limpar histórico')
+        window.location.reload()
+    } catch (erro) {
+        console.error('Erro ao limpar histórico:', erro)
+        alert('Não foi possível limpar o histórico.')
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const reportTable = document.getElementById('reportTable')
+    if (!reportTable) return
+
+    window.reportSetores = Array.isArray(window.reportSetores) ? window.reportSetores : []
+
+    fillSetorOptions()
+    renderReport()
+    renderHistory()
+
+    const reportSetor = document.getElementById('reportSetor')
+    const reportStatus = document.getElementById('reportStatus')
+    const searchReport = document.getElementById('searchReport')
+
+    reportSetor?.addEventListener('change', renderReport)
+    reportStatus?.addEventListener('change', renderReport)
+    searchReport?.addEventListener('input', renderReport)
+    searchReport?.addEventListener('keyup', renderReport)
+
+    document.getElementById('historySearch')?.addEventListener('input', renderHistory)
+    document.getElementById('historyDateStart')?.addEventListener('change', renderHistory)
+    document.getElementById('historyDateEnd')?.addEventListener('change', renderHistory)
 })

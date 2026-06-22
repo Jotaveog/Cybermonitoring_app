@@ -42,19 +42,16 @@
                         <!-- MENU ADMINISTRADOR -->
                         <% if (usuario.perfil==='Administrador') { %>
                             <li><a href="/painel" class="nav-link">Painel</a></li>
-                            <li><a href="/gerenciar-computadores" class="nav-link">Gerenciar Computadores</a></li>
+                            <li><a href="/gerenciar-computadoresAdmin" class="nav-link">Gerenciar Computadores</a></li>
                             <li><a href="/usuarios" class="nav-link">Gerenciar Usuários</a></li>
-                            <li><a href="/configuracoes" class="nav-link">Configurações</a></li>
-                            <li><a href="/relatorios" class="nav-link">Relatórios</a></li>
-                            <li><a href="/historico" class="nav-link">Histórico</a></li>
+                            <li><a href="/admin/relatorios" class="nav-link">Relatórios</a></li>
                         <% } %>
-
+                            
                         <!-- MENU TÉCNICO -->
                         <% if (usuario.perfil==='Tecnico') { %>
                             <li><a href="/tecnico" class="nav-link">Painel</a></li>
                             <li><a href="/tecnico/gerenciar-computadores" class="nav-link">Gerenciar Computadores</a></li>
                             <li><a href="/tecnico/relatorios" class="nav-link">Relatórios</a></li>
-                            <li><a href="#historico" class="nav-link">Histórico</a></li>
                         <% } %>
                     </ul>
                 </nav>

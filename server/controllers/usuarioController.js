@@ -117,8 +117,9 @@ module.exports = {
     
     try {
     // Pega as infomações das caixinhas da view, de acordo com o name delas
-    const { nome, email, senha, id_perfil } = req.body;
+    const { nome, email, senha, id_perfil, status } = req.body;
     const perfilId = id_perfil ? parseInt(id_perfil, 10) : 2;
+    const statusUsuario = status && (status === 'ATIVO' || status === 'INATIVO') ? status : 'ATIVO';
 
     // Permite criar administrador apenas se o usuário autenticado for administrador
     if (perfilId === 1) {
@@ -140,7 +141,7 @@ module.exports = {
         const senhaHash = await bcrypt.hash(senha, 10);
 
         // Chama o model passando as informações para criar o usuário (agora sem login)
-        await usuarioModel.criarUsuario(nome, email, senhaHash, perfilId);
+        await usuarioModel.criarUsuario(nome, email, senhaHash, perfilId, statusUsuario);
 
         // Variável para definir para onde o usuário será redirecionado após criar o novo usuário
         let redirecionadoPara = "/login";
@@ -191,12 +192,17 @@ module.exports = {
         const { nome, email, status, id_perfil, senha } = req.body;
         if (!id || isNaN(id)) return res.status(400).render('erro', { mensagem: 'ID inválido' });
 
+        if (senha && senha.trim() !== '' && senha.length < 6) {
+          return res.status(400).render('erro', { mensagem: 'A senha deve ter pelo menos 6 caracteres' });
+        }
+
         let senhaHash = null;
-        if (senha && senha.length >= 6) {
+        if (senha && senha.trim() !== '') {
           senhaHash = await bcrypt.hash(senha, 10);
         }
 
-        const linhas = await usuarioModel.atualizarUsuarioCompleto(id, nome, email, id_perfil || 2, status || 'ATIVO', senhaHash);
+        const perfilId = id_perfil && Number(id_perfil) ? Number(id_perfil) : 2;
+        const linhas = await usuarioModel.atualizarUsuarioCompleto(id, nome, email, perfilId, status || 'ATIVO', senhaHash);
         if (linhas === 0) return res.status(404).render('erro', { mensagem: 'Usuário não encontrado' });
 
         res.redirect('/usuarios');
@@ -210,13 +216,36 @@ module.exports = {
     listar: async(req,res) => {
       try{
           // Se deu certo
-          const usuarios = await usuarioModel.listarUsuarios()
-          res.render('usuarios/listar', { usuarios })
+          const [usuarios, perfis] = await Promise.all([
+            usuarioModel.listarUsuarios(),
+            usuarioModel.listarPerfis()
+          ]);
+          res.render('usuarios/listar', { usuarios, perfis })
       }
       catch(erro){
           // Se deu erro
           res.status(500).render('erro', {mensagem: "Erro ao listar usuários"})
         }
+    },
+
+    // API - Obter dados do usuário em JSON
+    obterDados: async (req, res) => {
+      try {
+        const { id } = req.params;
+        if (!id || isNaN(id)) {
+          return res.status(400).json({ erro: 'ID inválido' });
+        }
+
+        const usuario = await usuarioModel.buscarPorId(id);
+        if (!usuario) {
+          return res.status(404).json({ erro: 'Usuário não encontrado' });
+        }
+
+        res.json(usuario);
+      } catch (erro) {
+        console.error('Erro ao buscar dados do usuário:', erro);
+        res.status(500).json({ erro: 'Erro ao buscar dados do usuário' });
+      }
     },
 
     // DELETE - Deletar usuário (apenas admin)

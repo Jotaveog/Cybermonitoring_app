@@ -9,7 +9,7 @@ const bcrypt = require('bcrypt');
 async function seed() {
   try {
     const email = process.argv[2] || process.env.SEED_ADMIN_EMAIL || 'admin@cyber.local';
-    const senha = process.argv[3] || process.env.SEED_ADMIN_PASS || 'Admin@123';
+    const senha = process.argv[3] || process.env.SEED_ADMIN_PASS || '123';
 
     // Verifica se já existe
     const [rows] = await db.execute('SELECT id_usuario FROM usuarios WHERE email = ?', [email]);
@@ -19,6 +19,19 @@ async function seed() {
     }
 
     const hash = await bcrypt.hash(senha, 10);
+
+    // Garante os perfis padrão necessários para o administrador
+    const perfisDefaults = [
+      { id_perfil: 1, nome_perfil: 'Administrador' },
+      { id_perfil: 2, nome_perfil: 'Tecnico' }
+    ];
+
+    for (const perfil of perfisDefaults) {
+      await db.execute(
+        'INSERT INTO perfis (id_perfil, nome_perfil) VALUES (?, ?) ON DUPLICATE KEY UPDATE nome_perfil = VALUES(nome_perfil)',
+        [perfil.id_perfil, perfil.nome_perfil]
+      );
+    }
 
     const nome = 'Administrador';
     const id_perfil = 1; // assumindo 1 = Administrador
@@ -41,4 +54,5 @@ async function seed() {
 seed();
 
 
-// node scripts/seedAdmin.js admin@cyber.local Admin@123
+// node scripts/seedAdmin.js adm@gmail.com 123
+// login tecnico: 	caio@gmail.com 	caio@gmail.com

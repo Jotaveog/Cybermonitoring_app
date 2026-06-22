@@ -11,11 +11,11 @@ const setoresExemplo = [
 ];
 
 const eventosExemplo = [
-  { dt: '17/06/2026 09:30', host: 'SRV-01', info: 'Backup concluído com sucesso' },
-  { dt: '17/06/2026 09:15', host: 'PC-204', info: 'Atualização de antivírus realizada' },
-  { dt: '17/06/2026 08:50', host: 'SRV-03', info: 'Disco com 82% de utilização' },
-  { dt: '17/06/2026 08:20', host: 'ROTA-07', info: 'Conexão retomada após falha' },
-  { dt: '17/06/2026 07:55', host: 'PC-118', info: 'Login bloqueado por senha expirada' }
+  { dt: '17/06/2026 09:30', host: 'SRV-01', info: 'Backup concluído com sucesso', status: 'NORMAL' },
+  { dt: '17/06/2026 09:15', host: 'PC-204', info: 'Atualização de antivírus realizada', status: 'NORMAL' },
+  { dt: '17/06/2026 08:50', host: 'SRV-03', info: 'Disco com 82% de utilização', status: 'ATENCAO' },
+  { dt: '17/06/2026 08:20', host: 'ROTA-07', info: 'Conexão retomada após falha', status: 'NORMAL' },
+  { dt: '17/06/2026 07:55', host: 'PC-118', info: 'Login bloqueado por senha expirada', status: 'CRITICO' }
 ];
 
 module.exports = {
@@ -28,13 +28,21 @@ module.exports = {
       const setores = await ativoModel.contarPorSetor();
       const ultimos_eventos = await monitoramentoModel.buscarUltimos(5);
 
+      // Mapear dados do banco para o formato da view (status separado)
+      const eventosFormatados = ultimos_eventos.map(evento => ({
+        dt: new Date(evento.data_coleta).toLocaleString('pt-BR'),
+        host: evento.nome_maquina,
+        status: evento.status_monitoramento || null,
+        info: evento.observacoes || `CPU: ${evento.uso_cpu}% | Memória: ${evento.uso_memoria}% | Disco: ${evento.uso_disco}%`
+      }));
+
       res.render('admin/painel', {
         totalAtivos: totalAtivos,
         otimo: statusMonitor.normal || 0,
         atencao: statusMonitor.atencao || 0,
         critico: statusMonitor.critico || 0,
-        setores: setoresExemplo,
-        eventos: eventosExemplo
+        setores: setores || [],
+        eventos: eventosFormatados.length ? eventosFormatados : eventosExemplo
       });
     } catch (erro) {
       console.error("Erro ao carregar dashboard admin:", erro);
@@ -58,13 +66,21 @@ module.exports = {
       const setores = await ativoModel.contarPorSetor();
       const ultimos_eventos = await monitoramentoModel.buscarUltimos(5);
 
+      // Mapear dados do banco para o formato da view (status separado)
+      const eventosFormatados = ultimos_eventos.map(evento => ({
+        dt: new Date(evento.data_coleta).toLocaleString('pt-BR'),
+        host: evento.nome_maquina,
+        status: evento.status_monitoramento || null,
+        info: evento.observacoes || `CPU: ${evento.uso_cpu}% | Memória: ${evento.uso_memoria}% | Disco: ${evento.uso_disco}%`
+      }));
+
       res.render('tecnico/painel', {
         totalAtivos: totalAtivos,
         otimo: statusMonitor.normal || 0,
         atencao: statusMonitor.atencao || 0,
         critico: statusMonitor.critico || 0,
-        setores: setoresExemplo,
-        eventos: eventosExemplo
+        setores: setores || [],
+        eventos: eventosFormatados.length ? eventosFormatados : eventosExemplo
       });
     } catch (erro) {
       console.error("Erro ao carregar dashboard técnico:", erro);
@@ -83,10 +99,11 @@ module.exports = {
   gerenciarComputadoresAdmin: async (req, res) => {
     try {
       const ativos = await ativoModel.listarAtivos();
-      res.render('admin/gerenciarPc', { ativos: ativos || [] });
+      const setores = await ativoModel.contarPorSetor();
+      res.render('admin/gerenciar-computadoresAdmin', { ativos: ativos || [], setores: setores || [] });
     } catch (erro) {
       console.error("Erro ao carregar gerenciador de computadores:", erro);
-      res.render('admin/gerenciarPc', { ativos: [] });
+      res.render('admin/gerenciar-computadoresAdmin', { ativos: [], setores: [] });
     }
   },
 
@@ -94,21 +111,89 @@ module.exports = {
   gerenciarComputadoresTecnico: async (req, res) => {
     try {
       const ativos = await ativoModel.listarAtivos();
-      res.render('tecnico/gerenciar-computadores', { ativos: ativos || [] });
+      const setores = await ativoModel.contarPorSetor();
+      res.render('tecnico/gerenciar-computadores', { ativos: ativos || [], setores: setores || [] });
     } catch (erro) {
       console.error("Erro ao carregar gerenciador de computadores:", erro);
-      res.render('tecnico/gerenciar-computadores', { ativos: [] });
+      res.render('tecnico/gerenciar-computadores', { ativos: [], setores: [] });
     }
   },
 
   // Página de relatórios (Técnico)
   relatorios: async (req, res) => {
     try {
-      const eventos_criticos = await monitoramentoModel.buscarEventosCriticos(20);
-      res.render('tecnico/relatorios', { eventos_criticos: eventos_criticos || [] });
+      const ativos = await ativoModel.listarAtivosRelatorio();
+      const setores = await ativoModel.contarPorSetor();
+      const statusResumo = await ativoModel.contarPorStatusMonitoramento();
+
+      const totalAtivos = ativos.length;
+      const onlineCount = (statusResumo && statusResumo.normal) ? statusResumo.normal : ativos.filter(a => a.status_monitoramento !== null && a.status_monitoramento !== undefined).length;
+
+      res.render('tecnico/relatorios', {
+        ativos: ativos || [],
+        setores: setores || [],
+        statusResumo: statusResumo || { normal: 0, atencao: 0, critico: 0 },
+        totalAtivos,
+        onlineCount
+      });
     } catch (erro) {
       console.error("Erro ao carregar relatórios:", erro);
-      res.render('tecnico/relatorios', { eventos_criticos: [] });
+      res.render('tecnico/relatorios', {
+        ativos: [],
+        setores: [],
+        statusResumo: { normal: 0, atencao: 0, critico: 0 },
+        totalAtivos: 0,
+        onlineCount: 0
+      });
     }
+  }
+};
+
+// pagina de relatórios (Admin)
+module.exports.relatoriosAdmin = async (req, res) => {
+  try {
+    const ativos = await ativoModel.listarAtivosRelatorio();
+    const setores = await ativoModel.contarPorSetor();
+    const statusResumo = await ativoModel.contarPorStatusMonitoramento();
+
+    let historico = []
+    try {
+      historico = await monitoramentoModel.buscarHistoricoEventos(100)
+    } catch (histErro) {
+      console.error("Erro ao buscar histórico de eventos:", histErro)
+      historico = []
+    }
+
+    const totalAtivos = ativos.length;
+    const onlineCount = (statusResumo && statusResumo.normal) ? statusResumo.normal : ativos.filter(a => a.status_monitoramento !== null && a.status_monitoramento !== undefined).length;
+
+    res.render('admin/relatorios', {
+      ativos: ativos || [],
+      setores: setores || [],
+      statusResumo: statusResumo || { normal: 0, atencao: 0, critico: 0 },
+      historico,
+      totalAtivos,
+      onlineCount
+    });
+  } catch (erro) {
+    console.error("Erro ao carregar relatórios admin:", erro);
+    res.render('admin/relatorios', {
+      ativos: [],
+      setores: [],
+      statusResumo: { normal: 0, atencao: 0, critico: 0 },
+      historico: [],
+      totalAtivos: 0,
+      onlineCount: 0
+    });
+  }
+};
+
+module.exports.limparHistorico = async (req, res) => {
+  try {
+    await monitoramentoModel.limparHistorico();
+    res.json({ sucesso: true, mensagem: 'Histórico limpo com sucesso' });
+  } catch (erro) {
+    console.error('Erro ao limpar histórico:', erro);
+    res.status(500).json({ sucesso: false, mensagem: 'Erro ao limpar histórico' });
   }
 };

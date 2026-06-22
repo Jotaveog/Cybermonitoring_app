@@ -33,11 +33,12 @@ module.exports = {
   },
 
   // CREATE - Criar novo usuário
-  criarUsuario: async (nome, email, senha_hash, id_perfil) => {
+  criarUsuario: async (nome, email, senha_hash, id_perfil, status = 'ATIVO') => {
     const perfilId = id_perfil && Number(id_perfil) ? Number(id_perfil) : 2;
+    const statusUsuario = status && (status === 'ATIVO' || status === 'INATIVO') ? status : 'ATIVO';
     const query = `INSERT INTO usuarios (nome, email, senha_hash, id_perfil, status)
-                   VALUES (?, ?, ?, ?, 'ATIVO')`;
-    const [resultado] = await db.execute(query, [nome, email, senha_hash, perfilId]);
+                   VALUES (?, ?, ?, ?, ?)`;
+    const [resultado] = await db.execute(query, [nome, email, senha_hash, perfilId, statusUsuario]);
     return resultado.insertId;
   },
 
@@ -69,13 +70,14 @@ module.exports = {
 
   // Atualizar usuário completo (nome, email, perfil, status e opcionalmente senha)
   atualizarUsuarioCompleto: async (id, nome, email, id_perfil, status, senha_hash) => {
+    const perfilId = id_perfil && Number(id_perfil) ? Number(id_perfil) : 2;
     if (senha_hash) {
       const query = `UPDATE usuarios SET nome = ?, email = ?, id_perfil = ?, status = ?, senha_hash = ? WHERE id_usuario = ?`;
-      const [resultado] = await db.execute(query, [nome, email, id_perfil, status, senha_hash, id]);
+      const [resultado] = await db.execute(query, [nome, email, perfilId, status, senha_hash, id]);
       return resultado.affectedRows;
     } else {
       const query = `UPDATE usuarios SET nome = ?, email = ?, id_perfil = ?, status = ? WHERE id_usuario = ?`;
-      const [resultado] = await db.execute(query, [nome, email, id_perfil, status, id]);
+      const [resultado] = await db.execute(query, [nome, email, perfilId, status, id]);
       return resultado.affectedRows;
     }
   },
