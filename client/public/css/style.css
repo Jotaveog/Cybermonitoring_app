@@ -9,7 +9,6 @@ body {
   color: #e3e6ff;
 }
 
-<<<<<<< HEAD
 /* ========== AUTH PAGES (Login/Cadastro) ========== */
 body.auth-page {
   min-height: 100vh;
@@ -52,9 +51,7 @@ body.auth-page main {
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
   backdrop-filter: blur(14px);
 }
-=======
-/* Auth-specific styles moved to /css/auth.css to avoid interfering with other pages */
->>>>>>> e1fe5e33d9302109d31a03ae259bb7ccecacbd91
+
 
 .auth-card-wide {
   max-width: 520px;
