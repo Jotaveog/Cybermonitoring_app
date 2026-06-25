@@ -28,11 +28,12 @@
 
                 <!-- DADOS DO USUÁRIO -->
                 <div class="user-card">
-                    <div style="font-weight: 600; margin-bottom: 4px;">
-                        <%= usuario.nome %>
+                    <div class="user-avatar">
+                        <%= usuario.nome.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase() %>
                     </div>
-                    <div style="font-size: 0.85rem; color: #9dd1ff;">
-                        <%= usuario.perfil %>
+                    <div class="user-info">
+                        <span class="user-name"><%= usuario.nome %></span>
+                        <span class="user-role"><%= usuario.perfil %></span>
                     </div>
                 </div>
 
