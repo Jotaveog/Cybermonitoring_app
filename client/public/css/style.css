@@ -10,7 +10,7 @@
   --bg-input: #121215;         
   
   --border-color: rgba(255, 255, 255, 0.08);
-  --border-color-hover: rgba(255, 255, 255, 0.16);
+  --border-color-hover: #0D6EFD;
   --border-color-focus: #0D6EFD; /* Indigo 500 */
   
   --text-primary: #f4f4f5;     /* Zinc 100 */
@@ -356,7 +356,7 @@ header p, .page-title .subtitle {
 .card-title {
   margin-top: 0;
   font-size: 0.95rem;
-  color: var(--accent);
+  color: white;
   margin-bottom: 16px;
   font-weight: 600;
   text-transform: uppercase;
