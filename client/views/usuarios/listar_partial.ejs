@@ -24,8 +24,8 @@
             <button type="button" class="btn btn-sm btn-warning" onclick="carregarUsuarioParaEdicao(<%= u.id_usuario %>)">
               Editar
             </button>
-            <form action="/usuarios/deletar/<%= u.id_usuario %>" method="POST" style="display:inline-block;margin-left:8px;">
-              <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja deletar este usuário?');">Deletar</button>
+            <form action="/usuarios/desativar/<%= u.id_usuario %>" method="POST" style="display:inline-block;margin-left:8px;">
+              <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja desativar este usuário?');">Desativar</button>
             </form>
           </td>
         </tr>

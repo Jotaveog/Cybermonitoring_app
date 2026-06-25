@@ -356,7 +356,7 @@ header p, .page-title .subtitle {
 .card-title {
   margin-top: 0;
   font-size: 0.95rem;
-  color: var(--text-secondary);
+  color: var(--accent);
   margin-bottom: 16px;
   font-weight: 600;
   text-transform: uppercase;
@@ -375,6 +375,10 @@ header p, .page-title .subtitle {
 .big-number.green { color: var(--success); }
 .big-number.warning { color: var(--warning); }
 .big-number.critical { color: var(--danger); }
+
+.summary-card .big-number.green { color: var(--success) !important; }
+.summary-card .big-number.warning { color: var(--warning) !important; }
+.summary-card .big-number.critical { color: var(--danger) !important; }
 
 /* ========== DONUT CHART DASHBOARD ========== */
 .chart-container {
@@ -542,13 +546,13 @@ header p, .page-title .subtitle {
   height: 28px;
 }
 
-.status-chip.good, .status-badge.online, .status-chip[class*="good"], .status-badge[class*="online"] {
+.status-chip.good, .status-chip.normal, .status-badge.online, .status-chip[class*="good"], .status-chip[class*="normal"], .status-badge[class*="online"] {
   background-color: var(--success-bg);
   border-color: var(--success-border);
   color: var(--success);
 }
 
-.status-chip.good::before, .status-badge.online::before {
+.status-chip.good::before, .status-chip.normal::before, .status-badge.online::before {
   content: '';
   display: inline-block;
   width: 6px;
@@ -558,7 +562,7 @@ header p, .page-title .subtitle {
   box-shadow: 0 0 8px var(--success);
 }
 
-.status-chip.warning, .status-badge.warning, .status-chip[class*="warning"], .status-badge[class*="warning"] {
+.status-chip.warning, .status-chip.atencao, .status-badge.warning, .status-chip[class*="warning"], .status-chip[class*="atencao"], .status-badge[class*="warning"] {
   background-color: var(--warning-bg);
   border-color: var(--warning-border);
   color: var(--warning);
@@ -618,9 +622,9 @@ header p, .page-title .subtitle {
 }
 
 .badge.bg-info {
-  background-color: rgba(99, 102, 241, 0.15) !important;
-  color: #a5b4fc !important;
-  border: 1px solid rgba(99, 102, 241, 0.3);
+  background-color: rgba(13, 110, 253, 0.15) !important;
+  color: #0D6EFD !important;
+  border: 1px solid rgba(13, 110, 253, 0.3);
   padding: 6px 10px;
   border-radius: 6px;
   font-weight: 600;
