@@ -11,16 +11,16 @@
   
   --border-color: rgba(255, 255, 255, 0.08);
   --border-color-hover: rgba(255, 255, 255, 0.16);
-  --border-color-focus: #6366f1; /* Indigo 500 */
+  --border-color-focus: #0D6EFD; /* Indigo 500 */
   
   --text-primary: #f4f4f5;     /* Zinc 100 */
   --text-secondary: #a1a1aa;   /* Zinc 400 */
   --text-muted: #71717a;       /* Zinc 500 */
   
-  --accent: #6366f1;           /* Indigo 500 */
+  --accent: #0D6EFD;           /* Indigo 500 */
   --accent-hover: #4f46e5;     /* Indigo 600 */
   --accent-glow: rgba(99, 102, 241, 0.25);
-  --accent-gradient: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  --accent-gradient: linear-gradient(135deg, #0D6EFD 0%, #4f46e5 100%);
   
   --success: #10b981;          /* Emerald 500 */
   --success-bg: rgba(16, 185, 129, 0.12);
