@@ -41,7 +41,7 @@
                 <div class="report-summary-grid">
                     <div class="summary-card report-metric-card">
                         <h3>Total</h3>
-                        <p id="reportTotal" class="big-number green"><%= totalAtivos || 0 %></p>
+                        <p id="reportTotal" class="big-number"><%= totalAtivos || 0 %></p>
                     </div>
                     <div class="summary-card report-metric-card">
                         <h3>Normal</h3>
@@ -98,3 +98,4 @@
     <script>
         window.reportSetores = <%- JSON.stringify(setores || []) %> || [];
     </script>
+    <script src="/js/script.js" defer></script>

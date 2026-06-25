@@ -52,7 +52,7 @@ router.get('/:id/editar', usuarioController.renderizarEdicao);
 // Atualizar usuário (via formulário POST)
 router.post('/:id/editar', usuarioController.atualizar);
 
-// Deletar usuário (via formulário POST)
-router.post('/deletar/:id', usuarioController.deletar);
+// Desativar usuário (via formulário POST)
+router.post('/desativar/:id', usuarioController.desativar);
 
 module.exports = router;

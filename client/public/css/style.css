@@ -18,9 +18,9 @@
   --text-muted: #71717a;       /* Zinc 500 */
   
   --accent: #0D6EFD;           /* Indigo 500 */
-  --accent-hover: #4f46e5;     /* Indigo 600 */
+  --accent-hover: #0D6EFD;     /* Indigo 600 */
   --accent-glow: rgba(99, 102, 241, 0.25);
-  --accent-gradient: linear-gradient(135deg, #0D6EFD 0%, #4f46e5 100%);
+  --accent-gradient: linear-gradient(135deg, #0D6EFD 0%, #0D6EFD 100%);
   
   --success: #10b981;          /* Emerald 500 */
   --success-bg: rgba(16, 185, 129, 0.12);
@@ -35,7 +35,7 @@
   --danger-border: rgba(239, 68, 68, 0.2);
   
   --font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition: #0D6EFD;
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
@@ -251,7 +251,7 @@ header p, .page-title .subtitle {
   text-decoration: none;
   font-weight: 500;
   font-size: 0.95rem;
-  transition: var(--transition);
+  background: #1E1E26;
 }
 
 .sidebar nav a::before {
@@ -261,7 +261,7 @@ header p, .page-title .subtitle {
   width: 20px;
   text-align: center;
   color: var(--text-muted);
-  transition: var(--transition);
+  
 }
 
 /* Map specific icons to links if not in HTML */
@@ -282,13 +282,13 @@ header p, .page-title .subtitle {
 .sidebar nav li.active a,
 .sidebar nav a.active {
   background: rgba(99, 102, 241, 0.08);
-  border: 1px solid rgba(99, 102, 241, 0.2);
-  color: #c7d2fe; /* Indigo 200 */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff; /* Indigo 200 */
 }
 
 .sidebar nav li.active a::before,
 .sidebar nav a.active::before {
-  color: #818cf8; /* Indigo 400 */
+  color: #fff; /* Indigo 400 */
 }
 
 .logout {
@@ -375,6 +375,10 @@ header p, .page-title .subtitle {
 .big-number.green { color: var(--success); }
 .big-number.warning { color: var(--warning); }
 .big-number.critical { color: var(--danger); }
+
+.summary-card .big-number.green { color: var(--success) !important; }
+.summary-card .big-number.warning { color: var(--warning) !important; }
+.summary-card .big-number.critical { color: var(--danger) !important; }
 
 /* ========== DONUT CHART DASHBOARD ========== */
 .chart-container {
@@ -542,13 +546,13 @@ header p, .page-title .subtitle {
   height: 28px;
 }
 
-.status-chip.good, .status-badge.online, .status-chip[class*="good"], .status-badge[class*="online"] {
+.status-chip.good, .status-chip.normal, .status-badge.online, .status-chip[class*="good"], .status-chip[class*="normal"], .status-badge[class*="online"] {
   background-color: var(--success-bg);
   border-color: var(--success-border);
   color: var(--success);
 }
 
-.status-chip.good::before, .status-badge.online::before {
+.status-chip.good::before, .status-chip.normal::before, .status-badge.online::before {
   content: '';
   display: inline-block;
   width: 6px;
@@ -558,7 +562,7 @@ header p, .page-title .subtitle {
   box-shadow: 0 0 8px var(--success);
 }
 
-.status-chip.warning, .status-badge.warning, .status-chip[class*="warning"], .status-badge[class*="warning"] {
+.status-chip.warning, .status-chip.atencao, .status-badge.warning, .status-chip[class*="warning"], .status-chip[class*="atencao"], .status-badge[class*="warning"] {
   background-color: var(--warning-bg);
   border-color: var(--warning-border);
   color: var(--warning);

@@ -248,15 +248,15 @@ module.exports = {
       }
     },
 
-    // DELETE - Deletar usuário (apenas admin)
-    deletar: async (req, res) => {
+    // POST - Desativar usuário (apenas admin)
+    desativar: async (req, res) => {
       try {
         const { id } = req.params;
         if (!id || isNaN(id)) {
           return res.status(400).render('erro', { mensagem: 'ID inválido' });
         }
 
-        const linhas = await usuarioModel.deletarUsuario(id);
+        const linhas = await usuarioModel.desativarUsuario(id);
         if (linhas === 0) {
           return res.status(404).render('erro', { mensagem: 'Usuário não encontrado' });
         }
@@ -264,8 +264,8 @@ module.exports = {
         // Redireciona para a lista de usuários
         res.redirect('/usuarios');
       } catch (erro) {
-        console.error('Erro ao deletar usuário:', erro);
-        res.status(500).render('erro', { mensagem: 'Erro interno ao deletar usuário' });
+        console.error('Erro ao desativar usuário:', erro);
+        res.status(500).render('erro', { mensagem: 'Erro interno ao desativar usuário' });
       }
     }
 

@@ -7,13 +7,8 @@
 				Gerenciar Usuários
 			</h1>
 			<p>
-				Criar, editar e deletar usuários do sistema
+					Criar, editar e desativar usuários do sistema
 			</p>
-			
-		</div>
-	</header>
-
-
 	<!-- FORMULÁRIO CADASTRO/EDIÇÃO -->
 	<div class="card card-form">
 		<div class="card-header">
@@ -116,9 +111,9 @@
 						<button type="button" class="btn btn-sm btn-warning" onclick="carregarUsuarioParaEdicao(<%= usuario.id_usuario %>)">
 							Editar
 						</button>
-						<form action="/usuarios/deletar/<%= usuario.id_usuario %>" method="POST" style="display: inline-block; margin-left: 8px;">
-							<button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza?')">
-								Deletar
+						<form action="/usuarios/desativar/<%= usuario.id_usuario %>" method="POST" style="display: inline-block; margin-left: 8px;">
+							<button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja desativar este usuário?')">
+								Desativar
 							</button>
 						</form>
 					</td>
