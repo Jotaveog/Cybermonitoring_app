@@ -27,3 +27,6 @@ Se você estiver desenvolvendo em CSS, uma forma comum de aplicar esse fundo de 
 `background-color: #1e1e26; border-radius: 8px;`
 
 **Gostaria que eu gerasse uma paleta de cores complementar para os botões ou outros elementos dessa interface?**
+
+
+COR DOS BOTAO #0D6EFD
