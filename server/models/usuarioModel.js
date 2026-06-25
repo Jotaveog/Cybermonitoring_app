@@ -96,6 +96,13 @@ module.exports = {
     const query = "DELETE FROM usuarios WHERE id_usuario = ?";
     const [resultado] = await db.execute(query, [id]);
     return resultado.affectedRows;
+  },
+
+  // UPDATE - Desativar usuário
+  desativarUsuario: async (id) => {
+    const query = "UPDATE usuarios SET status = 'INATIVO' WHERE id_usuario = ?";
+    const [resultado] = await db.execute(query, [id]);
+    return resultado.affectedRows;
   }
 };
 
