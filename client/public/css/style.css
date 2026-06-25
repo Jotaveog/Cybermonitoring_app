@@ -356,7 +356,7 @@ header p, .page-title .subtitle {
 .card-title {
   margin-top: 0;
   font-size: 0.95rem;
-  color: var(--text-secondary);
+  color: var(--accent);
   margin-bottom: 16px;
   font-weight: 600;
   text-transform: uppercase;
@@ -618,9 +618,9 @@ header p, .page-title .subtitle {
 }
 
 .badge.bg-info {
-  background-color: rgba(99, 102, 241, 0.15) !important;
-  color: #a5b4fc !important;
-  border: 1px solid rgba(99, 102, 241, 0.3);
+  background-color: rgba(13, 110, 253, 0.15) !important;
+  color: #0D6EFD !important;
+  border: 1px solid rgba(13, 110, 253, 0.3);
   padding: 6px 10px;
   border-radius: 6px;
   font-weight: 600;
