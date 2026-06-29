@@ -19,35 +19,33 @@ module.exports = {
 
       // Valida campos obrigatórios
       if (!email || !senha) {
-        return res
-          .status(400)
-          .render("erro", { mensagem: "Email e senha são obrigatórios" });
+        const mensagem = encodeURIComponent("Email e senha são obrigatórios");
+        return res.redirect(`/login?erro=${mensagem}`);
       }
 
       // Executa a função de busca no model
       const usuario = await usuarioModel.buscarPorEmail(email);
       
       // Se não existir, mensagem de erro
-      if (!usuario)
-        return res
-          .status(404)
-          .render("erro", { mensagem: "Credenciais inválidas" });
+      if (!usuario) {
+        const mensagem = encodeURIComponent("Credenciais inválidas");
+        return res.redirect(`/login?erro=${mensagem}`);
+      }
 
       // Verifica se o usuário está ativo
       if (usuario.status !== "ATIVO") {
-        return res
-          .status(403)
-          .render("erro", { mensagem: "Usuário inativo. Contacte o administrador" });
+        const mensagem = encodeURIComponent("Usuário inativo. Contacte o administrador");
+        return res.redirect(`/login?erro=${mensagem}`);
       }
 
       // Compara a senha que o usuário digitou com a senha do banco
       const senhaValida = await bcrypt.compare(senha, usuario.senha_hash);
       
       // Se senhas não coincidirem, mensagem de erro
-      if (!senhaValida)
-        return res
-          .status(404)
-          .render("erro", { mensagem: "Credenciais inválidas" });
+      if (!senhaValida) {
+        const mensagem = encodeURIComponent("Credenciais inválidas");
+        return res.redirect(`/login?erro=${mensagem}`);
+      }
 
       // Busca o nome do perfil
       const perfilNome = usuario.nome_perfil || "Tecnico";
@@ -84,7 +82,8 @@ module.exports = {
       
     } catch (erro) {
       console.error("Erro no login:", erro);
-      res.status(500).render("erro", { mensagem: "Erro interno no servidor" });
+      const mensagem = encodeURIComponent("Erro interno no servidor");
+      res.redirect(`/login?erro=${mensagem}`);
     }
   },
 
@@ -98,20 +97,6 @@ module.exports = {
 
   // CRUD
   // Criar Usuários
-
-  renderizarCadastro: async (req, res) => {
-    // Busca perfis e usuários para popular o select e a listagem
-    try {
-      const [perfis, usuarios] = await Promise.all([
-        usuarioModel.listarPerfis(),
-        usuarioModel.listarUsuarios()
-      ]);
-      res.render('usuarios/cadastro', { perfis, usuarios });
-    } catch (err) {
-      console.error('Erro ao carregar perfis/usuarios:', err);
-      res.status(500).render('erro', { mensagem: 'Erro ao carregar página de cadastro' });
-    }
-  },
 
   cadastrar: async (req, res) => { // async porque tem operações assíncronas dentro da função (bcrypt e model)
     
@@ -133,7 +118,8 @@ module.exports = {
         }
       }
       if (!allowAdminCreate) {
-        return res.status(403).render('erro', { mensagem: 'Não é permitido criar usuários com perfil de administrador' });
+        const mensagem = encodeURIComponent('Não é permitido criar usuários com perfil de administrador');
+        return res.redirect(`/usuarios?erro=${mensagem}`);
       }
     }
 
@@ -164,7 +150,8 @@ module.exports = {
 
     } catch (erro) {
         console.error("Erro ao cadastrar usuário:", erro);
-        res.status(500).render("erro", { mensagem: "Erro interno no servidor" });
+        const mensagem = encodeURIComponent("Erro interno no servidor");
+        res.redirect(`/usuarios?erro=${mensagem}`);
         }
     },
 
@@ -172,16 +159,23 @@ module.exports = {
     renderizarEdicao: async (req, res) => {
       try {
         const { id } = req.params;
-        if (!id || isNaN(id)) return res.status(400).render('erro', { mensagem: 'ID inválido' });
+        if (!id || isNaN(id)) {
+          const mensagem = encodeURIComponent('ID inválido');
+          return res.redirect(`/usuarios?erro=${mensagem}`);
+        }
 
         const usuario = await usuarioModel.buscarPorId(id);
-        if (!usuario) return res.status(404).render('erro', { mensagem: 'Usuário não encontrado' });
+        if (!usuario) {
+          const mensagem = encodeURIComponent('Usuário não encontrado');
+          return res.redirect(`/usuarios?erro=${mensagem}`);
+        }
 
         const perfis = await usuarioModel.listarPerfis();
         res.render('usuarios/editar', { usuario, perfis });
       } catch (erro) {
         console.error('Erro ao carregar edição:', erro);
-        res.status(500).render('erro', { mensagem: 'Erro interno ao carregar edição' });
+        const mensagem = encodeURIComponent('Erro interno ao carregar edição');
+        res.redirect(`/usuarios?erro=${mensagem}`);
       }
     },
 
@@ -190,10 +184,14 @@ module.exports = {
       try {
         const { id } = req.params;
         const { nome, email, status, id_perfil, senha } = req.body;
-        if (!id || isNaN(id)) return res.status(400).render('erro', { mensagem: 'ID inválido' });
+        if (!id || isNaN(id)) {
+          const mensagem = encodeURIComponent('ID inválido');
+          return res.redirect(`/usuarios?erro=${mensagem}`);
+        }
 
         if (senha && senha.trim() !== '' && senha.length < 6) {
-          return res.status(400).render('erro', { mensagem: 'A senha deve ter pelo menos 6 caracteres' });
+          const mensagem = encodeURIComponent('A senha deve ter pelo menos 6 caracteres');
+          return res.redirect(`/usuarios/editar/${id}?erro=${mensagem}`);
         }
 
         let senhaHash = null;
@@ -203,12 +201,16 @@ module.exports = {
 
         const perfilId = id_perfil && Number(id_perfil) ? Number(id_perfil) : 2;
         const linhas = await usuarioModel.atualizarUsuarioCompleto(id, nome, email, perfilId, status || 'ATIVO', senhaHash);
-        if (linhas === 0) return res.status(404).render('erro', { mensagem: 'Usuário não encontrado' });
+        if (linhas === 0) {
+          const mensagem = encodeURIComponent('Usuário não encontrado');
+          return res.redirect(`/usuarios?erro=${mensagem}`);
+        }
 
         res.redirect('/usuarios');
       } catch (erro) {
         console.error('Erro ao atualizar usuário:', erro);
-        res.status(500).render('erro', { mensagem: 'Erro interno ao atualizar usuário' });
+        const mensagem = encodeURIComponent('Erro interno ao atualizar usuário');
+        res.redirect(`/usuarios?erro=${mensagem}`);
       }
     },
 
@@ -224,7 +226,9 @@ module.exports = {
       }
       catch(erro){
           // Se deu erro
-          res.status(500).render('erro', {mensagem: "Erro ao listar usuários"})
+          console.error('Erro ao listar usuários:', erro);
+          const mensagem = encodeURIComponent("Erro ao listar usuários");
+          res.redirect(`/?erro=${mensagem}`);
         }
     },
 
@@ -253,19 +257,22 @@ module.exports = {
       try {
         const { id } = req.params;
         if (!id || isNaN(id)) {
-          return res.status(400).render('erro', { mensagem: 'ID inválido' });
+          const mensagem = encodeURIComponent('ID inválido');
+          return res.redirect(`/usuarios?erro=${mensagem}`);
         }
 
         const linhas = await usuarioModel.desativarUsuario(id);
         if (linhas === 0) {
-          return res.status(404).render('erro', { mensagem: 'Usuário não encontrado' });
+          const mensagem = encodeURIComponent('Usuário não encontrado');
+          return res.redirect(`/usuarios?erro=${mensagem}`);
         }
 
         // Redireciona para a lista de usuários
         res.redirect('/usuarios');
       } catch (erro) {
         console.error('Erro ao desativar usuário:', erro);
-        res.status(500).render('erro', { mensagem: 'Erro interno ao desativar usuário' });
+        const mensagem = encodeURIComponent('Erro interno ao desativar usuário');
+        res.redirect(`/usuarios?erro=${mensagem}`);
       }
     }
 

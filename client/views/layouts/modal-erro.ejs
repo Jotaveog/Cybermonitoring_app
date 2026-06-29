@@ -1,0 +1,43 @@
+<!-- MODAL DE ERRO PROFISSIONAL -->
+<div class="modal fade" id="modalErro" tabindex="-1" aria-labelledby="modalErroLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background-color: var(--cor-fundo); border: 2px solid var(--cor-borda);">
+      <div class="modal-header" style="border-bottom: 2px solid var(--cor-borda);">
+        <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
+          <i class="fa-solid fa-circle-exclamation fa-lg" style="color: var(--cor-destaque);"></i>
+          <h5 class="modal-title" id="modalErroLabel" style="margin: 0;">Aviso</h5>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" style="padding: 1.5rem;">
+        <p id="modalErroMensagem" style="margin: 0; color: var(--cor-texto-principal); font-size: 1rem;"></p>
+      </div>
+      <div class="modal-footer" style="border-top: 2px solid var(--cor-borda);">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+          <i class="fa-solid fa-check"></i> Ok
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Verifica se há mensagem de erro na URL
+  document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const erro = urlParams.get('erro');
+    
+    if (erro) {
+      const mensagemDecoded = decodeURIComponent(erro);
+      document.getElementById('modalErroMensagem').textContent = mensagemDecoded;
+      const modalErro = new bootstrap.Modal(document.getElementById('modalErro'), {
+        backdrop: 'static',
+        keyboard: false
+      });
+      modalErro.show();
+
+      // Limpa a URL após abrir o modal
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  });
+</script>

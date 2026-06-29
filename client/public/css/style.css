@@ -156,6 +156,7 @@ header p, .page-title .subtitle {
   text-transform: uppercase;
   background: linear-gradient(to right, #ffffff, #a1a1aa);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   display: flex;
   align-items: center;
@@ -329,6 +330,12 @@ header p, .page-title .subtitle {
   display: grid;
   gap: 24px;
   grid-template-columns: repeat(3, 1fr);
+}
+
+.report-summary-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(4, 1fr);
 }
 
 .summary-card,
@@ -787,61 +794,6 @@ textarea.form-control {
   margin-bottom: 24px;
 }
 
-.export-section {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 24px;
-}
-
-/* ========== REPORTS STYLING ========== */
-.report-panel {
-  border-left: 4px solid var(--accent);
-}
-
-.report-panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 20px;
-}
-
-.report-filter-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-.report-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-start;
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid var(--border-color);
-}
-
-.report-summary-grid {
-  display: grid;
-  gap: 16px;
-  grid-template-columns: repeat(4, 1fr);
-  margin-bottom: 24px;
-}
-
-.report-metric-card {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid var(--border-color);
-  padding: 20px;
-  border-radius: var(--radius-md);
-  text-align: left;
-}
-
-.report-table-wrapper {
-  margin-top: 16px;
-}
-
 .history-container {
   background: rgba(255, 255, 255, 0.015);
   border: 1px solid var(--border-color);
@@ -890,7 +842,7 @@ textarea.form-control {
 .main .card-form .card-body form {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: 0.5px;
 }
 
 .main .card-form .card-body form .col-12 {
@@ -1034,7 +986,7 @@ textarea.form-control {
   
   .main .card-form .card-body form {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 8px;
   }
   
   .sidebar {
@@ -1085,4 +1037,54 @@ textarea.form-control {
   .sidebar nav a {
     padding: 8px;
   }
+}
+
+/* ========== MODAL STYLING ========== */
+.modal-content {
+  background-color: var(--bg-card) !important;
+  border: 2px solid var(--border-color) !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3) !important;
+  border-radius: var(--radius-lg) !important;
+}
+
+.modal-header {
+  border-bottom: 2px solid var(--border-color) !important;
+  padding: 1.5rem !important;
+}
+
+.modal-title {
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modal-body {
+  padding: 1.5rem !important;
+  color: var(--text-primary);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.modal-footer {
+  border-top: 2px solid var(--border-color) !important;
+  padding: 1rem 1.5rem !important;
+}
+
+.modal-footer .btn {
+  font-weight: 500;
+  border-radius: var(--radius-md) !important;
+}
+
+.modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+.btn-close {
+  filter: brightness(1.5) !important;
+}
+
+.btn-close:focus {
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
 }

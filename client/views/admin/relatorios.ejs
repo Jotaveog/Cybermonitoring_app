@@ -17,23 +17,30 @@
                     </div>
                 </div>
 
-                <div class="report-filter-row no-print">
-                    <select id="reportSetor">
-                        <option value="">Todos os setores</option>
-                    </select>
-                    <select id="reportStatus">
-                        <option value="">Todos os status</option>
-                        <option value="NORMAL">Normal</option>
-                        <option value="ATENCAO">Atenção</option>
-                        <option value="CRITICO">Crítico</option>
-                    </select>
-                    <input type="text" placeholder="Buscar..." id="searchReport">
+                <div class="filters-section mb-4 no-print">
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <label for="reportSetor" class="form-label">Filtro de setor</label>
+                            <select class="form-control" id="reportSetor" name="reportSetor">
+                                <option value="">Todos os setores</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="reportStatus" class="form-label">Filtro de status</label>
+                            <select class="form-control" id="reportStatus" name="reportStatus">
+                                <option value="">Todos os status</option>
+                                <option value="NORMAL">Normal</option>
+                                <option value="ATENCAO">Atenção</option>
+                                <option value="CRITICO">Crítico</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="report-actions no-print">
-                    <button type="button" class="btn btn-primary" onclick="exportPDF()">PDF</button>
-                    <button type="button" class="btn btn-primary" onclick="exportExcel()">Excel</button>
-                    <button type="button" class="btn btn-secondary" onclick="printReport()">Imprimir</button>
+                <div class="report-actions no-print" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <input type="text" placeholder="Buscar..." id="searchReport" class="form-control" style="flex: 1;">
+                    <button type="button" class="btn btn-primary" onclick="exportPDF()">Gerar PDF</button>
+                    <button type="button" class="btn btn-primary" onclick="exportExcel()">Exportar Excel</button>
                 </div>
             </div>
 
@@ -96,6 +103,6 @@
            
 
     <script>
-        window.reportSetores = <%- JSON.stringify(setores || []) %> || [];
+        window.reportSetores = JSON.parse('<%- JSON.stringify(setores || []) %>');
     </script>
     <script src="/js/script.js" defer></script>

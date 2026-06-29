@@ -18,182 +18,108 @@ const eventosExemplo = [
   { dt: '17/06/2026 07:55', host: 'PC-118', info: 'Login bloqueado por senha expirada', status: 'CRITICO' }
 ];
 
-module.exports = {
-  // Dashboard Admin - visão completa
-  dashboardAdmin: async (req, res) => {
-    try {
-      // Buscar estatísticas gerais
-      const totalAtivos = await ativoModel.contarAtivos();
-      const statusMonitor = await ativoModel.contarPorStatusMonitoramento();
-      const setores = await ativoModel.contarPorSetor();
-      const ultimos_eventos = await monitoramentoModel.buscarUltimos(5);
+// Helper para consolidar lógica de dashboard
+const renderizarDashboard = async (req, res, isAdmin = true) => {
+  try {
+    const totalAtivos = await ativoModel.contarAtivos();
+    const statusMonitor = await ativoModel.contarPorStatusMonitoramento();
+    const setores = await ativoModel.contarPorSetor();
+    const ultimos_eventos = await monitoramentoModel.buscarUltimos(5);
 
-      // Mapear dados do banco para o formato da view (status separado)
-      const eventosFormatados = ultimos_eventos.map(evento => ({
-        dt: new Date(evento.data_coleta).toLocaleString('pt-BR'),
-        host: evento.nome_maquina,
-        status: evento.status_monitoramento || null,
-        info: evento.observacoes || `CPU: ${evento.uso_cpu}% | Memória: ${evento.uso_memoria}% | Disco: ${evento.uso_disco}%`
-      }));
+    const eventosFormatados = ultimos_eventos.map(evento => ({
+      dt: new Date(evento.data_coleta).toLocaleString('pt-BR'),
+      host: evento.nome_maquina,
+      status: evento.status_monitoramento || null,
+      info: evento.observacoes || `CPU: ${evento.uso_cpu}% | Memória: ${evento.uso_memoria}% | Disco: ${evento.uso_disco}%`
+    }));
 
-      res.render('admin/painel', {
-        totalAtivos: totalAtivos,
-        otimo: statusMonitor.normal || 0,
-        atencao: statusMonitor.atencao || 0,
-        critico: statusMonitor.critico || 0,
-        setores: setores || [],
-        eventos: eventosFormatados.length ? eventosFormatados : eventosExemplo
-      });
-    } catch (erro) {
-      console.error("Erro ao carregar dashboard admin:", erro);
-      res.render('admin/painel', {
-        totalAtivos: 0,
-        otimo: 0,
-        atencao: 0,
-        critico: 0,
-        setores: [],
-        eventos: []
-      });
-    }
-  },
-
-  // Dashboard Técnico - visão restrita
-  dashboardTecnico: async (req, res) => {
-    try {
-      // Buscar estatísticas gerais (mesmos dados, interface diferente)
-      const totalAtivos = await ativoModel.contarAtivos();
-      const statusMonitor = await ativoModel.contarPorStatusMonitoramento();
-      const setores = await ativoModel.contarPorSetor();
-      const ultimos_eventos = await monitoramentoModel.buscarUltimos(5);
-
-      // Mapear dados do banco para o formato da view (status separado)
-      const eventosFormatados = ultimos_eventos.map(evento => ({
-        dt: new Date(evento.data_coleta).toLocaleString('pt-BR'),
-        host: evento.nome_maquina,
-        status: evento.status_monitoramento || null,
-        info: evento.observacoes || `CPU: ${evento.uso_cpu}% | Memória: ${evento.uso_memoria}% | Disco: ${evento.uso_disco}%`
-      }));
-
-      res.render('tecnico/painel', {
-        totalAtivos: totalAtivos,
-        otimo: statusMonitor.normal || 0,
-        atencao: statusMonitor.atencao || 0,
-        critico: statusMonitor.critico || 0,
-        setores: setores || [],
-        eventos: eventosFormatados.length ? eventosFormatados : eventosExemplo
-      });
-    } catch (erro) {
-      console.error("Erro ao carregar dashboard técnico:", erro);
-      res.render('tecnico/painel', {
-        totalAtivos: 0,
-        otimo: 0,
-        atencao: 0,
-        critico: 0,
-        setores: [],
-        eventos: []
-      });
-    }
-  },
-
-  // Página de gerenciamento de computadores (Admin)
-  gerenciarComputadoresAdmin: async (req, res) => {
-    try {
-      const ativos = await ativoModel.listarAtivos();
-      const setores = await ativoModel.contarPorSetor();
-      res.render('admin/gerenciar-computadoresAdmin', { ativos: ativos || [], setores: setores || [] });
-    } catch (erro) {
-      console.error("Erro ao carregar gerenciador de computadores:", erro);
-      res.render('admin/gerenciar-computadoresAdmin', { ativos: [], setores: [] });
-    }
-  },
-
-  // Página de gerenciamento de computadores (Técnico)
-  gerenciarComputadoresTecnico: async (req, res) => {
-    try {
-      const ativos = await ativoModel.listarAtivos();
-      const setores = await ativoModel.contarPorSetor();
-      res.render('tecnico/gerenciar-computadores', { ativos: ativos || [], setores: setores || [] });
-    } catch (erro) {
-      console.error("Erro ao carregar gerenciador de computadores:", erro);
-      res.render('tecnico/gerenciar-computadores', { ativos: [], setores: [] });
-    }
-  },
-
-  // Página de relatórios (Técnico)
-  relatorios: async (req, res) => {
-    try {
-      const ativos = await ativoModel.listarAtivosRelatorio();
-      const setores = await ativoModel.contarPorSetor();
-      const statusResumo = await ativoModel.contarPorStatusMonitoramento();
-
-      const totalAtivos = ativos.length;
-      const onlineCount = (statusResumo && statusResumo.normal) ? statusResumo.normal : ativos.filter(a => a.status_monitoramento !== null && a.status_monitoramento !== undefined).length;
-
-      res.render('tecnico/relatorios', {
-        ativos: ativos || [],
-        setores: setores || [],
-        statusResumo: statusResumo || { normal: 0, atencao: 0, critico: 0 },
-        totalAtivos,
-        onlineCount
-      });
-    } catch (erro) {
-      console.error("Erro ao carregar relatórios:", erro);
-      res.render('tecnico/relatorios', {
-        ativos: [],
-        setores: [],
-        statusResumo: { normal: 0, atencao: 0, critico: 0 },
-        totalAtivos: 0,
-        onlineCount: 0
-      });
-    }
+    res.render('admin/painel', {
+      totalAtivos: totalAtivos,
+      otimo: statusMonitor.normal || 0,
+      atencao: statusMonitor.atencao || 0,
+      critico: statusMonitor.critico || 0,
+      setores: setores || [],
+      eventos: eventosFormatados.length ? eventosFormatados : eventosExemplo
+    });
+  } catch (erro) {
+    console.error("Erro ao carregar dashboard:", erro);
+    res.render('admin/painel', {
+      totalAtivos: 0,
+      otimo: 0,
+      atencao: 0,
+      critico: 0,
+      setores: [],
+      eventos: []
+    });
   }
 };
 
-// pagina de relatórios (Admin)
-module.exports.relatoriosAdmin = async (req, res) => {
+// Helper para consolidar lógica de gerenciar computadores
+const renderizarGerenciador = async (req, res) => {
+  try {
+    const ativos = await ativoModel.listarAtivos();
+    const setores = await ativoModel.contarPorSetor();
+    res.render('admin/gerenciar-computadoresAdmin', { ativos: ativos || [], setores: setores || [] });
+  } catch (erro) {
+    console.error("Erro ao carregar gerenciador:", erro);
+    res.render('admin/gerenciar-computadoresAdmin', { ativos: [], setores: [] });
+  }
+};
+
+// Helper para consolidar lógica de relatórios
+const renderizarRelatorios = async (req, res, isAdmin = false) => {
   try {
     const ativos = await ativoModel.listarAtivosRelatorio();
     const setores = await ativoModel.contarPorSetor();
     const statusResumo = await ativoModel.contarPorStatusMonitoramento();
-
-    let historico = []
-    try {
-      historico = await monitoramentoModel.buscarHistoricoEventos(100)
-    } catch (histErro) {
-      console.error("Erro ao buscar histórico de eventos:", histErro)
-      historico = []
-    }
-
     const totalAtivos = ativos.length;
-    const onlineCount = (statusResumo && statusResumo.normal) ? statusResumo.normal : ativos.filter(a => a.status_monitoramento !== null && a.status_monitoramento !== undefined).length;
+    const onlineCount = (statusResumo && statusResumo.normal) ? statusResumo.normal : ativos.filter(a => a.status_monitoramento).length;
 
-    res.render('admin/relatorios', {
+    const data = {
       ativos: ativos || [],
       setores: setores || [],
       statusResumo: statusResumo || { normal: 0, atencao: 0, critico: 0 },
-      historico,
       totalAtivos,
       onlineCount
-    });
+    };
+
+    // Admin tem acesso a histórico completo
+    if (isAdmin) {
+      try {
+        data.historico = await monitoramentoModel.buscarHistoricoEventos(100);
+      } catch (histErro) {
+        console.error("Erro ao buscar histórico:", histErro);
+        data.historico = [];
+      }
+    }
+
+    res.render('admin/relatorios', data);
   } catch (erro) {
-    console.error("Erro ao carregar relatórios admin:", erro);
+    console.error("Erro ao carregar relatórios:", erro);
     res.render('admin/relatorios', {
       ativos: [],
       setores: [],
       statusResumo: { normal: 0, atencao: 0, critico: 0 },
-      historico: [],
       totalAtivos: 0,
       onlineCount: 0
     });
   }
 };
 
-module.exports.limparHistorico = async (req, res) => {
-  try {
-    await monitoramentoModel.limparHistorico();
-    res.json({ sucesso: true, mensagem: 'Histórico limpo com sucesso' });
-  } catch (erro) {
-    console.error('Erro ao limpar histórico:', erro);
-    res.status(500).json({ sucesso: false, mensagem: 'Erro ao limpar histórico' });
+module.exports = {
+  dashboardAdmin: (req, res) => renderizarDashboard(req, res, true),
+  dashboardTecnico: (req, res) => renderizarDashboard(req, res, false),
+  gerenciarComputadoresAdmin: (req, res) => renderizarGerenciador(req, res),
+  gerenciarComputadoresTecnico: (req, res) => renderizarGerenciador(req, res),
+  relatorios: (req, res) => renderizarRelatorios(req, res, false),
+  relatoriosAdmin: (req, res) => renderizarRelatorios(req, res, true),
+  limparHistorico: async (req, res) => {
+    try {
+      await monitoramentoModel.limparHistorico();
+      res.json({ sucesso: true, mensagem: 'Histórico limpo com sucesso' });
+    } catch (erro) {
+      console.error('Erro ao limpar histórico:', erro);
+      res.status(500).json({ sucesso: false, mensagem: 'Erro ao limpar histórico' });
+    }
   }
 };
